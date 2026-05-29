@@ -122,8 +122,30 @@
     <p class="text-sm text-text-secondary m-0 mt-0.5">Collections, payments, and distributions across the trust accounts.</p>
   </div>
 
+  <!-- Tabs -->
+  <div class="flex gap-2 border-b border-border mb-5">
+    <button id="tab-collection" onclick="switchTab('collection')" class="cf-tab px-4 py-2 text-sm font-semibold border-b-2 border-secondary -mb-px font-primary text-text">
+      <i class="ph ph-chart-bar mr-1"></i> Collection Chart
+    </button>
+    <button id="tab-history" onclick="switchTab('history')" class="cf-tab px-4 py-2 text-sm font-medium border-b-2 border-transparent -mb-px font-primary text-text-secondary hover:text-text">
+      <i class="ph ph-clock-counter-clockwise mr-1"></i> Payment History
+    </button>
+    <button id="tab-account" onclick="switchTab('account')" class="cf-tab px-4 py-2 text-sm font-medium border-b-2 border-transparent -mb-px font-primary text-text-secondary hover:text-text">
+      <i class="ph ph-shield-check mr-1"></i> Account Balance
+    </button>
+    <a id="openStandalone" href="./collection-chart.html" target="_blank" class="ml-auto inline-flex items-center gap-1 text-xs text-text-secondary hover:text-text" title="Open in new tab">
+      <i class="ph ph-arrow-square-out"></i> Open standalone
+    </a>
+  </div>
+
+  <!-- Iframes + inline pane (only one visible at a time) -->
+  <iframe id="frame-collection" class="cf-frame" src="./collection-chart.html" title="Collection Chart"></iframe>
+  <iframe id="frame-history" class="cf-frame hidden" src="./payment-history.html" title="Payment History"></iframe>
+
+  <!-- Account Balance pane (inline, hidden by default) -->
+  <div id="frame-account" class="hidden">
   <!-- ════════ ACCOUNT BALANCE ════════ -->
-  <article class="bg-surface border border-border rounded-xl p-4 mb-6">
+  <article class="bg-surface border border-border rounded-xl p-4">
     <header class="flex items-center justify-between gap-3 flex-wrap mb-2">
       <h3 class="font-primary text-base font-bold uppercase tracking-wider m-0 flex items-center gap-2">
         <i class="ph ph-shield-check text-danger"></i> Account Balance
@@ -216,29 +238,13 @@
       </tfoot>
     </table>
   </article>
-
-  <!-- Tabs -->
-  <div class="flex gap-2 border-b border-border mb-5">
-    <button id="tab-collection" onclick="switchTab('collection')" class="cf-tab px-4 py-2 text-sm font-semibold border-b-2 border-secondary -mb-px font-primary text-text">
-      <i class="ph ph-chart-bar mr-1"></i> Collection Chart
-    </button>
-    <button id="tab-history" onclick="switchTab('history')" class="cf-tab px-4 py-2 text-sm font-medium border-b-2 border-transparent -mb-px font-primary text-text-secondary hover:text-text">
-      <i class="ph ph-clock-counter-clockwise mr-1"></i> Payment History
-    </button>
-    <a href="./collection-chart.html" target="_blank" class="ml-auto inline-flex items-center gap-1 text-xs text-text-secondary hover:text-text" title="Open in new tab">
-      <i class="ph ph-arrow-square-out"></i> Open standalone
-    </a>
   </div>
-
-  <!-- Iframes (only one visible at a time) -->
-  <iframe id="frame-collection" class="cf-frame" src="./collection-chart.html" title="Collection Chart"></iframe>
-  <iframe id="frame-history" class="cf-frame hidden" src="./payment-history.html" title="Payment History"></iframe>
 
 </main>
 
 <script>
   function switchTab(tab){
-    const tabs = ['history','collection'];
+    const tabs = ['collection','history','account'];
     tabs.forEach(t => {
       const btn = document.getElementById('tab-'+t);
       const frame = document.getElementById('frame-'+t);
@@ -252,8 +258,14 @@
         frame.classList.add('hidden');
       }
     });
-    // Update "Open standalone" link
-    document.querySelector('a[title="Open in new tab"]').href = tab === 'collection' ? './collection-chart.html' : './payment-history.html';
+    // Update "Open standalone" link · hidden for inline panes (account)
+    const openLink = document.getElementById('openStandalone');
+    if (tab === 'account') {
+      openLink.style.display = 'none';
+    } else {
+      openLink.style.display = '';
+      openLink.href = tab === 'collection' ? './collection-chart.html' : './payment-history.html';
+    }
   }
 </script>
 
