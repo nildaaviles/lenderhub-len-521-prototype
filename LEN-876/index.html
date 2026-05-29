@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>LEN-876 · Reporting Frequency Badge</title>
+<style>
+  :root {
+    --bg: #F7F8FA;
+    --surface: #FFFFFF;
+    --border: #E4E7EC;
+    --text: #101828;
+    --text-2: #475467;
+    --text-3: #98A2B3;
+    --brand: #1A56DB;
+    --brand-soft: #EFF4FF;
+    --success: #027A48;
+    --success-soft: #ECFDF3;
+    --warning: #B54708;
+    --warning-soft: #FFFAEB;
+    --info: #175CD3;
+    --info-soft: #EFF8FF;
+    --radius: 8px;
+    --shadow-sm: 0 1px 2px rgba(16,24,40,.05);
+    --shadow-md: 0 4px 12px rgba(16,24,40,.08);
+    --font: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* ===== Top app shell ===== */
+  .shell { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+  .sidebar {
+    background: #0B1426;
+    color: #fff;
+    padding: 24px 16px;
+  }
+  .logo {
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: .3px;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .logo-dot { width: 10px; height: 10px; background: var(--brand); border-radius: 2px; }
+  .nav-section { font-size: 11px; color: #8893A8; text-transform: uppercase; letter-spacing: 1px; margin: 16px 8px 8px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; border-radius: 6px; color: #C9D1E0; cursor: pointer;
+    font-size: 13px;
+  }
+  .nav-item:hover { background: rgba(255,255,255,.04); }
+  .nav-item.active { background: rgba(26,86,219,.18); color: #fff; }
+
+  .main { padding: 24px 32px 64px; }
+
+  /* ===== Breadcrumbs & header ===== */
+  .crumbs { font-size: 12px; color: var(--text-3); margin-bottom: 8px; }
+  .crumbs a { color: var(--text-2); text-decoration: none; }
+  .page-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 24px; margin-bottom: 24px;
+  }
+  .page-title h1 { margin: 0 0 4px; font-size: 22px; font-weight: 600; }
+  .page-title p { margin: 0; color: var(--text-2); font-size: 13px; }
+  .status-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--success-soft); color: var(--success);
+    padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;
+    margin-left: 8px;
+  }
+  .status-pill::before { content: ""; width: 6px; height: 6px; background: var(--success); border-radius: 50%; }
+
+  /* ===== Filter bar (key area for LEN-876) ===== */
+  .filter-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 20px;
+  }
+  .filter-group { display: flex; flex-direction: column; gap: 4px; }
+  .filter-label { font-size: 11px; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: .5px; }
+  .filter-control {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #fff; border: 1px solid var(--border); border-radius: 6px;
+    padding: 8px 12px; font-size: 13px; color: var(--text); cursor: pointer;
+    min-width: 180px;
+  }
+  .filter-control:hover { border-color: #CBD5E1; }
+  .filter-control .chev { color: var(--text-3); font-size: 11px; margin-left: auto; }
+
+  /* THE BADGE — LEN-876 core */
+  .cutoff-wrap { display: flex; align-items: center; gap: 8px; position: relative; }
+
+  .freq-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    height: 24px;
+    cursor: help;
+    user-select: none;
+    transition: transform .15s ease;
+  }
+  .freq-badge:hover { transform: translateY(-1px); }
+  .freq-badge .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+  }
+  .freq-badge.daily   { background: var(--success-soft); color: var(--success); }
+  .freq-badge.daily   .dot { background: var(--success); }
+  .freq-badge.weekly  { background: var(--info-soft);    color: var(--info); }
+  .freq-badge.weekly  .dot { background: var(--info); }
+  .freq-badge.monthly { background: var(--warning-soft); color: var(--warning); }
+  .freq-badge.monthly .dot { background: var(--warning); }
+
+  /* Tooltip */
+  .tt {
+    position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+    background: #101828; color: #fff;
+    padding: 8px 10px; border-radius: 6px; font-size: 12px; line-height: 1.4;
+    white-space: nowrap;
+    box-shadow: var(--shadow-md);
+    opacity: 0; pointer-events: none; transition: opacity .15s ease;
+    z-index: 10;
+  }
+  .tt::after {
+    content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+    border: 5px solid transparent; border-top-color: #101828;
+  }
+  .cutoff-wrap:hover .tt { opacity: 1; }
+
+  /* ===== KPI cards ===== */
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+  .kpi {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 16px 18px; box-shadow: var(--shadow-sm);
+  }
+  .kpi .label { font-size: 12px; color: var(--text-2); margin-bottom: 6px; }
+  .kpi .value { font-size: 22px; font-weight: 600; }
+  .kpi .delta { font-size: 12px; color: var(--success); margin-top: 4px; }
+  .kpi .delta.neg { color: #B42318; }
+
+  /* ===== Content card ===== */
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow-sm); margin-bottom: 20px;
+  }
+  .card-head { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .card-title { font-weight: 600; font-size: 15px; }
+  .card-body { padding: 20px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font-weight: 600; color: var(--text-2); font-size: 11px; text-transform: uppercase; letter-spacing: .5px; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  td { padding: 12px; border-bottom: 1px solid #F2F4F7; }
+  tr:last-child td { border-bottom: none; }
+  .num { font-variant-numeric: tabular-nums; text-align: right; }
+
+  /* ===== Variants showcase ===== */
+  .variants { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .variant {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 16px; box-shadow: var(--shadow-sm);
+  }
+  .variant h4 { margin: 0 0 12px; font-size: 13px; color: var(--text-2); font-weight: 600; }
+  .variant .row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .variant .meta { font-size: 11px; color: var(--text-3); }
+
+  /* Edge cases */
+  .edge {
+    background: #FFFBEB; border: 1px dashed #FCD34D; border-radius: 6px;
+    padding: 8px 10px; font-size: 12px; color: #92400E;
+  }
+
+  .section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-3); letter-spacing: 1px; margin: 28px 0 12px; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo"><span class="logo-dot"></span> LenderHub</div>
+    <div class="nav-section">Portfolio</div>
+    <div class="nav-item">Dashboard</div>
+    <div class="nav-item active">Facilities</div>
+    <div class="nav-item">Asset View</div>
+    <div class="nav-item">Financials</div>
+    <div class="nav-item">Data Requests</div>
+    <div class="nav-section">Account</div>
+    <div class="nav-item">Settings</div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="crumbs"><a href="#">Facilities</a> / <a href="#">Fideicomiso 4521 — Mexarrend</a> / <strong style="color:var(--text)">Detail</strong></div>
+
+    <div class="page-header">
+      <div class="page-title">
+        <h1>Mexarrend · Working Capital Facility
+          <span class="status-pill">Active</span>
+        </h1>
+        <p>Committed $250M MXN · Originator: Mexarrend, S.A.P.I. de C.V. · Servicer: CIBanco</p>
+      </div>
+    </div>
+
+    <!-- Filter bar — the LEN-876 area -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label class="filter-label">Cut-Off Date</label>
+        <div class="cutoff-wrap">
+          <button class="filter-control">
+            <span>📅</span>
+            <span>May 15, 2026</span>
+            <span class="chev">▾</span>
+          </button>
+
+          <!-- THE BADGE -->
+          <span class="freq-badge weekly" tabindex="0" aria-describedby="freq-tt">
+            <span class="dot"></span>
+            Weekly
+          </span>
+
+          <div class="tt" id="freq-tt" role="tooltip">
+            Inferred from the cut-off history of this facility.
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">View</label>
+        <button class="filter-control">
+          <span>Summary</span>
+          <span class="chev">▾</span>
+        </button>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Currency</label>
+        <button class="filter-control">
+          <span>MXN</span>
+          <span class="chev">▾</span>
+        </button>
+      </div>
+
+      <div style="margin-left:auto; display:flex; gap:8px;">
+        <button class="filter-control" style="background:var(--brand); color:#fff; border-color:var(--brand);">Export</button>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpis">
+      <div class="kpi">
+        <div class="label">Outstanding Balance</div>
+        <div class="value">$184.2M</div>
+        <div class="delta">+2.4% vs. last cut</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Headroom</div>
+        <div class="value">$65.8M</div>
+        <div class="delta neg">−$6M vs. last cut</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Advance Rate</div>
+        <div class="value">73.7%</div>
+        <div class="delta">Within covenant</div>
+      </div>
+      <div class="kpi">
+        <div class="label">DSCR</div>
+        <div class="value">1.42x</div>
+        <div class="delta">≥ 1.20x required</div>
+      </div>
+    </div>
+
+    <!-- Cut-off history table (supports the inference story) -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Cut-Off History · last 6 reports</div>
+        <span style="font-size:12px; color:var(--text-3);">Median delta: 7 days → <strong style="color:var(--info)">Weekly</strong></span>
+      </div>
+      <div class="card-body" style="padding:0;">
+        <table>
+          <thead>
+            <tr>
+              <th>Cut-Off Date</th>
+              <th>Delta (days)</th>
+              <th class="num">Outstanding</th>
+              <th class="num">Headroom</th>
+              <th>Source</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>May 15, 2026</td><td>7</td><td class="num">$184.2M</td><td class="num">$65.8M</td><td>DWH</td></tr>
+            <tr><td>May 08, 2026</td><td>7</td><td class="num">$178.4M</td><td class="num">$71.6M</td><td>DWH</td></tr>
+            <tr><td>May 01, 2026</td><td>8</td><td class="num">$176.1M</td><td class="num">$73.9M</td><td>DWH</td></tr>
+            <tr><td>Apr 23, 2026</td><td>7</td><td class="num">$172.0M</td><td class="num">$78.0M</td><td>DWH</td></tr>
+            <tr><td>Apr 16, 2026</td><td>7</td><td class="num">$168.3M</td><td class="num">$81.7M</td><td>DWH</td></tr>
+            <tr><td>Apr 09, 2026</td><td>—</td><td class="num">$165.1M</td><td class="num">$84.9M</td><td>DWH</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Variants & edge cases -->
+    <div class="section-title">Badge — variants & edge cases</div>
+    <div class="variants">
+      <div class="variant">
+        <h4>DAILY</h4>
+        <div class="row">
+          <span class="freq-badge daily"><span class="dot"></span>Daily</span>
+          <span class="meta">median ≤ 2 days</span>
+        </div>
+        <div class="meta">Used by high-frequency originators (e.g., consumer lending tape).</div>
+      </div>
+
+      <div class="variant">
+        <h4>WEEKLY</h4>
+        <div class="row">
+          <span class="freq-badge weekly"><span class="dot"></span>Weekly</span>
+          <span class="meta">median 5–9 days</span>
+        </div>
+        <div class="meta">Most common in factoring & working capital facilities.</div>
+      </div>
+
+      <div class="variant">
+        <h4>MONTHLY</h4>
+        <div class="row">
+          <span class="freq-badge monthly"><span class="dot"></span>Monthly</span>
+          <span class="meta">median 25–35 days</span>
+        </div>
+        <div class="meta">Standard for term loans & long-tenor structured facilities.</div>
+      </div>
+
+      <div class="variant">
+        <h4>NO BADGE · &lt; 2 cuts</h4>
+        <div class="row">
+          <button class="filter-control" style="min-width:auto;">
+            <span>📅</span><span>May 15, 2026</span><span class="chev">▾</span>
+          </button>
+        </div>
+        <div class="edge">Newly onboarded facility — no delta to compute yet.</div>
+      </div>
+
+      <div class="variant">
+        <h4>NO BADGE · out of range</h4>
+        <div class="row">
+          <button class="filter-control" style="min-width:auto;">
+            <span>📅</span><span>May 15, 2026</span><span class="chev">▾</span>
+          </button>
+        </div>
+        <div class="edge">Median = 12 days → outside Daily / Weekly / Monthly buckets. Do not invent a label.</div>
+      </div>
+
+      <div class="variant">
+        <h4>HOVER · tooltip</h4>
+        <div class="row" style="position:relative; padding-bottom:36px;">
+          <span class="freq-badge weekly"><span class="dot"></span>Weekly</span>
+          <div style="position:absolute; top:-32px; left:0; background:#101828; color:#fff; padding:6px 10px; border-radius:6px; font-size:12px; white-space:nowrap;">
+            Inferred from the cut-off history of this facility.
+          </div>
+        </div>
+        <div class="meta">Triggers Pendo `facility_reporting_frequency_tooltip_hover` after 500ms.</div>
+      </div>
+    </div>
+
+  </main>
+</div>
+</body>
+</html>

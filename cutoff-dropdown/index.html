@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Cut-off Date Dropdown · LenderHub Prototype</title>
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --surface: #ffffff;
+    --border: #d8dde5;
+    --border-strong: #b8c0cc;
+    --text: #1a2233;
+    --text-muted: #6b7689;
+    --text-soft: #8a94a6;
+    --primary: #1f3a8a;
+    --selected-bg: #e3e8f5;
+    --hover-bg: #f0f3f9;
+    --warning-bg: #fff3e6;
+    --warning-fg: #b85a00;
+    --warning-border: #ffb877;
+    --divider: #e6e9ef;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 60px 40px;
+    display: flex;
+    gap: 80px;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .panel {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: 0 2px 12px rgba(20, 30, 50, 0.06);
+    width: 360px;
+  }
+  .panel-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    margin: 0 0 4px;
+  }
+  .panel-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0 0 24px;
+  }
+
+  .label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .select {
+    position: relative;
+    width: 100%;
+  }
+  .select-trigger {
+    width: 100%;
+    height: 44px;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    padding: 0 14px;
+    font-size: 15px;
+    color: var(--text);
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: border-color .15s;
+  }
+  .select-trigger:hover { border-color: var(--primary); }
+  .select-trigger:focus { outline: 2px solid var(--primary); outline-offset: 1px; }
+  .trigger-value { display: flex; flex-direction: column; line-height: 1.2; }
+  .trigger-date { font-weight: 500; }
+  .trigger-day { font-size: 11px; color: var(--text-soft); margin-top: 2px; }
+  .chev { color: var(--text-muted); transition: transform .2s; }
+  .open .chev { transform: rotate(180deg); }
+
+  .dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(20, 30, 50, 0.12);
+    max-height: 380px;
+    overflow-y: auto;
+    z-index: 10;
+    display: none;
+  }
+  .open .dropdown { display: block; }
+
+  .group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px 6px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    border-top: 1px solid var(--divider);
+  }
+  .group-header:first-child { border-top: none; }
+  .group-header .count { font-weight: 400; font-size: 10px; color: var(--text-soft); opacity: 0; transition: opacity .15s; }
+  .group-header:hover .count { opacity: 1; }
+  .group-header.has-issue::after {
+    content: "";
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--warning-fg);
+    margin-left: 6px;
+  }
+
+  .item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    font-size: 14px;
+    color: var(--text);
+    cursor: pointer;
+    transition: background .1s;
+  }
+  .item:hover { background: var(--hover-bg); }
+  .item.selected { background: var(--selected-bg); font-weight: 500; }
+  .item-date { display: flex; align-items: center; gap: 8px; }
+  .latest-dot {
+    display: inline-block;
+    font-size: 10px;
+    color: var(--primary);
+    font-weight: 600;
+    background: #e3e8f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .badge-warn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--warning-bg);
+    color: var(--warning-fg);
+    border: 1px solid var(--warning-border);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+  }
+  .badge-warn::before {
+    content: "⚠";
+    font-size: 11px;
+  }
+
+  /* BEFORE panel — simulating the original */
+  .before-trigger {
+    width: 100%;
+    height: 44px;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    padding: 0 14px;
+    font-size: 15px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .before-list {
+    margin-top: 6px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .before-item {
+    padding: 12px 14px;
+    font-size: 14px;
+    border-bottom: 1px solid var(--divider);
+  }
+  .before-item:last-child { border-bottom: none; }
+  .before-item.sel { background: var(--selected-bg); font-weight: 500; }
+  .before-badge {
+    margin-top: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--warning-bg);
+    color: var(--warning-fg);
+    border: 1px solid var(--warning-border);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 14px;
+  }
+  .before-badge::before { content: "⚠"; }
+
+  .legend {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--divider);
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  .legend strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+  <!-- BEFORE -->
+  <div class="panel">
+    <p class="panel-title">Before</p>
+    <p class="panel-sub">Current production component</p>
+
+    <label class="label">Cut-off date</label>
+    <div class="before-trigger">
+      <span>05/04/2026</span>
+      <span class="chev">▾</span>
+    </div>
+    <div class="before-list">
+      <div class="before-item sel">05/04/2026</div>
+      <div class="before-item">05/03/2026</div>
+      <div class="before-item">05/02/2026</div>
+      <div class="before-item">05/01/2026</div>
+      <div class="before-item">04/12/2025</div>
+    </div>
+    <span class="before-badge">Non compliant</span>
+
+    <div class="legend">
+      <strong>Issues:</strong><br/>
+      • Ambiguous format (MM/DD vs DD/MM)<br/>
+      • Date gap unexplained (May → Dec)<br/>
+      • "Non compliant" detached from any item<br/>
+      • All items look equal — no signal
+    </div>
+  </div>
+
+  <!-- AFTER -->
+  <div class="panel">
+    <p class="panel-title">After</p>
+    <p class="panel-sub">Grouped by month · exceptions only</p>
+
+    <label class="label" for="cutoff">Cut-off date</label>
+    <div class="select" id="select">
+      <button class="select-trigger" id="trigger" aria-haspopup="listbox" aria-expanded="false">
+        <span class="trigger-value">
+          <span class="trigger-date" id="triggerDate">March 12, 2026</span>
+          <span class="trigger-day" id="triggerDay">Thursday · Latest available</span>
+        </span>
+        <span class="chev">▾</span>
+      </button>
+
+      <div class="dropdown" role="listbox" id="dropdown">
+        <div class="group-header">
+          <span>May 2026</span><span class="count">2 cut-offs</span>
+        </div>
+        <div class="item" data-date="May 12, 2026" data-day="Tuesday">
+          <span class="item-date">May 12, 2026 <span class="latest-dot">LATEST</span></span>
+        </div>
+        <div class="item" data-date="May 05, 2026" data-day="Tuesday">
+          <span class="item-date">May 05, 2026</span>
+          <span class="badge-warn">Non compliant</span>
+        </div>
+
+        <div class="group-header">
+          <span>April 2026</span><span class="count">2 cut-offs</span>
+        </div>
+        <div class="item" data-date="April 12, 2026" data-day="Sunday">
+          <span class="item-date">Apr 12, 2026</span>
+        </div>
+        <div class="item" data-date="April 05, 2026" data-day="Sunday">
+          <span class="item-date">Apr 05, 2026</span>
+        </div>
+
+        <div class="group-header has-issue">
+          <span>March 2026</span><span class="count">2 cut-offs · 1 issue</span>
+        </div>
+        <div class="item selected" data-date="March 12, 2026" data-day="Thursday">
+          <span class="item-date">Mar 12, 2026</span>
+        </div>
+        <div class="item" data-date="March 05, 2026" data-day="Thursday">
+          <span class="item-date">Mar 05, 2026</span>
+          <span class="badge-warn">Non compliant</span>
+        </div>
+
+        <div class="group-header">
+          <span>December 2025</span><span class="count">1 cut-off</span>
+        </div>
+        <div class="item" data-date="December 04, 2025" data-day="Thursday">
+          <span class="item-date">Dec 04, 2025</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <strong>Improvements:</strong><br/>
+      • Unambiguous date format <code>Month DD, YYYY</code><br/>
+      • Grouped by month → temporal mental model<br/>
+      • Compliant = silent · Non-compliant = signal<br/>
+      • Gap (Dec 2025) self-explanatory by grouping<br/>
+      • Group header dot flags months with issues<br/>
+      • <code>LATEST</code> badge anchors freshness<br/>
+      • Weekday on selected item (covenant testing)
+    </div>
+  </div>
+
+<script>
+  const select = document.getElementById('select');
+  const trigger = document.getElementById('trigger');
+  const dropdown = document.getElementById('dropdown');
+  const triggerDate = document.getElementById('triggerDate');
+  const triggerDay = document.getElementById('triggerDay');
+
+  trigger.addEventListener('click', () => {
+    const open = select.classList.toggle('open');
+    trigger.setAttribute('aria-expanded', open);
+  });
+
+  dropdown.querySelectorAll('.item').forEach(item => {
+    item.addEventListener('click', () => {
+      dropdown.querySelectorAll('.item').forEach(i => i.classList.remove('selected'));
+      item.classList.add('selected');
+      const date = item.dataset.date;
+      const day = item.dataset.day;
+      const isLatest = item.querySelector('.latest-dot') !== null;
+      triggerDate.textContent = date;
+      triggerDay.textContent = isLatest ? `${day} · Latest available` : day;
+      select.classList.remove('open');
+      trigger.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!select.contains(e.target)) {
+      select.classList.remove('open');
+      trigger.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  // Open by default for demo
+  select.classList.add('open');
+  trigger.setAttribute('aria-expanded', 'true');
+</script>
+</body>
+</html>

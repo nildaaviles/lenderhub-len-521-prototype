@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Borrowing Base · LenderHub</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #f7f7f9;
+    --ink: #111;
+    --ink-2: #6b6b73;
+    --line: #ececf0;
+    --pink: #e6007e;
+    --amber: #f5a623;
+    --red: #d92d20;
+    --amber-bg: #fef4e6;
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); padding: 32px; }
+  .card {
+    background: #fff; border-radius: 12px; padding: 24px 28px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05); max-width: 980px; margin: 0 auto;
+  }
+  .head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .title { font-size: 13px; font-weight: 700; letter-spacing: .05em; }
+  .pills { display: inline-flex; gap: 8px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 600;
+  }
+  .pill .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .pill.amber { background: var(--amber-bg); color: #b07410; }
+  .pill.amber .dot { background: var(--amber); }
+  .pill.green { background: #e8f7f0; color: #00a86b; }
+  .pill.green .dot { background: #00a86b; }
+
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 24px; }
+  .kpi .label { font-size: 11px; color: var(--ink-2); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; display: inline-flex; align-items: center; gap: 5px; }
+  .info {
+    width: 13px; height: 13px; border-radius: 50%;
+    background: #e4e4e9; color: #6b6b73;
+    font-size: 9px; font-weight: 700;
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: help; position: relative;
+  }
+  .info:hover .tip { opacity: 1; transform: translate(-50%, -4px); pointer-events: auto; }
+  .tip {
+    position: absolute; bottom: 100%; left: 50%;
+    transform: translate(-50%, 0); opacity: 0;
+    background: #111; color: #fff; padding: 8px 10px; border-radius: 6px;
+    font-size: 11px; font-weight: 400; white-space: nowrap; letter-spacing: 0; text-transform: none;
+    transition: opacity .15s, transform .15s; pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15); z-index: 10;
+  }
+  .tip::after {
+    content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+    border: 4px solid transparent; border-top-color: #111;
+  }
+  .tip code { background: rgba(255,255,255,.12); padding: 1px 5px; border-radius: 3px; font-size: 11px; }
+  .kpi .value { font-size: 28px; font-weight: 700; letter-spacing: -.02em; }
+  .kpi.alert .value { color: var(--red); }
+
+  .chart-wrap { position: relative; height: 280px; margin-bottom: 20px; }
+
+  .action {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px; background: #fff8ec; border: 1px solid #f5d6a3; border-radius: 10px;
+    font-size: 13px;
+  }
+  .action .icon { font-size: 18px; }
+  .action .text b { color: var(--ink); }
+  .action .text { color: var(--ink-2); }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="head">
+    <div class="title">⚖️ BORROWING BASE</div>
+    <div class="pills">
+      <div class="pill green">✓ Compliant</div>
+      <div class="pill amber"><span class="dot"></span> 99% Utilization</div>
+    </div>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi alert">
+      <div class="label">Availability <span class="info">i<span class="tip">Borrowing Base − Outstanding Debt = <code>$3.25M − $3.22M</code></span></span></div>
+      <div class="value">$30K</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Borrowing Base</div>
+      <div class="value">$3.25M</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Outstanding Debt</div>
+      <div class="value">$3.22M</div>
+    </div>
+  </div>
+
+  <div class="chart-wrap"><canvas id="bbChart"></canvas></div>
+</div>
+
+<script>
+  const labels = ['Dec','Jan','Feb','Mar','Apr'];
+  const bb   = [1350000, 2370000, 2850000, 2780000, 3250000];
+  const out  = [1350000, 1900000, 2420000, 2760000, 3220000];
+
+  const ctx = document.getElementById('bbChart').getContext('2d');
+  const grad = ctx.createLinearGradient(0,0,0,280);
+  grad.addColorStop(0, 'rgba(230,0,126,0.30)');
+  grad.addColorStop(1, 'rgba(230,0,126,0.02)');
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Borrowing Base', data: bb, borderColor: '#8a8a93', borderDash: [6,4],
+          backgroundColor: 'transparent', pointBackgroundColor:'#fff', pointBorderColor:'#8a8a93',
+          pointRadius: 4, tension: 0.3 },
+        { label: 'Outstanding Debt', data: out, borderColor: '#e6007e', backgroundColor: grad,
+          fill: '-1', pointBackgroundColor:'#fff', pointBorderColor:'#e6007e',
+          pointRadius: 4, tension: 0.3 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'top', labels: { boxWidth: 10, font: { size: 11 } } },
+        tooltip: {
+          backgroundColor: '#111', padding: 12,
+          callbacks: {
+            label: (c) => ` ${c.dataset.label}: $${(c.parsed.y/1e6).toFixed(2)}M`,
+            afterBody: (items) => {
+              const i = items[0].dataIndex;
+              const avail = bb[i] - out[i];
+              return ['', `Availability: $${(avail/1e3).toFixed(0)}K`];
+            }
+          }
+        }
+      },
+      scales: {
+        y: { ticks: { callback: (v) => '$' + (v/1e6).toFixed(1) + 'M', font:{size:11} },
+             grid: { color: '#f0f0f3' } },
+        x: { grid: { display: false }, ticks: { font: { size: 11 } } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

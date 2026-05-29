@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Portfolio Comparison · BBVA Spark — LenderHub</title>
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web" />
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:wght@400;500;700&family=Noto+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#1F2733; --secondary:#910057; --secondary-active:#840058;
+  --bg:#F8FAFC; --surface:#FFFFFF;
+  --border:#E2E8F0; --border-strong:#CBD5E1;
+  --text:#334155; --text-secondary:#64748B; --text-muted:#94A3B8;
+  --green:#16A34A; --green-bg:#F0FDF4;
+  --orange:#EA580C; --orange-bg:#FFF7ED;
+  --yellow:#D97706; --yellow-bg:#FFFBEB;
+  --red:#DC2626; --red-bg:#FEF2F2;
+  --blue:#0284C7; --blue-bg:#F0F9FF;
+  --radius:8px; --radius-sm:6px; --radius-lg:12px;
+  --shadow:0 1px 3px rgba(0,0,0,.10),0 1px 2px rgba(0,0,0,.06);
+  --font-primary:'Sofia Sans',-apple-system,sans-serif;
+  --font-ui:'Noto Sans',-apple-system,sans-serif;
+  --font-mono:'Space Mono',monospace;
+  --topbar-height:52px; --sidebar-width:232px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);font-size:1rem;line-height:1.5}
+h1,h2,h3,h4{font-family:var(--font-primary)}
+
+/* Topbar */
+.topbar{background:var(--bg);border-bottom:1px solid var(--border);position:fixed;top:0;left:0;right:0;height:var(--topbar-height);display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:1100}
+.topbar-logo{height:24px}
+.topbar-right{display:flex;align-items:center;gap:16px}
+.icon-btn{width:32px;height:32px;border-radius:6px;display:grid;place-items:center;cursor:pointer}
+.icon-btn:hover{background:var(--border)}
+.icon-btn i{font-size:18px}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--secondary);color:#fff;display:grid;place-items:center;font-weight:700;font-family:var(--font-primary);font-size:.9rem}
+
+/* Sidebar */
+.sidebar{background:var(--bg);border-right:1px solid var(--border);position:fixed;top:var(--topbar-height);left:0;width:var(--sidebar-width);height:calc(100vh - var(--topbar-height));overflow-y:auto;z-index:1000;padding:16px 12px}
+.nav-cat{font-family:var(--font-primary);font-size:.625rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary);padding:12px 12px 6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:6px;color:var(--text);font-weight:500;font-size:.9rem;cursor:pointer;margin-bottom:2px}
+.nav-item i{font-size:16px}
+.nav-item:hover{background:var(--border-strong);font-weight:600}
+.nav-item.active{background:var(--border);font-weight:600}
+.nav-item.active i.lead{color:var(--secondary-active)}
+.nav-item .caret{margin-left:auto;font-size:14px;color:var(--text-muted)}
+
+/* Main */
+.main{background:var(--surface);margin:24px;margin-left:calc(var(--sidebar-width) + 24px);margin-top:calc(var(--topbar-height) + 24px);border-radius:8px;padding:24px;min-height:calc(100vh - var(--topbar-height) - 48px)}
+.breadcrumb{font-size:.75rem;color:var(--text-secondary);margin-bottom:8px}
+.breadcrumb i{font-size:12px;margin:0 4px}
+.page-header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+.page-title{font-family:var(--font-primary);font-size:2rem;font-weight:700;color:var(--text);margin:0}
+.page-sub{color:var(--text-secondary);font-size:.9rem;margin:0 0 20px}
+
+/* Filter strip */
+.filter-strip{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 16px;background:var(--bg);border:1px solid var(--border);border-radius:8px;margin-bottom:20px}
+.filter-label{font-family:var(--font-primary);font-size:.625rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary)}
+.select-btn{display:flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--border-strong);border-radius:6px;background:#fff;font-size:.9rem;color:var(--text);cursor:pointer;font-weight:500}
+.select-btn:hover{border-color:var(--text-muted)}
+.select-btn i.caret{font-size:14px;color:var(--text-muted)}
+.filter-meta{margin-left:auto;color:var(--text-secondary);font-size:.75rem}
+.filter-meta strong{color:var(--text);font-weight:600}
+
+/* Summary KPIs */
+.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.kpi-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px}
+.kpi-title{font-family:var(--font-primary);font-size:.9rem;font-weight:500;color:var(--text-secondary);margin:0 0 8px;display:flex;align-items:center;gap:6px}
+.kpi-help{color:var(--text-muted);font-size:14px;cursor:help}
+.kpi-value{font-size:2rem;font-weight:700;color:var(--text);line-height:1.1}
+.kpi-foot{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap}
+.kpi-period{font-size:.75rem;color:var(--text-secondary)}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;font-size:.75rem;font-weight:700;font-family:var(--font-primary)}
+.chip i{font-size:12px}
+.chip-good{background:var(--green-bg);color:var(--green)}
+.chip-bad{background:var(--orange-bg);color:var(--orange)}
+.chip-neutral{background:var(--border);color:var(--text-secondary)}
+.chip-danger{background:var(--red-bg);color:var(--red)}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:20px}
+.tab{padding:10px 16px;font-family:var(--font-primary);font-size:.9rem;font-weight:600;color:var(--text-secondary);cursor:pointer;border-bottom:2px solid transparent;display:inline-flex;align-items:center;gap:8px}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--text);border-bottom-color:var(--secondary)}
+.tab i{font-size:16px}
+
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* ===== Heatmap ===== */
+.heatmap-wrap{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.heatmap-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:12px}
+.heatmap-title{font-family:var(--font-primary);font-size:1rem;font-weight:700;margin:0;display:flex;align-items:center;gap:8px}
+.legend{display:flex;align-items:center;gap:12px;font-size:.75rem;color:var(--text-secondary)}
+.legend .sw{width:12px;height:12px;border-radius:3px;display:inline-block;margin-right:4px;vertical-align:-2px}
+
+table.heatmap{width:100%;border-collapse:separate;border-spacing:0;font-size:.875rem}
+.heatmap th{padding:10px 12px;font-family:var(--font-primary);font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;color:var(--text-secondary);font-weight:700;background:var(--bg);text-align:center;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:1}
+.heatmap th.facility-col{text-align:left;min-width:180px}
+.heatmap td{padding:0;border-bottom:1px solid var(--border);text-align:center;font-family:var(--font-mono);font-feature-settings:"tnum";vertical-align:middle}
+.heatmap td.facility-cell{padding:12px;text-align:left;font-family:var(--font-ui)}
+.heatmap tr:last-child td{border-bottom:none}
+.fc-name{font-weight:700;color:var(--text);font-family:var(--font-primary)}
+.fc-meta{font-size:.75rem;color:var(--text-secondary);margin-top:2px}
+.cell{display:block;padding:12px 8px;font-weight:700;color:var(--text);position:relative;cursor:pointer}
+.cell .val{font-size:.95rem}
+.cell .delta{display:block;font-size:.625rem;color:var(--text-secondary);font-family:var(--font-primary);margin-top:2px;font-weight:600}
+.cell.green{background:#DCFCE7}
+.cell.green-soft{background:#F0FDF4}
+.cell.yellow{background:#FEF3C7}
+.cell.orange{background:#FFEDD5}
+.cell.red{background:#FECACA}
+.cell.red-strong{background:#FCA5A5;color:#7F1D1D}
+.cell.green:hover,.cell.green-soft:hover,.cell.yellow:hover,.cell.orange:hover,.cell.red:hover,.cell.red-strong:hover{filter:brightness(.95)}
+.cell-empty{padding:12px;color:var(--text-muted)}
+
+.risk-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;font-size:.7rem;font-weight:700;font-family:var(--font-primary)}
+.risk-high{background:var(--red-bg);color:var(--red)}
+.risk-med{background:var(--orange-bg);color:var(--orange)}
+.risk-low{background:var(--green-bg);color:var(--green)}
+
+.insights-box{background:var(--bg);border-left:3px solid var(--secondary);padding:12px 14px;border-radius:0 6px 6px 0;margin-top:16px}
+.insights-box h4{margin:0 0 6px;font-size:.875rem;font-weight:700;display:flex;align-items:center;gap:6px}
+.insights-box ul{margin:0;padding-left:20px;font-size:.875rem;color:var(--text)}
+.insights-box li{margin-bottom:4px}
+.insights-box li strong{color:var(--text)}
+
+/* ===== Spark trends ===== */
+.spark-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.spark-card{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.spark-card-head{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.spark-card-title{font-family:var(--font-primary);font-size:.9rem;font-weight:700;margin:0;display:flex;align-items:center;gap:6px}
+.spark-table{width:100%;border-collapse:collapse}
+.spark-table th{font-family:var(--font-primary);font-size:.625rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-secondary);font-weight:700;padding:8px 12px;text-align:left;background:var(--bg);border-bottom:1px solid var(--border)}
+.spark-table th.num{text-align:right}
+.spark-table td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:.875rem;vertical-align:middle}
+.spark-table tr:last-child td{border-bottom:none}
+.spark-table .fname{font-weight:600;font-family:var(--font-primary);color:var(--text)}
+.spark-table .num{text-align:right;font-family:var(--font-mono);font-weight:600}
+.spark-line{display:block}
+
+/* ===== Peer benchmark ===== */
+.peer-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.peer-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:18px}
+.peer-row{display:grid;grid-template-columns:180px 1fr 140px;gap:16px;align-items:center;padding:14px 0;border-bottom:1px solid var(--border)}
+.peer-row:last-child{border-bottom:none}
+.peer-label{font-family:var(--font-primary);font-weight:600;font-size:.875rem;color:var(--text)}
+.peer-label .help{color:var(--text-muted);font-size:12px;margin-left:4px;cursor:help}
+.peer-bar-wrap{position:relative;height:36px}
+.peer-track{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);height:6px;background:var(--border);border-radius:999px}
+.peer-range{position:absolute;top:50%;transform:translateY(-50%);height:6px;background:var(--blue-bg);border-radius:999px}
+.peer-peers{position:absolute;top:50%;transform:translate(-50%,-50%);width:8px;height:8px;border-radius:50%;background:var(--text-muted)}
+.peer-self{position:absolute;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--secondary);border:3px solid #fff;box-shadow:0 0 0 1px var(--secondary);z-index:2}
+.peer-tick{position:absolute;top:calc(50% + 8px);transform:translateX(-50%);font-size:.625rem;color:var(--text-muted);font-family:var(--font-mono)}
+.peer-value{text-align:right;font-family:var(--font-mono);font-weight:700;font-size:.95rem;color:var(--text)}
+.peer-value .vs{display:block;font-size:.625rem;color:var(--text-secondary);font-family:var(--font-primary);font-weight:600;margin-top:2px}
+.peer-good{color:var(--green)}
+.peer-bad{color:var(--orange)}
+.peer-danger{color:var(--red)}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:6px;font-family:var(--font-ui);font-size:.9rem;font-weight:600;cursor:pointer;border:1px solid transparent;line-height:1}
+.btn i{font-size:16px}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-outlined{background:transparent;border-color:var(--border);color:var(--text)}
+.page-actions{display:flex;gap:8px}
+
+@media (max-width:1200px){.summary-grid{grid-template-columns:repeat(2,1fr)}.spark-grid{grid-template-columns:1fr}.peer-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- Topbar -->
+<header class="topbar">
+  <img class="topbar-logo" src="https://stg.suite.cxc.com.mx/logos/cxc_fullcolor.svg" alt="CXC" />
+  <div class="topbar-right">
+    <div class="icon-btn"><i class="ph ph-question"></i></div>
+    <div class="icon-btn"><i class="ph ph-bell"></i></div>
+    <div class="avatar">LG</div>
+  </div>
+</header>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="nav-cat">Portfolio</div>
+  <div class="nav-item"><i class="ph ph-house lead"></i> Home</div>
+  <div class="nav-item active"><i class="ph ph-stack lead"></i> Facilities <i class="ph ph-caret-down caret"></i></div>
+  <div class="nav-item" style="padding-left:30px"><i class="ph ph-chart-line"></i> Insights</div>
+  <div class="nav-item" style="padding-left:30px;background:var(--border);font-weight:600"><i class="ph ph-git-diff" style="color:var(--secondary-active)"></i> Comparison</div>
+  <div class="nav-item" style="padding-left:30px"><i class="ph ph-coins"></i> Financials</div>
+  <div class="nav-item" style="padding-left:30px"><i class="ph ph-tree-structure"></i> Concentrations</div>
+  <div class="nav-item"><i class="ph ph-users-three lead"></i> Originators</div>
+  <div class="nav-item"><i class="ph ph-file-text lead"></i> Reports</div>
+  <div class="nav-cat" style="margin-top:14px">Account</div>
+  <div class="nav-item"><i class="ph ph-bell-ringing lead"></i> Alerts</div>
+  <div class="nav-item"><i class="ph ph-gear lead"></i> Settings</div>
+</aside>
+
+<!-- Main -->
+<main class="main">
+
+  <div class="breadcrumb">Facilities <i class="ph ph-caret-right"></i> <span style="color:var(--text);font-weight:600">Portfolio Comparison</span></div>
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Portfolio Comparison</h1>
+      <p class="page-sub">Cross-facility risk triage · BBVA Spark portfolio</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-outlined"><i class="ph ph-download-simple"></i> Export</button>
+      <button class="btn btn-primary"><i class="ph ph-bookmark-simple"></i> Save view</button>
+    </div>
+  </div>
+
+  <!-- Filter strip -->
+  <div class="filter-strip">
+    <span class="filter-label">Cut-off</span>
+    <button class="select-btn"><i class="ph ph-calendar-blank"></i> Mar 31, 2026 <i class="ph ph-caret-down caret"></i></button>
+    <span class="filter-label" style="margin-left:8px">Facilities</span>
+    <button class="select-btn"><i class="ph ph-funnel"></i> All active (6) <i class="ph ph-caret-down caret"></i></button>
+    <span class="filter-label" style="margin-left:8px">Group by</span>
+    <button class="select-btn">Originator <i class="ph ph-caret-down caret"></i></button>
+    <div class="filter-meta">
+      Total committed: <strong class="num" style="font-family:var(--font-mono)">$2.34B</strong> · Drawn: <strong class="num" style="font-family:var(--font-mono)">$1.78B</strong> · <span style="color:var(--red);font-weight:700">2 at risk</span>
+    </div>
+  </div>
+
+  <!-- Summary KPIs -->
+  <div class="summary-grid">
+    <div class="kpi-card">
+      <h3 class="kpi-title">Facilities at risk <i class="ph ph-info kpi-help" title="Facilities with at least one breach or rising signal"></i></h3>
+      <div class="kpi-value" style="color:var(--red)">2 <span style="font-size:1rem;color:var(--text-secondary);font-weight:500">of 6</span></div>
+      <div class="kpi-foot"><span class="chip chip-bad"><i class="ph ph-arrow-up"></i> +1</span><span class="kpi-period">vs. prior month</span></div>
+    </div>
+    <div class="kpi-card">
+      <h3 class="kpi-title">Weighted 90+ days <i class="ph ph-info kpi-help" title="Portfolio-weighted average of 90+ delinquency"></i></h3>
+      <div class="kpi-value">7.42%</div>
+      <div class="kpi-foot"><span class="chip chip-bad"><i class="ph ph-arrow-up"></i> +0.6 pp</span><span class="kpi-period">vs. prior month</span></div>
+    </div>
+    <div class="kpi-card">
+      <h3 class="kpi-title">Avg. utilization <i class="ph ph-info kpi-help" title="Drawn / Committed across all facilities"></i></h3>
+      <div class="kpi-value">76.1%</div>
+      <div class="kpi-foot"><span class="chip chip-bad"><i class="ph ph-arrow-up"></i> +3.2 pp</span><span class="kpi-period">vs. prior month</span></div>
+    </div>
+    <div class="kpi-card">
+      <h3 class="kpi-title">Compliance breaches <i class="ph ph-info kpi-help" title="Trust accounts in Non-Compliant status"></i></h3>
+      <div class="kpi-value" style="color:var(--red)">3</div>
+      <div class="kpi-foot"><span class="chip chip-bad"><i class="ph ph-arrow-up"></i> +2</span><span class="kpi-period">vs. prior month</span></div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" data-tab="heatmap"><i class="ph ph-grid-four"></i> Heatmap</div>
+    <div class="tab" data-tab="trends"><i class="ph ph-chart-line-up"></i> Trends</div>
+    <div class="tab" data-tab="peer"><i class="ph ph-crosshair"></i> Peer benchmark</div>
+  </div>
+
+  <!-- ====== TAB 1: HEATMAP ====== -->
+  <div class="tab-panel active" id="tab-heatmap">
+
+    <div class="heatmap-wrap">
+      <div class="heatmap-head">
+        <h3 class="heatmap-title"><i class="ph ph-grid-four" style="color:var(--secondary)"></i> Risk heatmap · all signals × all facilities</h3>
+        <div class="legend">
+          <span><span class="sw" style="background:#DCFCE7"></span>Healthy</span>
+          <span><span class="sw" style="background:#FEF3C7"></span>Watch</span>
+          <span><span class="sw" style="background:#FFEDD5"></span>Caution</span>
+          <span><span class="sw" style="background:#FECACA"></span>Breach</span>
+        </div>
+      </div>
+
+      <div style="overflow-x:auto">
+      <table class="heatmap">
+        <thead>
+          <tr>
+            <th class="facility-col">Facility</th>
+            <th>Risk</th>
+            <th>Utilization</th>
+            <th>Headroom</th>
+            <th>90+ aging</th>
+            <th>OC margin</th>
+            <th>Compliance</th>
+            <th>Ineligible Δ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- BBVA Spark -->
+          <tr>
+            <td class="facility-cell">
+              <div class="fc-name">BBVA Spark</div>
+              <div class="fc-meta">Kueski · Monthly · $700M committed</div>
+            </td>
+            <td><span class="risk-badge risk-high"><i class="ph ph-warning"></i> High</span></td>
+            <td><span class="cell red"><span class="val">87.5%</span><span class="delta">↑ +5.4 pp</span></span></td>
+            <td><span class="cell red"><span class="val">$87.6M</span><span class="delta">↓ −18.4%</span></span></td>
+            <td><span class="cell red"><span class="val">9.18%</span><span class="delta">↑ +0.7 pp</span></span></td>
+            <td><span class="cell yellow"><span class="val">+3.5 pp</span><span class="delta">↓ −0.6 pp</span></span></td>
+            <td><span class="cell red-strong"><span class="val">Breach</span><span class="delta">2 of 5 accts</span></span></td>
+            <td><span class="cell orange"><span class="val">$87.8M</span><span class="delta">↑ +18.6%</span></span></td>
+          </tr>
+          <!-- Covalto -->
+          <tr>
+            <td class="facility-cell">
+              <div class="fc-name">Covalto</div>
+              <div class="fc-meta">LeaseMD · Monthly · $480M committed</div>
+            </td>
+            <td><span class="risk-badge risk-med"><i class="ph ph-clock"></i> Medium</span></td>
+            <td><span class="cell orange"><span class="val">78.2%</span><span class="delta">↑ +2.1 pp</span></span></td>
+            <td><span class="cell yellow"><span class="val">$104.6M</span><span class="delta">↓ −9.2%</span></span></td>
+            <td><span class="cell yellow"><span class="val">6.40%</span><span class="delta">↑ +0.4 pp</span></span></td>
+            <td><span class="cell green"><span class="val">+8.2 pp</span><span class="delta">→ 0.0 pp</span></span></td>
+            <td><span class="cell green"><span class="val">Compliant</span><span class="delta">5 of 5</span></span></td>
+            <td><span class="cell yellow"><span class="val">$31.2M</span><span class="delta">↑ +6.4%</span></span></td>
+          </tr>
+          <!-- PROMECAP -->
+          <tr>
+            <td class="facility-cell">
+              <div class="fc-name">PROMECAP</div>
+              <div class="fc-meta">Nexu · Weekly · $320M committed</div>
+            </td>
+            <td><span class="risk-badge risk-low"><i class="ph ph-check"></i> Low</span></td>
+            <td><span class="cell green-soft"><span class="val">62.4%</span><span class="delta">→ +0.3 pp</span></span></td>
+            <td><span class="cell green"><span class="val">$120.3M</span><span class="delta">↑ +1.8%</span></span></td>
+            <td><span class="cell green-soft"><span class="val">4.20%</span><span class="delta">↓ −0.1 pp</span></span></td>
+            <td><span class="cell green"><span class="val">+12.4 pp</span><span class="delta">↑ +0.3 pp</span></span></td>
+            <td><span class="cell green"><span class="val">Compliant</span><span class="delta">4 of 4</span></span></td>
+            <td><span class="cell green-soft"><span class="val">$12.8M</span><span class="delta">↓ −2.1%</span></span></td>
+          </tr>
+          <!-- Saison -->
+          <tr>
+            <td class="facility-cell">
+              <div class="fc-name">Saison</div>
+              <div class="fc-meta">Aplazo · Monthly · $250M committed</div>
+            </td>
+            <td><span class="risk-badge risk-high"><i class="ph ph-warning"></i> High</span></td>
+            <td><span class="cell orange"><span class="val">81.6%</span><span class="delta">↑ +4.2 pp</span></span></td>
+            <td><span class="cell orange"><span class="val">$46.0M</span><span class="delta">↓ −22.1%</span></span></td>
+            <td><span class="cell red"><span class="val">10.84%</span><span class="delta">↑ +1.2 pp</span></span></td>
+            <td><span class="cell orange"><span class="val">+1.8 pp</span><span class="delta">↓ −0.9 pp</span></span></td>
+            <td><span class="cell red"><span class="val">Breach</span><span class="delta">1 of 4 accts</span></span></td>
+            <td><span class="cell red"><span class="val">$42.1M</span><span class="delta">↑ +28.4%</span></span></td>
+          </tr>
+          <!-- Alloy -->
+          <tr>
+            <td class="facility-cell">
+              <div class="fc-name">Alloy</div>
+              <div class="fc-meta">Creditas · Monthly · $390M committed</div>
+            </td>
+            <td><span class="risk-badge risk-low"><i class="ph ph-check"></i> Low</span></td>
+            <td><span class="cell yellow"><span class="val">71.0%</span><span class="delta">↑ +1.4 pp</span></span></td>
+            <td><span class="cell green"><span class="val">$113.1M</span><span class="delta">↓ −3.1%</span></span></td>
+            <td><span class="cell green-soft"><span class="val">5.10%</span><span class="delta">→ 0.0 pp</span></span></td>
+            <td><span class="cell green"><span class="val">+9.6 pp</span><span class="delta">↑ +0.4 pp</span></span></td>
+            <td><span class="cell green"><span class="val">Compliant</span><span class="delta">5 of 5</span></span></td>
+            <td><span class="cell green-soft"><span class="val">$22.6M</span><span class="delta">↑ +1.1%</span></span></td>
+          </tr>
+          <!-- BOUS -->
+          <tr>
+            <td class="facility-cell">
+              <div class="fc-name">BOUS</div>
+              <div class="fc-meta">Kueski · Monthly · $200M committed</div>
+            </td>
+            <td><span class="risk-badge risk-low"><i class="ph ph-check"></i> Low</span></td>
+            <td><span class="cell green-soft"><span class="val">68.5%</span><span class="delta">↑ +0.8 pp</span></span></td>
+            <td><span class="cell green"><span class="val">$63.0M</span><span class="delta">↑ +2.4%</span></span></td>
+            <td><span class="cell green-soft"><span class="val">5.80%</span><span class="delta">↑ +0.2 pp</span></span></td>
+            <td><span class="cell green"><span class="val">+11.2 pp</span><span class="delta">↑ +0.1 pp</span></span></td>
+            <td><span class="cell green"><span class="val">Compliant</span><span class="delta">5 of 5</span></span></td>
+            <td><span class="cell green-soft"><span class="val">$8.4M</span><span class="delta">→ +0.4%</span></span></td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+
+    <div class="insights-box">
+      <h4><i class="ph ph-sparkle" style="color:var(--secondary)"></i> Auto-generated insights</h4>
+      <ul>
+        <li><strong>Saison</strong> needs attention first — 90+ at 10.84% (above covenant), reserve account in breach, ineligible up +28.4% MoM.</li>
+        <li><strong>BBVA Spark</strong> headroom dropped 18.4% — at 12.5% of committed left, will hit &lt;10% threshold next cut-off at current pace.</li>
+        <li><strong>PROMECAP and BOUS</strong> are the healthiest — consider as benchmarks for originator best practices (both Kueski/Nexu).</li>
+        <li>Portfolio-wide ineligible receivables grew 11.2% — possible upstream documentation issue across originators.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ====== TAB 2: TRENDS (Sparklines) ====== -->
+  <div class="tab-panel" id="tab-trends">
+    <div class="spark-grid">
+      <!-- 90+ trend -->
+      <div class="spark-card">
+        <div class="spark-card-head">
+          <h3 class="spark-card-title"><i class="ph ph-trend-up" style="color:var(--orange)"></i> 90+ days past due · last 6 cut-offs</h3>
+          <span style="font-size:.75rem;color:var(--text-secondary)">Covenant max: 8.0%</span>
+        </div>
+        <table class="spark-table">
+          <thead><tr><th>Facility</th><th>Trend (6 mo)</th><th class="num">Current</th><th class="num">Δ vs. prior</th></tr></thead>
+          <tbody>
+            <tr><td class="fname">BBVA Spark</td>
+              <td><svg class="spark-line" viewBox="0 0 120 32" width="120" height="32"><polyline points="0,24 24,22 48,20 72,16 96,12 120,8" fill="none" stroke="#DC2626" stroke-width="2"/><line x1="0" y1="10" x2="120" y2="10" stroke="#CBD5E1" stroke-dasharray="2 2"/></svg></td>
+              <td class="num peer-danger" style="color:var(--red)">9.18%</td><td class="num"><span class="chip chip-bad"><i class="ph ph-arrow-up"></i>+0.7 pp</span></td></tr>
+            <tr><td class="fname">Saison</td>
+              <td><svg class="spark-line" viewBox="0 0 120 32" width="120" height="32"><polyline points="0,22 24,20 48,17 72,12 96,8 120,4" fill="none" stroke="#DC2626" stroke-width="2"/><line x1="0" y1="14" x2="120" y2="14" stroke="#CBD5E1" stroke-dasharray="2 2"/></svg></td>
+              <td class="num" style="color:var(--red)">10.84%</td><td class="num"><span class="chip chip-bad"><i class="ph ph-arrow-up"></i>+1.2 pp</span></td></tr>
+            <tr><td class="fname">Covalto</td>
+              <td><svg class="spark-line" viewBox="0 0 120 32" width="120" height="32"><polyline points="0,20 24,21 48,19 72,18 96,16 120,14" fill="none" stroke="#EA580C" stroke-width="2"/><line x1="0" y1="10" x2="120" y2="10" stroke="#CBD5E1" stroke-dasharray="2 2"/></svg></td>
+              <td class="num" style="color:var(--orange)">6.40%</td><td class="num"><span class="chip chip-bad"><i class="ph ph-arrow-up"></i>+0.4 pp</span></td></tr>
+            <tr><td class="fname">BOUS</td>
+              <td><svg class="spark-line" viewBox="0 0 120 32" width="120" height="32"><polyline points="0,22 24,21 48,20 72,20 96,19 120,18" fill="none" stroke="#16A34A" stroke-width="2"/><line x1="0" y1="14" x2="120" y2="14" stroke="#CBD5E1" stroke-dasharray="2 2"/></svg></td>
+              <td class="num" style="color:var(--text)">5.80%</td><td class="num"><span class="chip chip-neutral"><i class="ph ph-arrow-up"></i>+0.2 pp</span></td></tr>
+            <tr><td class="fname">Alloy</td>
+              <td><svg class="spark-line" viewBox="0 0 120 32" width="120" height="32"><polyline points="0,18 24,19 48,18 72,18 96,19 120,18" fill="none" stroke="#16A34A" stroke-width="2"/><line x1="0" y1="12" x2="120" y2="12" stroke="#CBD5E1" stroke-dasharray="2 2"/></svg></td>
+              <td class="num" style="color:var(--text)">5.10%</td><td class="num"><span class="chip chip-neutral"><i class="ph ph-arrow-right"></i>0.0 pp</span></td></tr>
+            <tr><td class="fname">PROMECAP</td>
+              <td><svg class="spark-line" viewBox="0 0 120 32" width="120" height="32"><polyline points="0,16 24,17 48,18 72,19 96,20 120,21" fill="none" stroke="#16A34A" stroke-width="2"/><line x1="0" y1="10" x2="120" y2="10" stroke="#CBD5E1" stroke-dasharray="2 2"/></svg></td>
+              <td class="num" style="color:var(--green)">4.20%</td><td class="num"><span class="chip chip-good"><i class="ph ph-arrow-down"></i>−0.1 pp</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Utilization trend -->
+      <div class="spark-card">
+        <div class="spark-card-head">
+          <h3 class="spark-card-title"><i class="ph ph-gauge" style="color:var(--primary)"></i> Utilization · last 6 cut-offs</h3>
+          <span style="font-size:.75rem;color:var(--text-secondary)">Alert threshold: 90%</span>
+        </div>
+        <table class="spark-table">
+          <thead><tr><th>Facility</th><th>Trend (6 mo)</th><th class="num">Current</th><th class="num">Δ vs. prior</th></tr></thead>
+          <tbody>
+            <tr><td class="fname">BBVA Spark</td>
+              <td><svg class="spark-line" viewBox="0 0 120 32" width="120" height="32"><polyline points="0,24 24,22 48,18 72,14 96,10 120,6" fill="none" stroke="#DC2626" stroke-width="2"/><line x1="0" y1="4" x2="120" y2="4" stroke="#DC2626" stroke-dasharray="2 2"/></svg></td>
+              <td class="num" style="color:var(--red)">87.5%</td><td class="num"><span class="chip chip-bad"><i class="ph ph-arrow-up"></i>+5.4 pp</span></td></tr>
+            <tr><td class="fname">Saison</td>
+              <td><svg class="spark-line" viewBox="0 0 120 32" width="120" height="32"><polyline points="0,22 24,18 48,15 72,13 96,11 120,9" fill="none" stroke="#EA580C" stroke-width="2"/></svg></td>
+              <td class="num" style="color:var(--orange)">81.6%</td><td class="num"><span class="chip chip-bad"><i class="ph ph-arrow-up"></i>+4.2 pp</span></td></tr>
+            <tr><td class="fname">Covalto</td>
+              <td><svg class="spark-line" viewBox="0 0 120 32" width="120" height="32"><polyline points="0,18 24,16 48,15 72,14 96,12 120,11" fill="none" stroke="#EA580C" stroke-width="2"/></svg></td>
+              <td class="num" style="color:var(--orange)">78.2%</td><td class="num"><span class="chip chip-bad"><i class="ph ph-arrow-up"></i>+2.1 pp</span></td></tr>
+            <tr><td class="fname">Alloy</td>
+              <td><svg class="spark-line" viewBox="0 0 120 32" width="120" height="32"><polyline points="0,16 24,16 48,15 72,15 96,14 120,13" fill="none" stroke="#D97706" stroke-width="2"/></svg></td>
+              <td class="num">71.0%</td><td class="num"><span class="chip chip-neutral"><i class="ph ph-arrow-up"></i>+1.4 pp</span></td></tr>
+            <tr><td class="fname">BOUS</td>
+              <td><svg class="spark-line" viewBox="0 0 120 32" width="120" height="32"><polyline points="0,18 24,18 48,17 72,17 96,16 120,16" fill="none" stroke="#16A34A" stroke-width="2"/></svg></td>
+              <td class="num">68.5%</td><td class="num"><span class="chip chip-neutral"><i class="ph ph-arrow-up"></i>+0.8 pp</span></td></tr>
+            <tr><td class="fname">PROMECAP</td>
+              <td><svg class="spark-line" viewBox="0 0 120 32" width="120" height="32"><polyline points="0,20 24,20 48,19 72,20 96,19 120,19" fill="none" stroke="#16A34A" stroke-width="2"/></svg></td>
+              <td class="num" style="color:var(--green)">62.4%</td><td class="num"><span class="chip chip-good"><i class="ph ph-arrow-right"></i>+0.3 pp</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- OC margin -->
+      <div class="spark-card">
+        <div class="spark-card-head">
+          <h3 class="spark-card-title"><i class="ph ph-ruler" style="color:var(--green)"></i> OC margin over minimum · last 6 cut-offs</h3>
+          <span style="font-size:.75rem;color:var(--text-secondary)">Higher = safer</span>
+        </div>
+        <table class="spark-table">
+          <thead><tr><th>Facility</th><th>Trend (6 mo)</th><th class="num">Current</th><th class="num">Δ vs. prior</th></tr></thead>
+          <tbody>
+            <tr><td class="fname">PROMECAP</td>
+              <td><svg class="spark-line" viewBox="0 0 120 32" width="120" height="32"><polyline points="0,12 24,11 48,11 72,10 96,9 120,8" fill="none" stroke="#16A34A" stroke-width="2"/></svg></td>
+              <td class="num peer-good">+12.4 pp</td><td class="num"><span class="chip chip-good"><i class="ph ph-arrow-up"></i>+0.3 pp</span></td></tr>
+            <tr><td class="fname">BOUS</td>
+              <td><svg class="spark-line" viewBox="0 0 120 32" width="120" height="32"><polyline points="0,14 24,13 48,12 72,12 96,11 120,10" fill="none" stroke="#16A34A" stroke-width="2"/></svg></td>
+              <td class="num peer-good">+11.2 pp</td><td class="num"><span class="chip chip-good"><i class="ph ph-arrow-up"></i>+0.1 pp</span></td></tr>
+            <tr><td class="fname">Alloy</td>
+              <td><svg class="spark-line" viewBox="0 0 120 32" width="120" height="32"><polyline points="0,14 24,13 48,13 72,12 96,11 120,10" fill="none" stroke="#16A34A" stroke-width="2"/></svg></td>
+              <td class="num peer-good">+9.6 pp</td><td class="num"><span class="chip chip-good"><i class="ph ph-arrow-up"></i>+0.4 pp</span></td></tr>
+            <tr><td class="fname">Covalto</td>
+              <td><svg class="spark-line" viewBox="0 0 120 32" width="120" height="32"><polyline points="0,16 24,15 48,15 72,15 96,14 120,14" fill="none" stroke="#16A34A" stroke-width="2"/></svg></td>
+              <td class="num">+8.2 pp</td><td class="num"><span class="chip chip-neutral"><i class="ph ph-arrow-right"></i>0.0 pp</span></td></tr>
+            <tr><td class="fname">BBVA Spark</td>
+              <td><svg class="spark-line" viewBox="0 0 120 32" width="120" height="32"><polyline points="0,12 24,13 48,15 72,17 96,19 120,21" fill="none" stroke="#EA580C" stroke-width="2"/></svg></td>
+              <td class="num peer-bad">+3.5 pp</td><td class="num"><span class="chip chip-bad"><i class="ph ph-arrow-down"></i>−0.6 pp</span></td></tr>
+            <tr><td class="fname">Saison</td>
+              <td><svg class="spark-line" viewBox="0 0 120 32" width="120" height="32"><polyline points="0,14 24,16 48,18 72,20 96,22 120,24" fill="none" stroke="#DC2626" stroke-width="2"/></svg></td>
+              <td class="num peer-danger">+1.8 pp</td><td class="num"><span class="chip chip-bad"><i class="ph ph-arrow-down"></i>−0.9 pp</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Headroom -->
+      <div class="spark-card">
+        <div class="spark-card-head">
+          <h3 class="spark-card-title"><i class="ph ph-arrow-elbow-down-left" style="color:var(--secondary)"></i> Undrawn commitment · last 6 cut-offs</h3>
+          <span style="font-size:.75rem;color:var(--text-secondary)">Alert: &lt;10% of committed</span>
+        </div>
+        <table class="spark-table">
+          <thead><tr><th>Facility</th><th>Trend (6 mo)</th><th class="num">Current</th><th class="num">Δ vs. prior</th></tr></thead>
+          <tbody>
+            <tr><td class="fname">PROMECAP</td>
+              <td><svg class="spark-line" viewBox="0 0 120 32" width="120" height="32"><polyline points="0,10 24,10 48,11 72,10 96,9 120,9" fill="none" stroke="#16A34A" stroke-width="2"/></svg></td>
+              <td class="num peer-good">$120.3M</td><td class="num"><span class="chip chip-good"><i class="ph ph-arrow-up"></i>+1.8%</span></td></tr>
+            <tr><td class="fname">Alloy</td>
+              <td><svg class="spark-line" viewBox="0 0 120 32" width="120" height="32"><polyline points="0,8 24,9 48,10 72,11 96,12 120,12" fill="none" stroke="#EA580C" stroke-width="2"/></svg></td>
+              <td class="num">$113.1M</td><td class="num"><span class="chip chip-bad"><i class="ph ph-arrow-down"></i>−3.1%</span></td></tr>
+            <tr><td class="fname">Covalto</td>
+              <td><svg class="spark-line" viewBox="0 0 120 32" width="120" height="32"><polyline points="0,8 24,10 48,12 72,14 96,16 120,18" fill="none" stroke="#EA580C" stroke-width="2"/></svg></td>
+              <td class="num">$104.6M</td><td class="num"><span class="chip chip-bad"><i class="ph ph-arrow-down"></i>−9.2%</span></td></tr>
+            <tr><td class="fname">BBVA Spark</td>
+              <td><svg class="spark-line" viewBox="0 0 120 32" width="120" height="32"><polyline points="0,4 24,8 48,12 72,16 96,20 120,24" fill="none" stroke="#DC2626" stroke-width="2"/></svg></td>
+              <td class="num peer-danger">$87.6M</td><td class="num"><span class="chip chip-bad"><i class="ph ph-arrow-down"></i>−18.4%</span></td></tr>
+            <tr><td class="fname">BOUS</td>
+              <td><svg class="spark-line" viewBox="0 0 120 32" width="120" height="32"><polyline points="0,14 24,14 48,13 72,13 96,12 120,12" fill="none" stroke="#16A34A" stroke-width="2"/></svg></td>
+              <td class="num">$63.0M</td><td class="num"><span class="chip chip-good"><i class="ph ph-arrow-up"></i>+2.4%</span></td></tr>
+            <tr><td class="fname">Saison</td>
+              <td><svg class="spark-line" viewBox="0 0 120 32" width="120" height="32"><polyline points="0,8 24,12 48,16 72,20 96,24 120,28" fill="none" stroke="#DC2626" stroke-width="2"/></svg></td>
+              <td class="num peer-danger">$46.0M</td><td class="num"><span class="chip chip-bad"><i class="ph ph-arrow-down"></i>−22.1%</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== TAB 3: PEER BENCHMARK ====== -->
+  <div class="tab-panel" id="tab-peer">
+    <div class="peer-card">
+      <div class="peer-head">
+        <h3 style="margin:0;font-family:var(--font-primary);font-size:1rem;font-weight:700">Peer benchmark · <span style="color:var(--secondary)">BBVA Spark</span> vs. portfolio</h3>
+        <button class="select-btn">BBVA Spark <i class="ph ph-caret-down caret"></i></button>
+      </div>
+
+      <p style="font-size:.875rem;color:var(--text-secondary);margin:0 0 12px">
+        Each row shows where <strong style="color:var(--secondary)">BBVA Spark</strong> sits against the 5 other facilities in the portfolio. Pink dot = BBVA Spark · grey dots = peers · blue band = interquartile range (P25–P75).
+      </p>
+
+      <!-- 90+ aging -->
+      <div class="peer-row">
+        <div class="peer-label">90+ days past due <i class="ph ph-info help" title="Lower is better"></i></div>
+        <div class="peer-bar-wrap">
+          <div class="peer-track"></div>
+          <div class="peer-range" style="left:20%;width:35%"></div>
+          <div class="peer-peers" style="left:18%"></div>
+          <div class="peer-peers" style="left:24%"></div>
+          <div class="peer-peers" style="left:32%"></div>
+          <div class="peer-peers" style="left:42%"></div>
+          <div class="peer-peers" style="left:55%"></div>
+          <div class="peer-self" style="left:78%"></div>
+          <div class="peer-tick" style="left:0%">3%</div>
+          <div class="peer-tick" style="left:50%">7%</div>
+          <div class="peer-tick" style="left:100%">12%</div>
+        </div>
+        <div class="peer-value peer-danger">9.18%<span class="vs" style="color:var(--red)">Worst 2 of 6</span></div>
+      </div>
+
+      <!-- Utilization -->
+      <div class="peer-row">
+        <div class="peer-label">Utilization <i class="ph ph-info help" title="Drawn / Committed · lower = more headroom"></i></div>
+        <div class="peer-bar-wrap">
+          <div class="peer-track"></div>
+          <div class="peer-range" style="left:20%;width:35%"></div>
+          <div class="peer-peers" style="left:15%"></div>
+          <div class="peer-peers" style="left:32%"></div>
+          <div class="peer-peers" style="left:46%"></div>
+          <div class="peer-peers" style="left:54%"></div>
+          <div class="peer-peers" style="left:64%"></div>
+          <div class="peer-self" style="left:85%"></div>
+          <div class="peer-tick" style="left:0%">60%</div>
+          <div class="peer-tick" style="left:50%">75%</div>
+          <div class="peer-tick" style="left:100%">95%</div>
+        </div>
+        <div class="peer-value peer-danger">87.5%<span class="vs" style="color:var(--red)">Highest in portfolio</span></div>
+      </div>
+
+      <!-- OC margin -->
+      <div class="peer-row">
+        <div class="peer-label">OC margin over min <i class="ph ph-info help" title="Reported OC − Required min · higher = safer"></i></div>
+        <div class="peer-bar-wrap">
+          <div class="peer-track"></div>
+          <div class="peer-range" style="left:45%;width:35%"></div>
+          <div class="peer-self" style="left:12%"></div>
+          <div class="peer-peers" style="left:5%"></div>
+          <div class="peer-peers" style="left:48%"></div>
+          <div class="peer-peers" style="left:62%"></div>
+          <div class="peer-peers" style="left:75%"></div>
+          <div class="peer-peers" style="left:88%"></div>
+          <div class="peer-tick" style="left:0%">+1 pp</div>
+          <div class="peer-tick" style="left:50%">+7 pp</div>
+          <div class="peer-tick" style="left:100%">+14 pp</div>
+        </div>
+        <div class="peer-value peer-bad">+3.5 pp<span class="vs" style="color:var(--orange)">Below P25</span></div>
+      </div>
+
+      <!-- Headroom -->
+      <div class="peer-row">
+        <div class="peer-label">Undrawn commitment <i class="ph ph-info help" title="Absolute headroom in USD millions"></i></div>
+        <div class="peer-bar-wrap">
+          <div class="peer-track"></div>
+          <div class="peer-range" style="left:40%;width:35%"></div>
+          <div class="peer-peers" style="left:18%"></div>
+          <div class="peer-self" style="left:42%"></div>
+          <div class="peer-peers" style="left:48%"></div>
+          <div class="peer-peers" style="left:62%"></div>
+          <div class="peer-peers" style="left:78%"></div>
+          <div class="peer-peers" style="left:88%"></div>
+          <div class="peer-tick" style="left:0%">$40M</div>
+          <div class="peer-tick" style="left:50%">$90M</div>
+          <div class="peer-tick" style="left:100%">$130M</div>
+        </div>
+        <div class="peer-value">$87.6M<span class="vs">Median</span></div>
+      </div>
+
+      <!-- Ineligible growth -->
+      <div class="peer-row">
+        <div class="peer-label">Ineligible growth (MoM) <i class="ph ph-info help" title="Lower / negative is better"></i></div>
+        <div class="peer-bar-wrap">
+          <div class="peer-track"></div>
+          <div class="peer-range" style="left:18%;width:32%"></div>
+          <div class="peer-peers" style="left:8%"></div>
+          <div class="peer-peers" style="left:14%"></div>
+          <div class="peer-peers" style="left:22%"></div>
+          <div class="peer-peers" style="left:34%"></div>
+          <div class="peer-self" style="left:72%"></div>
+          <div class="peer-peers" style="left:92%"></div>
+          <div class="peer-tick" style="left:0%">−5%</div>
+          <div class="peer-tick" style="left:50%">+10%</div>
+          <div class="peer-tick" style="left:100%">+30%</div>
+        </div>
+        <div class="peer-value peer-bad">+18.6%<span class="vs" style="color:var(--orange)">P83 · 2nd worst</span></div>
+      </div>
+
+      <!-- Compliance -->
+      <div class="peer-row">
+        <div class="peer-label">Trust compliance <i class="ph ph-info help" title="% of trust accounts in compliant status"></i></div>
+        <div class="peer-bar-wrap">
+          <div class="peer-track"></div>
+          <div class="peer-range" style="left:65%;width:35%"></div>
+          <div class="peer-self" style="left:55%"></div>
+          <div class="peer-peers" style="left:70%"></div>
+          <div class="peer-peers" style="left:100%"></div>
+          <div class="peer-peers" style="left:100%"></div>
+          <div class="peer-peers" style="left:100%"></div>
+          <div class="peer-peers" style="left:100%"></div>
+          <div class="peer-tick" style="left:0%">50%</div>
+          <div class="peer-tick" style="left:50%">75%</div>
+          <div class="peer-tick" style="left:100%">100%</div>
+        </div>
+        <div class="peer-value peer-danger">60%<span class="vs" style="color:var(--red)">Worst in portfolio</span></div>
+      </div>
+    </div>
+
+    <div class="insights-box" style="margin-top:18px">
+      <h4><i class="ph ph-target" style="color:var(--secondary)"></i> Peer takeaways</h4>
+      <ul>
+        <li>BBVA Spark is the <strong>highest-utilization facility</strong> and the <strong>worst-compliance facility</strong> in your book.</li>
+        <li>Only Saison sits in worse position on 90+ aging — same originator family bias may apply.</li>
+        <li><strong>OC margin is below P25</strong> — the buffer that protects you from a breach is thinner than 4 of 5 peers.</li>
+        <li>Recommended action: <strong>flag for risk committee</strong> and request originator action plan within 5 business days.</li>
+      </ul>
+    </div>
+  </div>
+
+  <p style="font-size:.75rem;color:var(--text-muted);margin-top:24px;font-family:var(--font-mono)">
+    Prototype · Portfolio Comparison · Extension of LEN-521 · CXC Design System v1.0
+  </p>
+</main>
+
+<script>
+  // Tab switching
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

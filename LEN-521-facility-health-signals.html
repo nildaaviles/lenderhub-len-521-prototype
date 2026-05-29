@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Facility Insights · F-2241 Covalto — LEN-521 (Angular-mapped)</title>
+
+<!--
+  ╔══════════════════════════════════════════════════════════════════════════╗
+  ║  PROTOTIPO HTML — MAPEADO 1:1 A IMPLEMENTACIÓN ANGULAR                  ║
+  ║  Cada custom element <component-name> corresponde a un componente real  ║
+  ║  en `financials-mfe/src/app/pages/facility-insights/components/`.       ║
+  ║  Los atributos `data-input-*` documentan los `input()` de cada cmp.     ║
+  ║  Las clases CSS son Tailwind utility — listas para copiar al template.  ║
+  ╚══════════════════════════════════════════════════════════════════════════╝
+-->
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="./runtime/len-521-runtime.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web" />
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:wght@400;500;700&family=Noto+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<script>
+  // Tailwind config — design tokens espejo de tailwind.config.ts del MFE
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: '#1F2733',
+          secondary: '#910057',
+          'secondary-active': '#840058',
+          bg: '#F8FAFC',
+          surface: '#FFFFFF',
+          border: '#E2E8F0',
+          'border-strong': '#CBD5E1',
+          text: '#334155',
+          'text-secondary': '#64748B',
+          'text-muted': '#94A3B8',
+          success: '#16A34A',
+          'success-bg': '#F0FDF4',
+          warning: '#B45309',
+          'warning-bg': '#FFFBEB',
+          'warning-border': '#FCD34D',
+          danger: '#DC2626',
+          'danger-bg': '#FEF2F2',
+          'danger-border': '#FCA5A5',
+          info: '#0284C7',
+          'info-bg': '#F0F9FF',
+        },
+        fontFamily: {
+          primary: ['Sofia Sans', 'system-ui', 'sans-serif'],
+          ui: ['Noto Sans', 'system-ui', 'sans-serif'],
+          mono: ['Space Mono', 'monospace'],
+        },
+        boxShadow: {
+          card: '0 1px 3px rgba(0,0,0,.10), 0 1px 2px rgba(0,0,0,.06)',
+        },
+      },
+    },
+  };
+</script>
+
+<style>
+  /* ════════ Sidebar transitions ════════ */
+  .primary-sidebar { width: 208px; transition: width 250ms cubic-bezier(.4,0,.2,1); }
+  .secondary-sidebar { transform: translateX(0); transition: transform 250ms cubic-bezier(.4,0,.2,1); }
+  main.app-main { transition: margin-left 250ms cubic-bezier(.4,0,.2,1); }
+
+  /* Primary collapsed → icon-only */
+  body.primary-collapsed .primary-sidebar { width: 64px; }
+  body.primary-collapsed .primary-sidebar .nav-label,
+  body.primary-collapsed .primary-sidebar .nav-caret { opacity: 0; pointer-events: none; }
+  body.primary-collapsed .primary-sidebar .nav-item { justify-content: center; }
+  body.primary-collapsed .primary-sidebar .nav-item:hover .nav-label { opacity: 1; }
+
+  /* Secondary hidden → off-screen left */
+  body.secondary-hidden .secondary-sidebar { transform: translateX(-105%); }
+
+  /* Main margin adapts to sidebar states */
+  main.app-main { margin-left: 492px; }                                /* default: both visible */
+  body.primary-collapsed main.app-main { margin-left: 348px; }         /* 64 + 260 + 24 */
+  body.secondary-hidden main.app-main { margin-left: 232px; }          /* 208 + 24 */
+  body.primary-collapsed.secondary-hidden main.app-main { margin-left: 88px; } /* 64 + 24 */
+
+  /* Secondary sidebar position adapts to primary state */
+  .secondary-sidebar { left: 208px; transition: transform 250ms cubic-bezier(.4,0,.2,1), left 250ms cubic-bezier(.4,0,.2,1); }
+  body.primary-collapsed .secondary-sidebar { left: 64px; }
+
+  /* Show toggle button (re-open secondary) when hidden — floats on left edge of main */
+  .reopen-secondary {
+    display: none;
+    left: 216px; /* primary expanded (208 + 8) */
+    transition: left 250ms cubic-bezier(.4,0,.2,1);
+  }
+  body.secondary-hidden .reopen-secondary { display: flex; }
+  body.primary-collapsed .reopen-secondary { left: 72px; /* primary collapsed (64 + 8) */ }
+
+  /* Nav label transition smoothing */
+  .nav-label, .nav-caret { transition: opacity 150ms ease; }
+
+  /* Custom elements ignored by browser get display:block via reset */
+  facility-insights-page, cut-off-header, cut-off-dropdown, reporting-frequency-badge,
+  pool-overview, portfolio-balance-card, outstanding-debt-card, total-contracts-card,
+  avg-current-balance-card, critical-signals, undrawn-commitment-card,
+  account-balance-status, aging-section, delinquency-card, overcollateralization-section,
+  borrowing-base-section, assets-evolution, assets-kpi-card, delta-chip, kpi-card,
+  currency-selector, interest-rate-card, maximum-credit-amount-card { display: block; }
+  currency-selector { display: inline-flex; }
+  delta-chip { display: inline-flex; }
+  body { font-family: 'Noto Sans', system-ui, sans-serif; color: #334155; }
+  h1, h2, h3, h4 { font-family: 'Sofia Sans', system-ui, sans-serif; }
+  .font-mono, .num { font-family: 'Space Mono', monospace; font-feature-settings: "tnum"; }
+  /* Tooltip simulation */
+  [data-tt] { position: relative; }
+  [data-tt]:hover::after {
+    content: attr(data-tt); position: absolute; bottom: calc(100% + 6px); left: 50%;
+    transform: translateX(-50%); background: #1F2733; color: #fff; font-size: .75rem;
+    padding: 6px 10px; border-radius: 6px; white-space: nowrap; z-index: 50; font-weight: 400;
+  }
+</style>
+</head>
+
+<body class="bg-bg text-text m-0 p-0">
+
+<!-- ╔══════════ TOPBAR (shell-mfe) ══════════╗ -->
+<header class="fixed top-0 left-0 right-0 h-[52px] bg-bg border-b border-border flex items-center justify-between px-6 z-50">
+  <img src="https://stg.suite.cxc.com.mx/logos/cxc_fullcolor.svg" alt="CXC" class="h-6 w-auto" />
+  <div class="flex items-center gap-4">
+    <button class="w-8 h-8 rounded-md grid place-items-center hover:bg-border"><i class="ph ph-question text-lg"></i></button>
+    <button class="w-8 h-8 rounded-md grid place-items-center hover:bg-border"><i class="ph ph-bell text-lg"></i></button>
+    <div class="w-8 h-8 rounded-full bg-secondary text-white grid place-items-center font-bold font-primary text-sm">CV</div>
+  </div>
+</header>
+
+<!-- ╔══════════ SIDEBAR (shell-mfe) ══════════╗ -->
+<!-- ╔══════════ PRIMARY SIDEBAR (categories) ══════════╗ -->
+<aside class="primary-sidebar fixed top-[52px] left-0 h-[calc(100vh-52px)] bg-bg border-r border-border p-3 z-40 overflow-y-auto flex flex-col gap-1">
+  <button onclick="document.body.classList.toggle('primary-collapsed')"
+          class="self-end w-7 h-7 rounded-md grid place-items-center hover:bg-border-strong text-text-secondary mb-1"
+          title="Toggle primary sidebar">
+    <i class="ph ph-sidebar-simple text-base"></i>
+  </button>
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text font-semibold bg-border cursor-pointer" title="Portfolio Monitoring">
+    <i class="ph ph-chart-line-up text-secondary-active flex-shrink-0"></i>
+    <span class="nav-label text-sm whitespace-nowrap overflow-hidden">Portfolio Monitoring</span>
+    <i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i>
+  </a>
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer" title="Financials">
+    <i class="ph ph-coins flex-shrink-0"></i>
+    <span class="nav-label whitespace-nowrap overflow-hidden">Financials</span>
+    <i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i>
+  </a>
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer" title="Companies">
+    <i class="ph ph-buildings flex-shrink-0"></i>
+    <span class="nav-label whitespace-nowrap overflow-hidden">Companies</span>
+  </a>
+  <hr class="border-0 border-t border-border my-2" />
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer" title="Data Studio">
+    <i class="ph ph-graph flex-shrink-0"></i>
+    <span class="nav-label whitespace-nowrap overflow-hidden">Data Studio</span>
+    <i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i>
+  </a>
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer" title="RUG Smart Search">
+    <i class="ph ph-seal-check flex-shrink-0"></i>
+    <span class="nav-label whitespace-nowrap overflow-hidden">RUG Smart Search</span>
+    <i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i>
+  </a>
+</aside>
+
+<!-- ╔══════════ SECONDARY SIDEBAR (facility sub-nav) ══════════╗ -->
+<aside class="secondary-sidebar fixed top-[52px] w-[260px] h-[calc(100vh-52px)] bg-bg border-r border-border p-4 z-30 overflow-y-auto">
+  <!-- Breadcrumb -->
+  <nav class="text-xs text-text-secondary mb-3 flex items-center gap-1.5">
+    <span class="hover:text-text cursor-pointer">Facilities</span>
+    <i class="ph ph-caret-right text-[10px]"></i>
+    <span class="text-text font-semibold">F-2241 Covalto</span>
+  </nav>
+
+  <!-- Facility title with back arrow -->
+  <header class="flex items-center gap-2 mb-4 pb-3 border-b border-border">
+    <button class="w-7 h-7 rounded-md grid place-items-center hover:bg-border-strong text-text-secondary" title="Back to Facilities">
+      <i class="ph ph-arrow-left text-base"></i>
+    </button>
+    <h2 class="font-primary text-base font-bold text-text m-0 truncate flex-1">F-2241 Covalto</h2>
+    <button onclick="document.body.classList.add('secondary-hidden')"
+            class="w-7 h-7 rounded-md grid place-items-center hover:bg-border-strong text-text-secondary"
+            title="Hide sidebar">
+      <i class="ph ph-caret-double-left text-base"></i>
+    </button>
+  </header>
+
+  <!-- Facility sub-nav -->
+  <div class="flex flex-col gap-1">
+    <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text font-semibold bg-border cursor-pointer">
+      <i class="ph ph-chart-line text-secondary-active"></i>
+      <span class="text-sm">Insights</span>
+    </a>
+    <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer">
+      <i class="ph ph-squares-four"></i>
+      <span>Concentrations</span>
+    </a>
+    <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer">
+      <i class="ph ph-arrows-left-right"></i>
+      <span>Cash flow</span>
+    </a>
+    <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer">
+      <i class="ph ph-file-text"></i>
+      <span>General information</span>
+    </a>
+    <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer">
+      <i class="ph ph-archive"></i>
+      <span>Report repository</span>
+    </a>
+    <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer">
+      <i class="ph ph-envelope"></i>
+      <span>Directory</span>
+    </a>
+    <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer">
+      <i class="ph ph-shield-check"></i>
+      <span>Covenants</span>
+    </a>
+    <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer">
+      <i class="ph ph-coins"></i>
+      <span>Financials</span>
+    </a>
+  </div>
+</aside>
+
+<!-- Reopen secondary sidebar button (visible only when secondary is hidden) -->
+<button onclick="document.body.classList.remove('secondary-hidden')"
+        class="reopen-secondary fixed top-[68px] z-30 w-8 h-8 rounded-md bg-surface border border-border shadow-card items-center justify-center hover:bg-bg text-text-secondary"
+        title="Show facility sidebar">
+  <i class="ph ph-caret-double-right text-base"></i>
+</button>
+
+<!-- ╔══════════ <facility-insights-page> ══════════╗ -->
+<facility-insights-page>
+<main class="app-main bg-surface m-6 mt-[76px] rounded-lg p-6 min-h-[calc(100vh-100px)]">
+
+  <!-- Page header -->
+  <div class="flex items-center justify-between gap-4 flex-wrap mb-1">
+    <div>
+      <h1 class="font-primary text-3xl font-bold text-text m-0">F-2241 Covalto · Facility Insights</h1>
+      <p class="text-text-secondary text-sm m-0 mt-1">Originator: LeaseMD · Facility ID <span class="num">FAC-2024-COV-2241</span> · Currency MXN</p>
+    </div>
+    <div class="flex gap-2">
+      <button class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md border border-border text-text text-sm font-semibold hover:bg-bg"><i class="ph ph-download-simple"></i> Export</button>
+      <button class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md border border-border text-text-secondary text-sm font-semibold hover:bg-bg"><i class="ph ph-download-simple"></i> Latest Report</button>
+      <button onclick="document.getElementById('flag-modal').classList.remove('hidden')" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md bg-primary text-white text-sm font-semibold hover:opacity-90"><i class="ph ph-flag"></i> Flag for review</button>
+    </div>
+  </div>
+
+  <!-- ════════ <cut-off-header> · LEN-876 + LEN-889 ════════ -->
+  <cut-off-header class="block mt-5 mb-6">
+    <section class="flex items-center gap-3.5 flex-wrap p-3.5 bg-bg border border-border rounded-lg">
+      <!-- <currency-selector [currency]="currency()" /> -->
+      <currency-selector class="flex items-center gap-2">
+        <span class="font-primary text-xs font-semibold text-text-secondary flex items-center gap-1">
+          Currency
+          <i class="ph ph-info text-text-muted cursor-help text-sm" data-tt="Reporting currency for this facility"></i>
+        </span>
+        <button type="button"
+                class="flex items-center gap-2 px-3 py-1.5 border border-border-strong rounded-md bg-surface hover:border-text-muted"
+                aria-haspopup="listbox" aria-expanded="false"
+                onclick="document.getElementById('currency-panel').classList.toggle('hidden')">
+          <span class="inline-flex w-5 h-3.5 rounded-sm overflow-hidden border border-border" aria-hidden="true">
+            <span style="background:#006847" class="flex-1"></span>
+            <span style="background:#FFFFFF" class="flex-1"></span>
+            <span style="background:#CE1126" class="flex-1"></span>
+          </span>
+          <span class="text-sm font-semibold text-text">MXN</span>
+          <i class="ph ph-caret-down text-xs text-text-muted ml-0.5"></i>
+        </button>
+        <div id="currency-panel" class="hidden absolute mt-12 bg-surface border border-border rounded-lg shadow-card min-w-[180px] p-1.5 z-30">
+          <div class="flex items-center gap-2 px-2.5 py-2 rounded-md bg-border font-semibold text-sm cursor-pointer">
+            <span class="inline-flex w-5 h-3.5 rounded-sm overflow-hidden border border-border" aria-hidden="true">
+              <span style="background:#006847" class="flex-1"></span>
+              <span style="background:#FFFFFF" class="flex-1"></span>
+              <span style="background:#CE1126" class="flex-1"></span>
+            </span>
+            <span>MXN</span>
+            <span class="text-xs text-text-secondary ml-auto">Mexican Peso</span>
+          </div>
+          <div class="flex items-center gap-2 px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer">
+            <span class="inline-flex w-5 h-3.5 rounded-sm overflow-hidden border border-border" aria-hidden="true">
+              <span style="background:#B22234" class="flex-1"></span>
+              <span style="background:#FFFFFF" class="flex-1"></span>
+              <span style="background:#3C3B6E" class="flex-1"></span>
+            </span>
+            <span>USD</span>
+            <span class="text-xs text-text-secondary ml-auto">US Dollar</span>
+          </div>
+        </div>
+      </currency-selector>
+
+      <div class="flex items-center gap-2 text-xs text-text-secondary">
+        <i class="ph ph-clock-clockwise text-text-muted"></i>
+        <span>Prior cut-off: <strong class="text-text font-semibold">February 28, 2026</strong></span>
+      </div>
+
+      <!-- <cut-off-dropdown [cutOffs]="cutOffOptions()" [selected]="selected()" (selectionChange)="onChange($event)" /> -->
+      <cut-off-dropdown class="ml-auto" data-input-facility-id="FAC-2024-COV-2241">
+        <button type="button"
+                class="flex items-center gap-2.5 px-3.5 py-2 border border-border-strong rounded-md bg-surface hover:border-text-muted text-left"
+                aria-haspopup="listbox" aria-expanded="true"
+                onclick="document.getElementById('cutoff-panel').classList.toggle('hidden')">
+          <i class="ph ph-calendar-blank text-text-secondary"></i>
+          <span class="flex flex-col leading-tight">
+            <span class="text-base font-semibold text-text">March 31, 2026</span>
+            <span class="text-xs text-text-secondary">Tuesday · Latest available</span>
+          </span>
+          <i class="ph ph-caret-down text-xs text-text-muted ml-1.5"></i>
+        </button>
+
+        <div id="cutoff-panel" class="hidden absolute mt-1.5 bg-surface border border-border rounded-lg shadow-card min-w-[380px] z-30">
+          <!-- Search input · sticky top -->
+          <div class="sticky top-0 bg-surface border-b border-border p-2.5 rounded-t-lg">
+            <div class="relative">
+              <i class="ph ph-magnifying-glass absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted text-sm"></i>
+              <input id="cutoff-search" type="text" placeholder="Search cut-off…"
+                     class="w-full pl-8 pr-3 py-1.5 text-sm border border-border-strong rounded-md focus:border-secondary focus:outline-none" />
+            </div>
+          </div>
+
+          <div class="max-h-[420px] overflow-y-auto p-2">
+
+            <!-- ──────── RECENT · top 3 ──────── -->
+            <div class="py-1">
+              <div class="flex items-center gap-1.5 px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-text-secondary font-primary">
+                <i class="ph ph-clock text-xs"></i>
+                <span>Recent · last 3 cuts</span>
+              </div>
+              <div class="cutoff-item flex items-center justify-between gap-2 px-2.5 py-2 rounded-md bg-border font-semibold text-sm cursor-pointer" data-date="march 31 2026 mar">
+                <span>March 31, 2026</span>
+                <span class="flex items-center gap-1.5">
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning-bg text-warning border border-warning-border text-[10px] font-bold font-primary">
+                    <i class="ph ph-warning text-[10px]"></i> Non compliant
+                  </span>
+                  <span class="inline-block px-1.5 py-0.5 rounded bg-border text-primary text-[10px] font-bold tracking-wider font-primary">LATEST</span>
+                </span>
+              </div>
+              <div class="cutoff-item flex items-center justify-between gap-2 px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="february 28 2026 feb">
+                <span>February 28, 2026</span>
+              </div>
+              <div class="cutoff-item flex items-center justify-between gap-2 px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="january 31 2026 jan">
+                <span>January 31, 2026</span>
+              </div>
+            </div>
+
+            <!-- ──────── YEAR ACCORDIONS ──────── -->
+
+            <!-- 2026 · expanded by default -->
+            <details class="year-group py-1 mt-1 border-t border-border" open>
+              <summary class="flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-bg rounded-md list-none">
+                <i class="ph ph-caret-down text-xs text-text-secondary year-caret"></i>
+                <span class="w-1.5 h-1.5 rounded-full bg-warning" title="Year contains non-compliant cuts"></span>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-text-secondary font-primary">2026</span>
+                <span class="ml-auto text-[10px] text-text-muted font-primary">3 cuts · 1 issue</span>
+              </summary>
+              <div class="pl-2 mt-1">
+                <div class="cutoff-item flex items-center justify-between gap-2 px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="march 31 2026 mar">
+                  <span>March 31, 2026</span>
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning-bg text-warning border border-warning-border text-[10px] font-bold font-primary">
+                    <i class="ph ph-warning text-[10px]"></i> Non compliant
+                  </span>
+                </div>
+                <div class="cutoff-item flex items-center justify-between gap-2 px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="february 28 2026 feb">
+                  <span>February 28, 2026</span>
+                </div>
+                <div class="cutoff-item flex items-center justify-between gap-2 px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="january 31 2026 jan">
+                  <span>January 31, 2026</span>
+                </div>
+              </div>
+            </details>
+
+            <!-- 2025 · collapsed by default -->
+            <details class="year-group py-1 mt-1 border-t border-border">
+              <summary class="flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-bg rounded-md list-none">
+                <i class="ph ph-caret-right text-xs text-text-secondary year-caret"></i>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-text-secondary font-primary">2025</span>
+                <span class="ml-auto text-[10px] text-text-muted font-primary">9 cuts</span>
+              </summary>
+              <div class="pl-2 mt-1">
+                <div class="cutoff-item flex items-center px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="december 31 2025 dec">December 31, 2025</div>
+                <div class="cutoff-item flex items-center px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="november 30 2025 nov">November 30, 2025</div>
+                <div class="cutoff-item flex items-center px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="october 31 2025 oct">October 31, 2025</div>
+                <div class="cutoff-item flex items-center px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="september 30 2025 sep">September 30, 2025</div>
+                <div class="cutoff-item flex items-center px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="august 31 2025 aug">August 31, 2025</div>
+                <div class="cutoff-item flex items-center px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="july 31 2025 jul">July 31, 2025</div>
+                <div class="cutoff-item flex items-center px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="june 30 2025 jun">June 30, 2025</div>
+                <div class="cutoff-item flex items-center px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="may 31 2025 may">May 31, 2025</div>
+                <div class="cutoff-item flex items-center px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="april 30 2025 apr">April 30, 2025</div>
+              </div>
+            </details>
+
+            <!-- 2024 · collapsed -->
+            <details class="year-group py-1 mt-1 border-t border-border">
+              <summary class="flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-bg rounded-md list-none">
+                <i class="ph ph-caret-right text-xs text-text-secondary year-caret"></i>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-text-secondary font-primary">2024</span>
+                <span class="ml-auto text-[10px] text-text-muted font-primary">12 cuts</span>
+              </summary>
+              <div class="pl-2 mt-1">
+                <div class="cutoff-item flex items-center px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="march 31 2024 mar">March 31, 2024</div>
+                <div class="cutoff-item flex items-center px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="february 29 2024 feb">February 29, 2024</div>
+                <div class="cutoff-item flex items-center px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="january 31 2024 jan">January 31, 2024</div>
+                <div class="text-[11px] italic text-text-muted px-2.5 py-1.5">…and 9 more cuts in 2024</div>
+              </div>
+            </details>
+
+            <!-- Empty state (search no match) -->
+            <div id="cutoff-empty" class="hidden py-6 text-center text-text-secondary text-xs">
+              <i class="ph ph-magnifying-glass text-lg block mb-1"></i>
+              No cut-offs match your search
+            </div>
+          </div>
+        </div>
+      </cut-off-dropdown>
+
+      <!-- <reporting-frequency-badge [frequency]="freq()" [facilityId]="..." /> -->
+      <reporting-frequency-badge data-input-frequency="monthly" data-input-median-delta-days="30">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-info-bg text-info text-xs font-bold font-primary"
+              role="status" aria-label="Reporting frequency: Monthly"
+              data-tt="Inferred from the cut-off history of this facility.">
+          <i class="ph ph-clock-counter-clockwise text-xs"></i> Monthly
+        </span>
+      </reporting-frequency-badge>
+    </section>
+  </cut-off-header>
+
+  <!-- ════════ <interest-rate-strip> · Facility pricing ════════ -->
+  <interest-rate-card class="block mb-6">
+    <section class="flex items-center gap-3 flex-wrap px-3.5 py-2.5 bg-bg border border-border rounded-lg text-xs">
+      <span class="font-primary text-[10px] font-bold tracking-wider uppercase text-text-secondary flex items-center gap-2">
+        <span class="inline-flex w-5 h-5 rounded-full bg-border items-center justify-center">
+          <i class="ph ph-percent text-text-secondary text-xs"></i>
+        </span>
+        Interest rate · effective at cut-off
+      </span>
+
+      <span class="flex items-center gap-1.5 text-text-secondary">
+        <span class="font-primary font-semibold">TIIE 28d</span>
+        <span class="num font-bold text-text">8.25%</span>
+      </span>
+
+      <span class="text-text-muted">+</span>
+
+      <span class="flex items-center gap-1.5 text-text-secondary">
+        <span class="font-primary font-semibold">Spread</span>
+        <span class="num font-bold text-text">5.50%</span>
+      </span>
+
+      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 text-text text-xs font-bold font-primary"
+            data-tt="TIIE 28d + Spread">
+        <span>Annual</span>
+        <span class="num">13.75%</span>
+      </span>
+
+      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 text-text text-xs font-bold font-primary"
+            data-tt="Annual ÷ 12">
+        <span>Monthly</span>
+        <span class="num">1.15%</span>
+      </span>
+    </section>
+  </interest-rate-card>
+
+  <!-- ════════ <pool-overview> · Wave 1 (LEN-572/573/663/879) ════════ -->
+  <pool-overview class="block mb-8">
+    <div class="grid grid-cols-5 gap-4 max-[1300px]:grid-cols-3 max-[900px]:grid-cols-2">
+
+      <!-- <portfolio-balance-card [data]="..." /> LEN-572 -->
+      <portfolio-balance-card>
+        <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[118px]">
+          <div class="flex items-center gap-1.5 mb-2">
+            <h3 class="font-primary text-sm font-medium text-text-secondary m-0">Portfolio Balance</h3>
+            <i class="ph ph-info text-text-muted text-sm cursor-help" data-tt="Eligible + Ineligible receivables at cut-off"></i>
+          </div>
+          <div class="num text-3xl font-bold text-text leading-tight">$299.37M</div>
+          <div class="mt-2">
+            <!-- <delta-chip [delta]="delta" colorScheme="standard" format="currency" /> -->
+            <delta-chip data-input-color-scheme="standard" data-input-format="currency"
+                        class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-success-bg text-success text-xs font-semibold font-primary">
+              <i class="ph ph-arrow-up text-xs"></i> +$17.4M (+6.2%) <span class="font-normal opacity-90">vs. prior month</span>
+            </delta-chip>
+          </div>
+        </kpi-card>
+      </portfolio-balance-card>
+
+      <!-- <outstanding-debt-card [data]="..." /> LEN-573 · color INVERTED -->
+      <outstanding-debt-card>
+        <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[118px]">
+          <div class="flex items-center gap-1.5 mb-1">
+            <h3 class="font-primary text-sm font-medium text-text-secondary m-0">Outstanding Debt</h3>
+            <i class="ph ph-info text-text-muted text-sm cursor-help" data-tt="Drawn principal outstanding"></i>
+          </div>
+          <div class="num text-3xl font-bold text-text leading-tight">$226.40M</div>
+          <div class="text-xs text-text-secondary mb-1">Drawn principal outstanding</div>
+          <div>
+            <!-- <delta-chip [delta]="delta" colorScheme="inverted" /> -->
+            <delta-chip data-input-color-scheme="inverted" data-input-format="currency"
+                        class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-warning-bg text-warning text-xs font-semibold font-primary">
+              <i class="ph ph-arrow-up text-xs"></i> +$16.9M (+8.1%) <span class="font-normal opacity-90">vs. prior month</span>
+            </delta-chip>
+          </div>
+        </kpi-card>
+      </outstanding-debt-card>
+
+      <!-- <maximum-credit-amount-card [data]="..." /> · contractual ceiling -->
+      <maximum-credit-amount-card>
+        <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[118px]">
+          <div class="flex items-center gap-1.5 mb-2">
+            <h3 class="font-primary text-sm font-medium text-text-secondary m-0">Maximum Credit Amount</h3>
+            <i class="ph ph-info text-text-muted text-sm cursor-help" data-tt="Contractual ceiling defined in the credit agreement"></i>
+          </div>
+          <div class="num text-3xl font-bold text-text leading-tight">$300.00M</div>
+          <div class="text-xs text-text-secondary mb-1">Facility commitment</div>
+          <div>
+            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-text-secondary text-xs font-semibold font-primary"
+                  data-tt="Per credit agreement — no change vs. prior cut-offs">
+              <i class="ph ph-lock-key text-xs"></i> Contractual · unchanged
+            </span>
+          </div>
+        </kpi-card>
+      </maximum-credit-amount-card>
+
+      <!-- <total-contracts-card [data]="..." /> LEN-663 · growth-only -->
+      <total-contracts-card>
+        <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[118px]">
+          <div class="flex items-center gap-1.5 mb-2">
+            <h3 class="font-primary text-sm font-medium text-text-secondary m-0">Total Contracts
+            </h3>
+            <i class="ph ph-info text-text-muted text-sm cursor-help" data-tt="Active contracts at selected cut-off date · delta vs. equivalent prior period"></i>
+          </div>
+          <div class="num text-3xl font-bold text-text leading-tight">14,287</div>
+          <div class="text-xs text-text-secondary mb-1">active</div>
+          <div>
+            <delta-chip data-input-color-scheme="growth-only" data-input-format="count"
+                        class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-success-bg text-success text-xs font-semibold font-primary">
+              <i class="ph ph-arrow-up text-xs"></i> +312 <span class="font-normal opacity-90">vs. prior month</span>
+            </delta-chip>
+          </div>
+        </kpi-card>
+      </total-contracts-card>
+
+      <!-- <avg-current-balance-card [data]="..." /> LEN-879 · neutral -->
+      <avg-current-balance-card>
+        <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[118px]">
+          <div class="flex items-center gap-1.5 mb-2">
+            <h3 class="font-primary text-sm font-medium text-text-secondary m-0">Avg. Current Balance
+            </h3>
+            <i class="ph ph-info text-text-muted text-sm cursor-help" data-tt="Formula: Outstanding Debt ÷ Number of Active Contracts"></i>
+          </div>
+          <div class="num text-3xl font-bold text-text leading-tight">$15.85K</div>
+          <div class="mt-2">
+            <delta-chip data-input-color-scheme="neutral" data-input-format="currency"
+                        class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-text-secondary text-xs font-semibold font-primary">
+              <i class="ph ph-arrow-down text-xs"></i> −$220 <span class="font-normal opacity-90">vs. prior month</span>
+            </delta-chip>
+          </div>
+        </kpi-card>
+      </avg-current-balance-card>
+    </div>
+  </pool-overview>
+
+  <!-- ════════ <critical-signals> · Wave 3 (LEN-568 + LEN-570) ════════ -->
+  <critical-signals class="block mb-8">
+    <!-- <undrawn-commitment-card [data]="undrawn()" /> LEN-568 -->
+    <div class="grid grid-cols-[1.3fr_1fr] gap-4 max-[1100px]:grid-cols-1 mb-4">
+      <undrawn-commitment-card>
+        <article class="bg-bg border border-border rounded-xl p-5">
+          <div class="flex items-center gap-2 mb-2">
+            <h3 class="text-base font-bold text-text font-primary m-0">Undrawn Commitment
+            </h3>
+            <i class="ph ph-info text-text-muted cursor-help" data-tt="The portion of the facility commitment not yet drawn. Calculated as Max Credit Amount − Outstanding Debt."></i>
+          </div>
+          <div class="flex items-baseline gap-3 flex-wrap">
+            <span class="text-3xl font-bold text-text num">$73.60M</span>
+            <delta-chip data-input-color-scheme="standard" data-input-format="currency"
+                        class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-warning-bg text-warning text-xs font-semibold font-primary">
+              <i class="ph ph-arrow-down text-xs"></i> −$16.5M (−18.4%) <span class="font-normal opacity-90">vs. prior month</span>
+            </delta-chip>
+          </div>
+          <div class="mt-3">
+            <div class="relative h-2 bg-border rounded-full overflow-hidden" role="progressbar" aria-valuenow="75.5" aria-valuemin="0" aria-valuemax="100" data-tt="Drawn $226.40M of $300.00M committed">
+              <div class="absolute inset-y-0 left-0 bg-primary rounded-full" style="width:75.5%"></div>
+            </div>
+            <div class="flex justify-between items-baseline mt-1.5">
+              <span class="font-primary font-bold text-sm text-text">75.5% drawn of commitment</span>
+              <span class="text-xs text-text-secondary num">Max Credit $300.00M − Outstanding $226.40M = $73.60M</span>
+            </div>
+          </div>
+        </article>
+      </undrawn-commitment-card>
+
+      <!-- Utilization trajectory mini-chart (internal-chart wrapper) -->
+      <article class="bg-surface border border-border rounded-xl p-5">
+        <div class="flex items-center gap-2 mb-2">
+          <h3 class="text-base font-bold text-text font-primary m-0">Utilization trajectory</h3>
+          <i class="ph ph-info text-text-muted cursor-help" data-tt="Drawn % of committed across last 5 cut-offs"></i>
+        </div>
+        <svg viewBox="0 0 320 90" class="w-full h-[90px]" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="utilGrad" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stop-color="#EA580C" stop-opacity=".35"/>
+              <stop offset="100%" stop-color="#EA580C" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <polyline points="0,72 64,66 128,60 192,48 256,32 320,18" fill="none" stroke="#EA580C" stroke-width="2.5"/>
+          <polygon points="0,72 64,66 128,60 192,48 256,32 320,18 320,90 0,90" fill="url(#utilGrad)"/>
+          <line x1="0" y1="9" x2="320" y2="9" stroke="#DC2626" stroke-dasharray="3 3" stroke-width="1"/>
+          <text x="318" y="7" text-anchor="end" font-family="Space Mono" font-size="9" fill="#DC2626">90% alert</text>
+        </svg>
+        <div class="flex justify-between text-[10px] text-text-muted num mt-1">
+          <span>Nov 25</span><span>Dec 25</span><span>Jan 26</span><span>Feb 26</span><span>Mar 26</span>
+        </div>
+      </article>
+    </div>
+
+  </critical-signals>
+
+  <hr class="border-0 border-t border-border my-8" />
+
+  <!-- ════════ Wave 2 — Ordered: OC → BB → Assets → Aging → Account Balance ════════ -->
+  <section class="flex flex-col gap-4 mb-8">
+    <!-- ════════ <aging-section> · LEN-578 — order 4 ════════ -->
+    <aging-section class="order-4 block">
+      <article class="bg-surface border border-border rounded-xl p-4">
+        <header class="flex items-center justify-between gap-3 flex-wrap mb-2">
+          <div class="flex items-center gap-2.5">
+            <h3 class="font-primary text-base font-bold uppercase tracking-wider text-text m-0">Aging</h3>
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-danger-bg text-danger border border-danger-border text-xs font-semibold font-primary">
+              <i class="ph ph-trend-up text-xs"></i> Rising trend · 5 cuts on 90+
+            </span>
+          </div>
+        </header>
+
+        <div class="grid grid-cols-2 gap-4 max-[900px]:grid-cols-1">
+          <div class="flex flex-col gap-3">
+            <!-- <delinquency-card [variant]="30" /> -->
+            <delinquency-card data-input-variant="30">
+              <article class="rounded-xl border border-warning-border bg-warning-bg p-4">
+                <div class="flex items-center gap-1.5 mb-2">
+                  <h4 class="font-primary text-sm font-semibold text-warning m-0">Delinquent 30+</h4>
+                  <i class="ph ph-info text-text-muted cursor-help" data-tt="Receivables 30+ days past due ÷ outstanding total"></i>
+                </div>
+                <div class="flex items-end gap-3 justify-between">
+                  <div>
+                    <div class="text-2xl font-bold num">13.96%</div>
+                    <div class="text-xs text-text-secondary num">$41.79M USD</div>
+                  </div>
+                  <svg viewBox="0 0 100 32" width="90" height="32">
+                    <polyline points="0,24 25,22 50,18 75,14 100,8" fill="none" stroke="#B45309" stroke-width="1.8"/>
+                    <circle cx="100" cy="8" r="2.5" fill="#B45309"/>
+                  </svg>
+                </div>
+                <div class="flex flex-wrap gap-2 mt-2">
+                  <delta-chip data-input-format="pp" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning-bg text-warning border border-warning-border text-[10px] font-semibold font-primary">
+                    <i class="ph ph-arrow-up text-[10px]"></i> +1.22 pp
+                  </delta-chip>
+                  <delta-chip data-input-format="currency" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning-bg text-warning border border-warning-border text-[10px] font-semibold font-primary">
+                    <i class="ph ph-arrow-up text-[10px]"></i> +$3.20M
+                  </delta-chip>
+                  <span class="text-[10px] text-text-secondary">vs. prior month</span>
+                </div>
+              </article>
+            </delinquency-card>
+
+            <delinquency-card data-input-variant="90">
+              <article class="rounded-xl border border-danger-border bg-danger-bg p-4">
+                <div class="flex items-center gap-1.5 mb-2">
+                  <h4 class="font-primary text-sm font-semibold text-danger m-0">Delinquent 90+</h4>
+                  <i class="ph ph-info text-text-muted cursor-help" data-tt="Receivables 90+ days past due ÷ outstanding total · Covenant max: 8%"></i>
+                  <span class="ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded bg-danger text-white text-[10px] font-bold font-primary tracking-wider">
+                    <i class="ph ph-warning text-[10px]"></i> ALERT
+                  </span>
+                </div>
+                <div class="flex items-end gap-3 justify-between">
+                  <div>
+                    <div class="text-2xl font-bold num text-danger">9.18%</div>
+                    <div class="text-xs text-text-secondary num">$27.48M USD</div>
+                  </div>
+                  <svg viewBox="0 0 100 32" width="90" height="32">
+                    <polyline points="0,26 25,22 50,18 75,12 100,4" fill="none" stroke="#DC2626" stroke-width="1.8"/>
+                    <circle cx="100" cy="4" r="2.5" fill="#DC2626"/>
+                  </svg>
+                </div>
+                <div class="flex flex-wrap gap-2 mt-2">
+                  <delta-chip data-input-format="pp" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-danger-bg text-danger border border-danger-border text-[10px] font-semibold font-primary">
+                    <i class="ph ph-arrow-up text-[10px]"></i> +1.22 pp
+                  </delta-chip>
+                  <delta-chip data-input-format="currency" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-danger-bg text-danger border border-danger-border text-[10px] font-semibold font-primary">
+                    <i class="ph ph-arrow-up text-[10px]"></i> +$5.60M
+                  </delta-chip>
+                  <span class="text-[10px] text-text-secondary">vs. prior month</span>
+                </div>
+              </article>
+            </delinquency-card>
+          </div>
+
+          <!-- <chart [data]="chartData()" [options]="..." type="bar" /> -->
+          <div class="bg-bg border border-border rounded-lg p-3.5">
+            <div class="flex justify-between items-center mb-1.5">
+              <span class="text-xs text-text-secondary font-primary font-semibold">Distribution by bucket — last 5 cuts</span>
+              <div class="inline-flex bg-bg border border-border rounded p-0.5">
+                <button type="button" class="px-3 py-1 text-xs rounded font-primary font-semibold bg-surface text-secondary shadow-sm">%</button>
+                <button type="button" class="px-3 py-1 text-xs rounded font-primary font-semibold text-text-secondary">$</button>
+              </div>
+            </div>
+            <svg viewBox="0 0 400 200" class="w-full h-[200px]">
+              <g stroke="#E2E8F0">
+                <line x1="40" y1="30" x2="390" y2="30"/><line x1="40" y1="75" x2="390" y2="75"/>
+                <line x1="40" y1="120" x2="390" y2="120"/><line x1="40" y1="165" x2="390" y2="165"/>
+                <line x1="40" y1="200" x2="390" y2="200" stroke="#CBD5E1"/>
+              </g>
+              <g font-family="Space Mono" font-size="9" fill="#64748B">
+                <text x="34" y="33" text-anchor="end">100%</text><text x="34" y="78" text-anchor="end">75%</text>
+                <text x="34" y="123" text-anchor="end">50%</text><text x="34" y="168" text-anchor="end">25%</text>
+                <text x="34" y="203" text-anchor="end">0%</text>
+              </g>
+              <g transform="translate(60,0)"><rect x="0" y="60" width="44" height="140" fill="#1E3A8A"/><rect x="0" y="46" width="44" height="14" fill="#0E7490"/><rect x="0" y="38" width="44" height="8" fill="#A16207"/><rect x="0" y="32" width="44" height="6" fill="#C2410C"/><rect x="0" y="26" width="44" height="6" fill="#DC2626"/><rect x="0" y="22" width="44" height="4" fill="#B91C1C"/><rect x="0" y="18" width="44" height="4" fill="#991B1B"/><rect x="0" y="14" width="44" height="4" fill="#7F1D1D"/><text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" fill="#64748B">Nov 25</text></g>
+              <g transform="translate(126,0)"><rect x="0" y="62" width="44" height="138" fill="#1E3A8A"/><rect x="0" y="48" width="44" height="14" fill="#0E7490"/><rect x="0" y="40" width="44" height="8" fill="#A16207"/><rect x="0" y="34" width="44" height="6" fill="#C2410C"/><rect x="0" y="28" width="44" height="6" fill="#DC2626"/><rect x="0" y="23" width="44" height="5" fill="#B91C1C"/><rect x="0" y="18" width="44" height="5" fill="#991B1B"/><rect x="0" y="12" width="44" height="6" fill="#7F1D1D"/><text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" fill="#64748B">Dec 25</text></g>
+              <g transform="translate(192,0)"><rect x="0" y="65" width="44" height="135" fill="#1E3A8A"/><rect x="0" y="50" width="44" height="15" fill="#0E7490"/><rect x="0" y="42" width="44" height="8" fill="#A16207"/><rect x="0" y="36" width="44" height="6" fill="#C2410C"/><rect x="0" y="30" width="44" height="6" fill="#DC2626"/><rect x="0" y="24" width="44" height="6" fill="#B91C1C"/><rect x="0" y="18" width="44" height="6" fill="#991B1B"/><rect x="0" y="10" width="44" height="8" fill="#7F1D1D"/><text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" fill="#64748B">Jan 26</text></g>
+              <g transform="translate(258,0)"><rect x="0" y="68" width="44" height="132" fill="#1E3A8A"/><rect x="0" y="52" width="44" height="16" fill="#0E7490"/><rect x="0" y="44" width="44" height="8" fill="#A16207"/><rect x="0" y="38" width="44" height="6" fill="#C2410C"/><rect x="0" y="32" width="44" height="6" fill="#DC2626"/><rect x="0" y="25" width="44" height="7" fill="#B91C1C"/><rect x="0" y="18" width="44" height="7" fill="#991B1B"/><rect x="0" y="8" width="44" height="10" fill="#7F1D1D"/><text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" fill="#64748B">Feb 26</text></g>
+              <g transform="translate(324,0)"><rect x="0" y="71" width="44" height="129" fill="#1E3A8A"/><rect x="0" y="54" width="44" height="17" fill="#0E7490"/><rect x="0" y="46" width="44" height="8" fill="#A16207"/><rect x="0" y="40" width="44" height="6" fill="#C2410C"/><rect x="0" y="34" width="44" height="6" fill="#DC2626"/><rect x="0" y="26" width="44" height="8" fill="#B91C1C"/><rect x="0" y="18" width="44" height="8" fill="#991B1B"/><rect x="0" y="6" width="44" height="12" fill="#7F1D1D"/><text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" fill="#64748B">Mar 26</text></g>
+              <polyline points="82,46 148,48 214,50 280,52 346,54" fill="none" stroke="#B45309" stroke-width="2.5"/>
+              <polyline points="82,26 148,28 214,30 280,32 346,34" fill="none" stroke="#DC2626" stroke-width="2" stroke-dasharray="5 3"/>
+              <line x1="40" y1="36" x2="390" y2="36" stroke="#DC2626" stroke-dasharray="2 4" stroke-width="1" opacity=".5"/>
+            </svg>
+            <div class="flex flex-wrap gap-3 text-xs text-text-secondary mt-1.5">
+              <span><span class="inline-block w-2.5 h-2.5 rounded-sm bg-[#1E3A8A] mr-1 align-middle"></span>Current</span>
+              <span><span class="inline-block w-2.5 h-2.5 rounded-sm bg-[#0E7490] mr-1 align-middle"></span>1-30</span>
+              <span><span class="inline-block w-2.5 h-2.5 rounded-sm bg-[#A16207] mr-1 align-middle"></span>31-60</span>
+              <span><span class="inline-block w-2.5 h-2.5 rounded-sm bg-[#C2410C] mr-1 align-middle"></span>61-90</span>
+              <span><span class="inline-block w-2.5 h-2.5 rounded-sm bg-[#DC2626] mr-1 align-middle"></span>91-120</span>
+              <span><span class="inline-block w-2.5 h-2.5 rounded-sm bg-[#B91C1C] mr-1 align-middle"></span>121-150</span>
+              <span><span class="inline-block w-2.5 h-2.5 rounded-sm bg-[#991B1B] mr-1 align-middle"></span>151-180</span>
+              <span><span class="inline-block w-2.5 h-2.5 rounded-sm bg-[#7F1D1D] mr-1 align-middle"></span>180+</span>
+            </div>
+            <div class="text-xs text-text-secondary mt-1.5">Monthly cuts · % of total portfolio balance</div>
+          </div>
+        </div>
+
+        <!-- p-accordion · View raw data -->
+        <details class="mt-3">
+          <summary class="inline-flex items-center gap-1 text-secondary text-xs font-semibold font-primary cursor-pointer hover:underline list-none">
+            <i class="ph ph-caret-right"></i> View raw data
+          </summary>
+          <table class="w-full border-collapse text-sm mt-2">
+            <thead>
+              <tr class="bg-bg">
+                <th rowspan="2" class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border align-bottom">Cut-off</th>
+                <th colspan="2" class="text-center p-2.5 font-primary text-[10px] uppercase tracking-wider text-warning font-bold border-b border-l border-border">30+ days past due</th>
+                <th colspan="2" class="text-center p-2.5 font-primary text-[10px] uppercase tracking-wider text-danger font-bold border-b border-l border-border">90+ days past due · covenant 8%</th>
+              </tr>
+              <tr class="bg-bg">
+                <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-l border-border">%</th>
+                <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Amount</th>
+                <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-l border-border">%</th>
+                <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="p-3 border-b border-border">Nov 30, 2025</td>
+                <td class="p-3 border-b border-l border-border text-right num">10.50%</td>
+                <td class="p-3 border-b border-border text-right num">$26.69M</td>
+                <td class="p-3 border-b border-l border-border text-right num text-success">5.50%</td>
+                <td class="p-3 border-b border-border text-right num">$13.98M</td>
+              </tr>
+              <tr>
+                <td class="p-3 border-b border-border">Dec 31, 2025</td>
+                <td class="p-3 border-b border-l border-border text-right num">11.40%</td>
+                <td class="p-3 border-b border-border text-right num">$30.07M</td>
+                <td class="p-3 border-b border-l border-border text-right num text-success">6.80%</td>
+                <td class="p-3 border-b border-border text-right num">$17.94M</td>
+              </tr>
+              <tr>
+                <td class="p-3 border-b border-border">Jan 31, 2026</td>
+                <td class="p-3 border-b border-l border-border text-right num">12.10%</td>
+                <td class="p-3 border-b border-border text-right num">$33.09M</td>
+                <td class="p-3 border-b border-l border-border text-right num text-warning">7.70%</td>
+                <td class="p-3 border-b border-border text-right num">$21.06M</td>
+              </tr>
+              <tr>
+                <td class="p-3 border-b border-border">Feb 28, 2026</td>
+                <td class="p-3 border-b border-l border-border text-right num">12.74%</td>
+                <td class="p-3 border-b border-border text-right num">$35.92M</td>
+                <td class="p-3 border-b border-l border-border text-right num text-warning">7.96%</td>
+                <td class="p-3 border-b border-border text-right num">$22.45M</td>
+              </tr>
+              <tr class="bg-bg">
+                <td class="p-3"><strong>Mar 31, 2026 · latest</strong></td>
+                <td class="p-3 border-l border-border text-right num font-bold text-warning">13.96%</td>
+                <td class="p-3 text-right num font-bold">$41.79M</td>
+                <td class="p-3 border-l border-border text-right num font-bold text-danger">9.18%</td>
+                <td class="p-3 text-right num font-bold">$27.48M</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="border-t-2 border-border-strong">
+                <td class="p-2.5 font-primary font-bold uppercase tracking-wider text-[10px] text-text-secondary">Δ vs. prior</td>
+                <td class="p-2.5 border-l border-border text-right num text-warning font-semibold">+1.22 pp</td>
+                <td class="p-2.5 text-right num text-warning font-semibold">+$5.87M</td>
+                <td class="p-2.5 border-l border-border text-right num text-danger font-semibold">+1.22 pp</td>
+                <td class="p-2.5 text-right num text-danger font-semibold">+$5.03M</td>
+              </tr>
+              <tr class="bg-bg">
+                <td class="p-2.5 font-primary font-bold uppercase tracking-wider text-[10px] text-text-secondary">Δ since Nov 25</td>
+                <td class="p-2.5 border-l border-border text-right num text-danger font-bold">+3.46 pp</td>
+                <td class="p-2.5 text-right num text-danger font-bold">+$15.10M</td>
+                <td class="p-2.5 border-l border-border text-right num text-danger font-bold">+3.68 pp</td>
+                <td class="p-2.5 text-right num text-danger font-bold">+$13.50M</td>
+              </tr>
+            </tfoot>
+          </table>
+        </details>
+      </article>
+    </aging-section>
+
+    <!-- ════════ <overcollateralization-section> · LEN-886 — order 1 ════════ -->
+    <overcollateralization-section class="order-1 block">
+      <article class="bg-surface border border-border rounded-xl p-4">
+        <header class="flex items-center gap-2.5 mb-3 flex-wrap">
+          <h3 class="font-primary text-base font-bold uppercase tracking-wider text-text m-0">Overcollateralization</h3>
+          <delta-chip class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-warning-bg text-warning text-xs font-semibold font-primary">
+            <i class="ph ph-arrow-down text-xs"></i> −0.06 <span class="font-normal opacity-90">vs. prior month</span>
+          </delta-chip>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-warning-bg text-warning text-xs font-bold font-primary">
+            <i class="ph ph-warning"></i> Non compliant
+          </span>
+        </header>
+
+        <div class="grid grid-cols-2 gap-4 mb-3">
+          <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[118px]">
+            <h4 class="font-primary text-sm font-medium text-text-secondary m-0 mb-2">Reported</h4>
+            <div class="num text-3xl font-bold leading-tight">1.28</div>
+            <div class="text-xs text-text-secondary mt-1">Actual OC ratio at cut-off</div>
+          </kpi-card>
+          <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[118px]">
+            <h4 class="font-primary text-sm font-medium text-text-secondary m-0 mb-2">Required</h4>
+            <div class="num text-3xl font-bold leading-tight">1.35</div>
+            <div class="text-xs text-text-secondary mt-1">Contractual minimum</div>
+          </kpi-card>
+        </div>
+
+        <div class="flex justify-center gap-4 text-xs text-text-secondary mb-1.5">
+          <span class="text-secondary"><span class="inline-block w-4 h-0.5 bg-current mr-1 align-middle"></span>Reported</span>
+          <span class="text-text-muted"><span class="inline-block w-4 h-0.5 bg-current mr-1 align-middle" style="background:repeating-linear-gradient(to right,currentColor 0 4px,transparent 4px 7px)"></span>Required</span>
+        </div>
+        <div class="text-xs text-text-secondary text-center">Last 5 report cuts · Overcollateralization ratio vs. contractual minimum</div>
+
+        <div class="bg-bg border border-border rounded-lg p-3.5 mt-2">
+          <svg viewBox="0 0 480 200" class="w-full h-[200px]">
+            <defs>
+              <linearGradient id="ocGreen" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#16A34A" stop-opacity=".15"/><stop offset="100%" stop-color="#16A34A" stop-opacity=".05"/></linearGradient>
+              <pattern id="ocAmber" patternUnits="userSpaceOnUse" width="6" height="6"><rect width="6" height="6" fill="rgba(217,119,6,0.10)"/></pattern>
+            </defs>
+            <g stroke="#E2E8F0"><line x1="40" y1="30" x2="470" y2="30"/><line x1="40" y1="80" x2="470" y2="80"/><line x1="40" y1="130" x2="470" y2="130"/><line x1="40" y1="170" x2="470" y2="170" stroke="#CBD5E1"/></g>
+            <g font-family="Space Mono" font-size="9" fill="#64748B"><text x="36" y="33" text-anchor="end">1.45</text><text x="36" y="83" text-anchor="end">1.40</text><text x="36" y="133" text-anchor="end">1.35</text><text x="36" y="173" text-anchor="end">1.28</text></g>
+            <polygon points="60,140 160,120 260,120 360,140 360,130 260,130 160,130 60,130" fill="url(#ocGreen)"/>
+            <polygon points="360,140 460,170 460,130 360,130" fill="url(#ocAmber)"/>
+            <line x1="60" y1="130" x2="460" y2="130" stroke="#94A3B8" stroke-width="2" stroke-dasharray="5 3"/>
+            <polyline points="60,140 160,120 260,120 360,140 460,170" stroke="#910057" stroke-width="2.5" fill="none"/>
+            <g fill="#910057"><circle cx="60" cy="140" r="3"/><circle cx="160" cy="120" r="3"/><circle cx="260" cy="120" r="3"/><circle cx="360" cy="140" r="3"/><circle cx="460" cy="170" r="3.5" stroke="#fff" stroke-width="1.5"/></g>
+            <g font-family="Sofia Sans" font-size="10" fill="#64748B"><text x="60" y="190" text-anchor="middle">Nov 25</text><text x="160" y="190" text-anchor="middle">Dec 25</text><text x="260" y="190" text-anchor="middle">Jan 26</text><text x="360" y="190" text-anchor="middle">Feb 26</text><text x="460" y="190" text-anchor="middle">Mar 26</text></g>
+          </svg>
+        </div>
+
+        <!-- oc-callout · variant: breach -->
+        <aside class="flex items-center gap-2.5 p-3 px-4 rounded-md border border-warning-border bg-warning-bg text-warning text-sm mt-3">
+          <i class="ph ph-x-circle text-lg"></i>
+          <span><strong>Breach: 5.2% below minimum · Deficit −0.07</strong> · Reported <span class="num">1.28</span> / Required <span class="num">1.35</span></span>
+        </aside>
+
+        <!-- p-accordion · View raw data -->
+        <details class="mt-3">
+          <summary class="inline-flex items-center gap-1 text-secondary text-xs font-semibold font-primary cursor-pointer hover:underline list-none">
+            <i class="ph ph-caret-right"></i> View raw data
+          </summary>
+          <table class="w-full border-collapse text-sm mt-2">
+            <thead><tr class="bg-bg">
+              <th class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Cut-off</th>
+              <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Reported</th>
+              <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Required</th>
+              <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Margin</th>
+              <th class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Status</th>
+            </tr></thead>
+            <tbody>
+              <tr><td class="p-3 border-b border-border">Nov 30, 2025</td><td class="p-3 border-b border-border text-right num">1.34</td><td class="p-3 border-b border-border text-right num">1.35</td><td class="p-3 border-b border-border text-right num text-warning">−0.01</td><td class="p-3 border-b border-border"><span class="text-warning text-xs font-semibold">Non compliant</span></td></tr>
+              <tr><td class="p-3 border-b border-border">Dec 31, 2025</td><td class="p-3 border-b border-border text-right num">1.40</td><td class="p-3 border-b border-border text-right num">1.35</td><td class="p-3 border-b border-border text-right num text-success">+0.05</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
+              <tr><td class="p-3 border-b border-border">Jan 31, 2026</td><td class="p-3 border-b border-border text-right num">1.40</td><td class="p-3 border-b border-border text-right num">1.35</td><td class="p-3 border-b border-border text-right num text-success">+0.05</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
+              <tr><td class="p-3 border-b border-border">Feb 28, 2026</td><td class="p-3 border-b border-border text-right num">1.34</td><td class="p-3 border-b border-border text-right num">1.35</td><td class="p-3 border-b border-border text-right num text-warning">−0.01</td><td class="p-3 border-b border-border"><span class="text-warning text-xs font-semibold">Non compliant</span></td></tr>
+              <tr class="bg-bg"><td class="p-3"><strong>Mar 31, 2026 · latest</strong></td><td class="p-3 text-right num font-bold">1.28</td><td class="p-3 text-right num font-bold">1.35</td><td class="p-3 text-right num font-bold text-warning">−0.07</td><td class="p-3"><span class="text-warning text-xs font-bold">Non compliant</span></td></tr>
+            </tbody>
+          </table>
+        </details>
+      </article>
+    </overcollateralization-section>
+
+    <!-- ════════ <borrowing-base-section> · LEN-918 — order 2 ════════ -->
+    <borrowing-base-section class="order-2 block">
+      <article class="bg-surface border border-border rounded-xl p-4">
+        <header class="flex items-center gap-2.5 mb-3 flex-wrap">
+          <h3 class="font-primary text-base font-bold uppercase tracking-wider text-text m-0">Borrowing Base</h3>
+          <!-- Two INDEPENDENT pills · LEN-918 -->
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success-bg text-success text-xs font-bold font-primary"
+                data-tt="Compliant when Borrowing Base ≥ Outstanding Debt">
+            <i class="ph ph-check-circle text-xs"></i> Compliant
+          </span>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-warning-bg text-warning text-xs font-bold font-primary"
+                data-tt="Watch zone: utilization between 85% and 95%">
+            <i class="ph ph-gauge text-xs"></i> 94.9% Utilization · Watch
+          </span>
+        </header>
+
+        <!-- KPI strip · 3 primary numbers -->
+        <div class="grid grid-cols-3 gap-3 mb-3 max-[900px]:grid-cols-1">
+          <!-- Availability — primary, with severity color · Watch = amber -->
+          <kpi-card class="block bg-warning-bg border border-warning-border rounded-xl p-4 min-h-[118px]"
+                    data-tt="Borrowing Base − Outstanding Debt = $238.50M − $226.40M">
+            <div class="flex items-center gap-1.5 mb-1">
+              <h4 class="font-primary text-sm font-medium text-warning m-0">Availability</h4>
+              <i class="ph ph-info text-text-muted text-sm cursor-help"></i>
+            </div>
+            <div class="num text-3xl font-bold text-warning leading-tight">$12.10M</div>
+            <div class="text-xs text-text-secondary mt-1">Headroom before breach</div>
+          </kpi-card>
+
+          <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[118px]">
+            <div class="flex items-center gap-1.5 mb-1">
+              <h4 class="font-primary text-sm font-medium text-text-secondary m-0">Borrowing Base</h4>
+              <i class="ph ph-info text-text-muted text-sm cursor-help"
+                 data-tt="Max amount the originator can draw, given the eligible pool"></i>
+            </div>
+            <div class="num text-3xl font-bold text-text leading-tight">$238.50M</div>
+            <div class="text-xs text-text-secondary mt-1">Eligible × advance rate</div>
+          </kpi-card>
+
+          <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[118px]">
+            <div class="flex items-center gap-1.5 mb-1">
+              <h4 class="font-primary text-sm font-medium text-text-secondary m-0">Outstanding Debt</h4>
+              <i class="ph ph-info text-text-muted text-sm cursor-help"
+                 data-tt="Current drawn balance under the facility"></i>
+            </div>
+            <div class="num text-3xl font-bold text-text leading-tight">$226.40M</div>
+            <div class="text-xs text-text-secondary mt-1">Drawn at cut-off</div>
+          </kpi-card>
+        </div>
+
+        <!-- Legend -->
+        <div class="flex justify-center gap-4 text-xs text-text-secondary mb-1.5">
+          <span class="text-secondary"><span class="inline-block w-4 h-0.5 bg-current mr-1 align-middle"></span>Borrowing Base</span>
+          <span class="text-warning"><span class="inline-block w-4 h-0.5 bg-current mr-1 align-middle" style="background:repeating-linear-gradient(to right,currentColor 0 4px,transparent 4px 7px)"></span>Outstanding Debt</span>
+        </div>
+        <div class="text-xs text-text-secondary text-center">Last 5 report cuts · Cushion compression visible · Tooltip per point includes Availability</div>
+
+        <!-- Chart: 2 lines with availability gap filled -->
+        <div class="bg-bg border border-border rounded-lg p-3.5 mt-2">
+          <svg viewBox="0 0 480 200" class="w-full h-[200px]">
+            <defs>
+              <linearGradient id="bbAvail" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#16A34A" stop-opacity=".20"/>
+                <stop offset="100%" stop-color="#B45309" stop-opacity=".15"/>
+              </linearGradient>
+            </defs>
+            <!-- Grid -->
+            <g stroke="#E2E8F0">
+              <line x1="40" y1="30" x2="470" y2="30"/>
+              <line x1="40" y1="80" x2="470" y2="80"/>
+              <line x1="40" y1="130" x2="470" y2="130"/>
+              <line x1="40" y1="170" x2="470" y2="170" stroke="#CBD5E1"/>
+            </g>
+            <g font-family="Space Mono" font-size="9" fill="#64748B">
+              <text x="36" y="33" text-anchor="end">$260M</text>
+              <text x="36" y="83" text-anchor="end">$240M</text>
+              <text x="36" y="133" text-anchor="end">$220M</text>
+              <text x="36" y="173" text-anchor="end">$200M</text>
+            </g>
+            <!-- Availability area (gap between BB and OD — closing over time) -->
+            <!-- Nov: BB=$245M, OD=$210M, avail=$35M (wide) -->
+            <!-- Mar: BB=$238.5M, OD=$226.4M, avail=$12.1M (tight) -->
+            <polygon points="60,55 160,60 260,68 360,76 460,75 460,98 360,108 260,116 160,120 60,125" fill="url(#bbAvail)"/>
+            <!-- OD line (dashed amber) -->
+            <polyline points="60,125 160,120 260,116 360,108 460,98" fill="none" stroke="#B45309" stroke-width="2.5" stroke-dasharray="5 3"/>
+            <g fill="#B45309">
+              <circle cx="60" cy="125" r="3"/><circle cx="160" cy="120" r="3"/>
+              <circle cx="260" cy="116" r="3"/><circle cx="360" cy="108" r="3"/>
+              <circle cx="460" cy="98" r="3.5" stroke="#fff" stroke-width="1.5"/>
+            </g>
+            <!-- BB line (solid secondary) -->
+            <polyline points="60,55 160,60 260,68 360,76 460,75" fill="none" stroke="#910057" stroke-width="2.5"/>
+            <g fill="#910057">
+              <circle cx="60" cy="55" r="3"/><circle cx="160" cy="60" r="3"/>
+              <circle cx="260" cy="68" r="3"/><circle cx="360" cy="76" r="3"/>
+              <circle cx="460" cy="75" r="3.5" stroke="#fff" stroke-width="1.5"/>
+            </g>
+            <!-- X axis labels -->
+            <g font-family="Sofia Sans" font-size="10" fill="#64748B">
+              <text x="60" y="190" text-anchor="middle">Nov 25</text>
+              <text x="160" y="190" text-anchor="middle">Dec 25</text>
+              <text x="260" y="190" text-anchor="middle">Jan 26</text>
+              <text x="360" y="190" text-anchor="middle">Feb 26</text>
+              <text x="460" y="190" text-anchor="middle">Mar 26</text>
+            </g>
+            <!-- Annotation on latest point — Availability callout -->
+            <line x1="460" y1="75" x2="460" y2="98" stroke="#B45309" stroke-width="1" stroke-dasharray="2 2"/>
+            <text x="465" y="89" font-family="Space Mono" font-size="9" fill="#B45309" font-weight="bold">$12.1M</text>
+          </svg>
+        </div>
+
+        <!-- p-accordion · View raw data -->
+        <details class="mt-3">
+          <summary class="inline-flex items-center gap-1 text-secondary text-xs font-semibold font-primary cursor-pointer hover:underline list-none">
+            <i class="ph ph-caret-right"></i> View raw data
+          </summary>
+          <table class="w-full border-collapse text-sm mt-2">
+            <thead><tr class="bg-bg">
+              <th class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Cut-off</th>
+              <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Borrowing Base</th>
+              <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Outstanding Debt</th>
+              <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Availability</th>
+              <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Utilization</th>
+              <th class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Status</th>
+            </tr></thead>
+            <tbody>
+              <tr><td class="p-3 border-b border-border">Nov 30, 2025</td><td class="p-3 border-b border-border text-right num">$245.0M</td><td class="p-3 border-b border-border text-right num">$210.0M</td><td class="p-3 border-b border-border text-right num text-success">$35.0M</td><td class="p-3 border-b border-border text-right num">85.7%</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
+              <tr><td class="p-3 border-b border-border">Dec 31, 2025</td><td class="p-3 border-b border-border text-right num">$243.0M</td><td class="p-3 border-b border-border text-right num">$215.5M</td><td class="p-3 border-b border-border text-right num text-success">$27.5M</td><td class="p-3 border-b border-border text-right num">88.7%</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
+              <tr><td class="p-3 border-b border-border">Jan 31, 2026</td><td class="p-3 border-b border-border text-right num">$241.5M</td><td class="p-3 border-b border-border text-right num">$220.0M</td><td class="p-3 border-b border-border text-right num text-warning">$21.5M</td><td class="p-3 border-b border-border text-right num">91.1%</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
+              <tr><td class="p-3 border-b border-border">Feb 28, 2026</td><td class="p-3 border-b border-border text-right num">$240.0M</td><td class="p-3 border-b border-border text-right num">$223.5M</td><td class="p-3 border-b border-border text-right num text-warning">$16.5M</td><td class="p-3 border-b border-border text-right num">93.1%</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
+              <tr class="bg-bg"><td class="p-3"><strong>Mar 31, 2026 · latest</strong></td><td class="p-3 text-right num font-bold">$238.5M</td><td class="p-3 text-right num font-bold">$226.4M</td><td class="p-3 text-right num font-bold text-warning">$12.1M</td><td class="p-3 text-right num font-bold text-warning">94.9%</td><td class="p-3"><span class="text-success text-xs font-bold">Compliant</span></td></tr>
+            </tbody>
+          </table>
+        </details>
+      </article>
+    </borrowing-base-section>
+
+    <!-- ════════ <assets-evolution> · LEN-662 — order 3 ════════ -->
+    <assets-evolution class="order-3 block">
+      <article class="bg-surface border border-border rounded-xl p-4">
+        <header class="mb-3"><h3 class="font-primary text-base font-bold uppercase tracking-wider text-text m-0">Assets</h3></header>
+
+        <div class="grid grid-cols-3 gap-4 mb-3 max-[900px]:grid-cols-1">
+          <assets-kpi-card data-input-variant="total">
+            <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[118px]">
+              <h4 class="font-primary text-sm font-medium text-text-secondary m-0 mb-2">Total Collateral
+              </h4>
+              <div class="num text-3xl font-bold">$299.37M</div>
+              <div class="flex items-center gap-2 mt-2 flex-wrap">
+                <delta-chip class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-success-bg text-success text-xs font-semibold font-primary">
+                  <i class="ph ph-arrow-up text-xs"></i> +$17.4M (+6.2%) <span class="font-normal opacity-90">vs. prior month</span>
+                </delta-chip>
+                <span class="ml-auto text-xs text-text-secondary num">100%</span>
+              </div>
+            </kpi-card>
+          </assets-kpi-card>
+          <assets-kpi-card data-input-variant="eligible">
+            <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[118px]">
+              <h4 class="font-primary text-sm font-medium text-text-secondary m-0 mb-2">Eligible
+              </h4>
+              <div class="num text-3xl font-bold">$258.13M</div>
+              <div class="flex items-center gap-2 mt-2 flex-wrap">
+                <delta-chip class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-success-bg text-success text-xs font-semibold font-primary">
+                  <i class="ph ph-arrow-up text-xs"></i> +$11.8M (+4.8%) <span class="font-normal opacity-90">vs. prior month</span>
+                </delta-chip>
+                <span class="ml-auto text-xs text-text-secondary num">86.2%</span>
+              </div>
+            </kpi-card>
+          </assets-kpi-card>
+          <assets-kpi-card data-input-variant="ineligible">
+            <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[118px]">
+              <h4 class="font-primary text-sm font-medium text-text-secondary m-0 mb-2">Ineligible
+              </h4>
+              <div class="num text-3xl font-bold">$41.24M</div>
+              <div class="flex items-center gap-2 mt-2 flex-wrap">
+                <delta-chip class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-danger-bg text-danger text-xs font-semibold font-primary">
+                  <i class="ph ph-arrow-up text-xs"></i> +$6.46M (+18.6%) <span class="font-normal opacity-90">vs. prior month</span>
+                </delta-chip>
+                <span class="ml-auto text-xs text-text-secondary num">13.8%</span>
+              </div>
+            </kpi-card>
+          </assets-kpi-card>
+        </div>
+
+        <div class="bg-bg border border-border rounded-lg p-3.5">
+          <div class="flex justify-between items-center mb-2 flex-wrap gap-2">
+            <h4 class="font-primary text-sm font-bold text-text m-0">Collateral evolution · last 5 cuts</h4>
+            <div class="flex gap-2">
+              <delta-chip class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-success-bg text-success text-[10px] font-semibold font-primary">
+                <i class="ph ph-arrow-up text-[10px]"></i> +$45.2M Total <span class="font-normal opacity-90">vs. prior month</span>
+              </delta-chip>
+              <delta-chip class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-danger-bg text-danger text-[10px] font-semibold font-primary">
+                <i class="ph ph-arrow-up text-[10px]"></i> +$10.3M Ineligible <span class="font-normal opacity-90">vs. prior month</span>
+              </delta-chip>
+            </div>
+          </div>
+
+          <!-- mini KPIs -->
+          <div class="grid grid-cols-2 gap-2 mb-3">
+            <div class="bg-surface border border-border rounded-md p-2.5">
+              <div class="text-[10px] font-primary font-bold text-text-secondary uppercase tracking-wider">Eligibility ratio</div>
+              <div class="num font-bold text-base mt-0.5 text-success">86.2%</div>
+            </div>
+            <div class="bg-surface border border-border rounded-md p-2.5">
+              <div class="text-[10px] font-primary font-bold text-text-secondary uppercase tracking-wider">Ineligibility ratio</div>
+              <div class="num font-bold text-base mt-0.5 text-warning">13.8%</div>
+            </div>
+          </div>
+
+          <svg viewBox="0 0 520 200" class="w-full h-[200px]">
+            <defs>
+              <linearGradient id="evoOk" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#16A34A" stop-opacity=".18"/><stop offset="100%" stop-color="#16A34A" stop-opacity=".04"/></linearGradient>
+              <linearGradient id="evoBreach" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#B45309" stop-opacity=".25"/><stop offset="100%" stop-color="#B45309" stop-opacity=".08"/></linearGradient>
+            </defs>
+            <g stroke="#E2E8F0"><line x1="40" y1="30" x2="510" y2="30"/><line x1="40" y1="80" x2="510" y2="80"/><line x1="40" y1="130" x2="510" y2="130"/><line x1="40" y1="170" x2="510" y2="170" stroke="#CBD5E1"/></g>
+            <g font-family="Space Mono" font-size="9" fill="#64748B"><text x="36" y="33" text-anchor="end">$340M</text><text x="36" y="83" text-anchor="end">$260M</text><text x="36" y="133" text-anchor="end">$180M</text><text x="36" y="173" text-anchor="end">$100M</text></g>
+            <polygon points="70,90 170,84 270,78 370,72 470,55 470,80 370,90 270,100 170,110 70,120" fill="url(#evoBreach)"/>
+            <polygon points="70,120 170,110 270,100 370,90 470,80 470,170 70,170" fill="url(#evoOk)"/>
+            <polyline points="70,90 170,84 270,78 370,72 470,55" fill="none" stroke="#1E3A8A" stroke-width="2.5"/>
+            <g fill="#1E3A8A"><circle cx="70" cy="90" r="3"/><circle cx="170" cy="84" r="3"/><circle cx="270" cy="78" r="3"/><circle cx="370" cy="72" r="3"/><circle cx="470" cy="55" r="3.5" stroke="#fff" stroke-width="2"/></g>
+            <polyline points="70,120 170,110 270,100 370,90 470,80" fill="none" stroke="#16A34A" stroke-width="2.5"/>
+            <g fill="#16A34A"><circle cx="70" cy="120" r="3"/><circle cx="170" cy="110" r="3"/><circle cx="270" cy="100" r="3"/><circle cx="370" cy="90" r="3"/><circle cx="470" cy="80" r="3.5" stroke="#fff" stroke-width="2"/></g>
+            <g font-family="Sofia Sans" font-size="10" fill="#64748B"><text x="70" y="190" text-anchor="middle">Nov 30</text><text x="170" y="190" text-anchor="middle">Dec 31</text><text x="270" y="190" text-anchor="middle">Jan 31</text><text x="370" y="190" text-anchor="middle">Feb 28</text><text x="470" y="190" text-anchor="middle">Mar 31</text></g>
+          </svg>
+
+          <div class="flex justify-center gap-3.5 text-xs text-text-secondary mt-1.5">
+            <span class="text-[#1E3A8A]"><span class="inline-block w-4 h-0.5 bg-current mr-1 align-middle"></span>Total Collateral</span>
+            <span class="text-success"><span class="inline-block w-4 h-0.5 bg-current mr-1 align-middle"></span>Eligible Collateral</span>
+            <span class="text-warning"><span class="inline-block w-2.5 h-2.5 rounded-sm bg-warning/30 mr-1 align-middle"></span>Ineligible (gap)</span>
+          </div>
+
+          <!-- p-accordion · View raw data -->
+          <details class="mt-3">
+            <summary class="inline-flex items-center gap-1 text-secondary text-xs font-semibold font-primary cursor-pointer hover:underline list-none">
+              <i class="ph ph-caret-right"></i> View raw data
+            </summary>
+            <table class="w-full border-collapse text-sm mt-2">
+              <thead><tr class="bg-bg">
+                <th class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Cut-off</th>
+                <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Total</th>
+                <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Eligible</th>
+                <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Ineligible</th>
+                <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Inelig. ratio</th>
+              </tr></thead>
+              <tbody>
+                <tr><td class="p-3 border-b border-border">Nov 30, 2025</td><td class="p-3 border-b border-border text-right num">$254.2M</td><td class="p-3 border-b border-border text-right num">$224.1M</td><td class="p-3 border-b border-border text-right num">$30.1M</td><td class="p-3 border-b border-border text-right num">11.8%</td></tr>
+                <tr><td class="p-3 border-b border-border">Dec 31, 2025</td><td class="p-3 border-b border-border text-right num">$263.8M</td><td class="p-3 border-b border-border text-right num">$231.6M</td><td class="p-3 border-b border-border text-right num">$32.2M</td><td class="p-3 border-b border-border text-right num">12.2%</td></tr>
+                <tr><td class="p-3 border-b border-border">Jan 31, 2026</td><td class="p-3 border-b border-border text-right num">$273.5M</td><td class="p-3 border-b border-border text-right num">$240.2M</td><td class="p-3 border-b border-border text-right num">$33.3M</td><td class="p-3 border-b border-border text-right num">12.2%</td></tr>
+                <tr><td class="p-3 border-b border-border">Feb 28, 2026</td><td class="p-3 border-b border-border text-right num">$281.97M</td><td class="p-3 border-b border-border text-right num">$246.20M</td><td class="p-3 border-b border-border text-right num">$35.77M</td><td class="p-3 border-b border-border text-right num">12.7%</td></tr>
+                <tr class="bg-bg"><td class="p-3"><strong>Mar 31, 2026 · latest</strong></td><td class="p-3 text-right num font-bold">$299.37M</td><td class="p-3 text-right num font-bold">$258.13M</td><td class="p-3 text-right num font-bold">$41.24M</td><td class="p-3 text-right num font-bold text-warning">13.8%</td></tr>
+              </tbody>
+            </table>
+          </details>
+        </div>
+      </article>
+    </assets-evolution>
+
+    <!-- <account-balance-status [data]="accBal()" /> LEN-570 — order 5 -->
+    <account-balance-status class="order-5 block">
+      <article class="bg-surface border border-border rounded-xl p-4">
+        <header class="flex items-center justify-between gap-3 flex-wrap mb-2">
+          <h3 class="font-primary text-base font-bold uppercase tracking-wider m-0 flex items-center gap-2">
+            <i class="ph ph-shield-check text-danger"></i> Account Balance
+            <span class="inline-block px-2 py-0.5 rounded bg-border text-primary text-[10px] font-bold tracking-wider font-primary">STATUS</span>
+          </h3>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-danger-bg text-danger text-xs font-bold font-primary">
+            <i class="ph ph-x-circle"></i> ✗ 2 account(s) in breach
+          </span>
+        </header>
+        <p class="num text-sm text-text font-semibold mb-3"><strong class="text-primary">$86.57M</strong> total in trust accounts</p>
+
+        <table class="w-full border-collapse text-sm">
+          <thead>
+            <tr class="bg-bg">
+              <th class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">#</th>
+              <th class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Account</th>
+              <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Required</th>
+              <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Actual</th>
+              <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Deficit</th>
+              <th class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="p-3 border-b border-border num">1</td>
+              <td class="p-3 border-b border-border">Collection Account A</td>
+              <td class="p-3 border-b border-border text-right num">$42.50M</td>
+              <td class="p-3 border-b border-border text-right num">$48.12M</td>
+              <td class="p-3 border-b border-border text-right num">—</td>
+              <td class="p-3 border-b border-border">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success-bg text-success text-xs font-bold font-primary">
+                  <span class="w-1.5 h-1.5 rounded-full bg-current"></span> Compliant
+                </span>
+              </td>
+            </tr>
+            <tr class="bg-danger-bg/40">
+              <td class="p-3 border-b border-border num">2</td>
+              <td class="p-3 border-b border-border">Payment Reserve Fund</td>
+              <td class="p-3 border-b border-border text-right num">$28.00M</td>
+              <td class="p-3 border-b border-border text-right num">$22.14M</td>
+              <td class="p-3 border-b border-border text-right num text-danger font-bold">−$5.86M</td>
+              <td class="p-3 border-b border-border">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-danger-bg text-danger text-xs font-bold font-primary">
+                  <span class="w-1.5 h-1.5 rounded-full bg-current"></span> Non-Compliant
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td class="p-3 border-b border-border num">3</td>
+              <td class="p-3 border-b border-border">Collection Account B</td>
+              <td class="p-3 border-b border-border text-right num">$12.80M</td>
+              <td class="p-3 border-b border-border text-right num">$13.40M</td>
+              <td class="p-3 border-b border-border text-right num">—</td>
+              <td class="p-3 border-b border-border">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success-bg text-success text-xs font-bold font-primary">
+                  <span class="w-1.5 h-1.5 rounded-full bg-current"></span> Compliant
+                </span>
+              </td>
+            </tr>
+            <tr class="bg-danger-bg/40">
+              <td class="p-3 border-b border-border num">4</td>
+              <td class="p-3 border-b border-border">Liquidity Fund</td>
+              <td class="p-3 border-b border-border text-right num">$8.50M</td>
+              <td class="p-3 border-b border-border text-right num">$6.93M</td>
+              <td class="p-3 border-b border-border text-right num text-danger font-bold">−$1.57M</td>
+              <td class="p-3 border-b border-border">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-danger-bg text-danger text-xs font-bold font-primary">
+                  <span class="w-1.5 h-1.5 rounded-full bg-current"></span> Non-Compliant
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td class="p-3 num">5</td>
+              <td class="p-3">Expense Account</td>
+              <td class="p-3 text-right num">—</td>
+              <td class="p-3 text-right num">$2.65M</td>
+              <td class="p-3 text-right num">—</td>
+              <td class="p-3 text-text-muted text-xs">—</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="bg-bg border-t-2 border-border-strong">
+              <td class="p-3"></td>
+              <td class="p-3 font-primary font-bold uppercase tracking-wider text-[10px] text-text-secondary">Total</td>
+              <td class="p-3 text-right num font-bold text-text">$91.80M</td>
+              <td class="p-3 text-right num font-bold text-text">$93.24M</td>
+              <td class="p-3 text-right num font-bold text-danger">−$7.43M</td>
+              <td class="p-3"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </article>
+    </account-balance-status>
+  </section>
+
+  <p class="text-xs text-text-muted mt-6 font-mono">
+    Prototype · LEN-521 · 11 HUs · HTML demo + <code>angular-impl/</code> + <code>runtime/</code> · CXC Design System v1.0
+  </p>
+</main>
+
+</facility-insights-page>
+
+<!-- ════════ <flag-for-review-modal> ════════ -->
+<div id="flag-modal" class="hidden fixed inset-0 z-[1200] bg-primary/40 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-surface rounded-lg shadow-card max-w-[640px] w-full max-h-[90vh] overflow-y-auto"
+       onclick="event.stopPropagation()">
+    <!-- Modal header -->
+    <header class="flex items-center justify-between px-6 py-4 border-b border-border">
+      <div class="flex items-center gap-2.5">
+        <span class="inline-flex w-8 h-8 rounded-md bg-danger-bg items-center justify-center">
+          <i class="ph ph-flag text-danger"></i>
+        </span>
+        <div>
+          <h2 class="font-primary text-base font-bold text-text m-0">Flag F-2241 Covalto for review</h2>
+          <p class="text-xs text-text-secondary m-0">Cut-off Mar 31, 2026 · snapshot will be attached</p>
+        </div>
+      </div>
+      <button onclick="document.getElementById('flag-modal').classList.add('hidden')"
+              class="w-8 h-8 rounded-md hover:bg-bg grid place-items-center">
+        <i class="ph ph-x text-text-secondary"></i>
+      </button>
+    </header>
+
+    <!-- Modal body -->
+    <div class="px-6 py-5 space-y-5">
+      <!-- Reasons -->
+      <div>
+        <label class="block font-primary text-[10px] font-bold tracking-wider uppercase text-text-secondary mb-2">Why are you flagging?</label>
+        <div class="flex flex-wrap gap-2">
+          <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border-strong text-xs cursor-pointer hover:bg-bg"><input type="checkbox" class="reason-cbx accent-secondary" checked/> <span>Covenant breach</span></label>
+          <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border-strong text-xs cursor-pointer hover:bg-bg"><input type="checkbox" class="reason-cbx accent-secondary" checked/> <span>Aging deterioration</span></label>
+          <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border-strong text-xs cursor-pointer hover:bg-bg"><input type="checkbox" class="reason-cbx accent-secondary"/> <span>Headroom compression</span></label>
+          <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border-strong text-xs cursor-pointer hover:bg-bg"><input type="checkbox" class="reason-cbx accent-secondary" checked/> <span>Trust accounts breach</span></label>
+          <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border-strong text-xs cursor-pointer hover:bg-bg"><input type="checkbox" class="reason-cbx accent-secondary"/> <span>Other</span></label>
+        </div>
+      </div>
+
+      <!-- Urgency -->
+      <div>
+        <label class="block font-primary text-[10px] font-bold tracking-wider uppercase text-text-secondary mb-2">Urgency</label>
+        <div class="inline-flex border border-border rounded-md p-0.5 bg-bg">
+          <label class="px-3 py-1 text-xs font-primary font-semibold rounded cursor-pointer">
+            <input type="radio" name="urgency" class="sr-only" value="low"/>
+            <span class="urgency-label">Low</span>
+          </label>
+          <label class="px-3 py-1 text-xs font-primary font-semibold rounded cursor-pointer">
+            <input type="radio" name="urgency" class="sr-only" value="medium"/>
+            <span class="urgency-label">Medium</span>
+          </label>
+          <label class="px-3 py-1 text-xs font-primary font-semibold rounded cursor-pointer bg-danger-bg text-danger">
+            <input type="radio" name="urgency" class="sr-only" value="high" checked/>
+            <span class="urgency-label">High</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Route to · multi-recipient -->
+      <div>
+        <div class="flex items-center justify-between mb-2">
+          <label class="block font-primary text-[10px] font-bold tracking-wider uppercase text-text-secondary">Route to · share with</label>
+          <span id="recipient-count" class="text-[10px] font-primary font-bold text-secondary">3 recipients selected</span>
+        </div>
+
+        <!-- Recipient list -->
+        <div id="recipient-list" class="border border-border rounded-md divide-y divide-border max-h-[200px] overflow-y-auto">
+          <label class="flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-bg recipient-row">
+            <input type="checkbox" class="recipient-cbx accent-secondary" data-email="luis.gomez@bbva.com" data-name="Luis Gómez" checked/>
+            <div class="w-7 h-7 rounded-full bg-secondary text-white grid place-items-center text-[10px] font-bold font-primary">LG</div>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-semibold text-text">Luis Gómez</div>
+              <div class="text-[11px] text-text-secondary font-mono truncate">luis.gomez@bbva.com</div>
+            </div>
+            <span class="text-[10px] text-text-secondary font-primary">Head of Risk · Champion</span>
+          </label>
+          <label class="flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-bg recipient-row">
+            <input type="checkbox" class="recipient-cbx accent-secondary" data-email="eduardo.lopez@bbva.com" data-name="Eduardo López" checked/>
+            <div class="w-7 h-7 rounded-full bg-info text-white grid place-items-center text-[10px] font-bold font-primary">EL</div>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-semibold text-text">Eduardo López</div>
+              <div class="text-[11px] text-text-secondary font-mono truncate">eduardo.lopez@bbva.com</div>
+            </div>
+            <span class="text-[10px] text-text-secondary font-primary">Credit Analyst</span>
+          </label>
+          <label class="flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-bg recipient-row">
+            <input type="checkbox" class="recipient-cbx accent-secondary" data-email="maria.hernandez@bbva.com" data-name="María Hernández"/>
+            <div class="w-7 h-7 rounded-full bg-success text-white grid place-items-center text-[10px] font-bold font-primary">MH</div>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-semibold text-text">María Hernández</div>
+              <div class="text-[11px] text-text-secondary font-mono truncate">maria.hernandez@bbva.com</div>
+            </div>
+            <span class="text-[10px] text-text-secondary font-primary">Portfolio Manager</span>
+          </label>
+          <label class="flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-bg recipient-row">
+            <input type="checkbox" class="recipient-cbx accent-secondary" data-email="risk-committee@bbva.com" data-name="Risk Committee" checked/>
+            <div class="w-7 h-7 rounded-md bg-danger-bg text-danger grid place-items-center"><i class="ph ph-users-three text-sm"></i></div>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-semibold text-text">Risk Committee</div>
+              <div class="text-[11px] text-text-secondary font-mono truncate">risk-committee@bbva.com</div>
+            </div>
+            <span class="text-[10px] text-text-secondary font-primary">Distribution list · 8 members</span>
+          </label>
+          <label class="flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-bg recipient-row">
+            <input type="checkbox" class="recipient-cbx accent-secondary" data-email="workout@bbva.com" data-name="Workout Team"/>
+            <div class="w-7 h-7 rounded-md bg-warning-bg text-warning grid place-items-center"><i class="ph ph-wrench text-sm"></i></div>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-semibold text-text">Workout Team</div>
+              <div class="text-[11px] text-text-secondary font-mono truncate">workout@bbva.com</div>
+            </div>
+            <span class="text-[10px] text-text-secondary font-primary">Distribution list · 4 members</span>
+          </label>
+        </div>
+
+        <!-- Add custom email -->
+        <div class="flex items-center gap-2 mt-2">
+          <input id="custom-email-input" type="email" placeholder="Add another email…"
+                 class="flex-1 px-3 py-2 text-sm border border-border-strong rounded-md focus:border-secondary focus:outline-none" />
+          <button id="add-recipient-btn"
+                  class="inline-flex items-center gap-1 px-3 py-2 rounded-md border border-border text-text-secondary text-xs font-semibold hover:bg-bg">
+            <i class="ph ph-plus"></i> Add
+          </button>
+        </div>
+
+        <!-- Selected pills preview -->
+        <div id="selected-pills" class="flex flex-wrap gap-1.5 mt-3"></div>
+      </div>
+
+      <!-- Notes -->
+      <div>
+        <label class="block font-primary text-[10px] font-bold tracking-wider uppercase text-text-secondary mb-2">Notes <span class="text-text-muted normal-case font-normal tracking-normal">· optional</span></label>
+        <textarea rows="3" placeholder="Add context for the recipients…"
+                  class="w-full px-3 py-2 text-sm border border-border-strong rounded-md focus:border-secondary focus:outline-none resize-none"></textarea>
+      </div>
+
+      <!-- Snapshot indicator -->
+      <div class="flex items-center gap-2 px-3 py-2 rounded-md bg-info-bg text-info text-xs">
+        <i class="ph ph-camera text-sm"></i>
+        <span>Snapshot of current cut-off (Mar 31, 2026) will be attached as PDF.</span>
+      </div>
+    </div>
+
+    <!-- Modal footer -->
+    <footer class="flex items-center justify-end gap-2 px-6 py-4 border-t border-border bg-bg/40">
+      <button onclick="document.getElementById('flag-modal').classList.add('hidden')"
+              class="inline-flex items-center gap-1.5 px-4 py-2 rounded-md border border-border text-text text-sm font-semibold hover:bg-bg">
+        Cancel
+      </button>
+      <button id="submit-flag-btn"
+              class="inline-flex items-center gap-1.5 px-4 py-2 rounded-md bg-primary text-white text-sm font-semibold hover:opacity-90">
+        <i class="ph ph-paper-plane-tilt"></i> Flag &amp; notify
+      </button>
+    </footer>
+  </div>
+</div>
+
+<!-- ════════ Toast confirmation ════════ -->
+<div id="flag-toast" class="hidden fixed bottom-6 right-6 z-[1300] bg-primary text-white rounded-lg shadow-card px-4 py-3 flex items-start gap-3 max-w-[400px]">
+  <div class="w-8 h-8 rounded-full bg-success text-white grid place-items-center flex-shrink-0">
+    <i class="ph ph-check"></i>
+  </div>
+  <div class="flex-1">
+    <div class="font-primary font-bold text-sm">Facility flagged successfully</div>
+    <div id="toast-detail" class="text-xs text-white/80 mt-0.5">Notification sent to 3 recipients</div>
+  </div>
+  <button onclick="document.getElementById('flag-toast').classList.add('hidden')"
+          class="text-white/60 hover:text-white">
+    <i class="ph ph-x"></i>
+  </button>
+</div>
+
+<script>
+  document.addEventListener('click', (e) => {
+    const cutoffPanel = document.getElementById('cutoff-panel');
+    if (cutoffPanel && !e.target.closest('cut-off-dropdown')) cutoffPanel.classList.add('hidden');
+
+    const currencyPanel = document.getElementById('currency-panel');
+    if (currencyPanel && !e.target.closest('currency-selector')) currencyPanel.classList.add('hidden');
+
+    // Close flag modal on backdrop click
+    const flagModal = document.getElementById('flag-modal');
+    if (flagModal && e.target === flagModal) flagModal.classList.add('hidden');
+  });
+
+  // ════════ Cut-off picker · search + caret toggle ════════
+  (function () {
+    const searchInput = document.getElementById('cutoff-search');
+    const emptyState = document.getElementById('cutoff-empty');
+    if (!searchInput) return;
+
+    function applyFilter() {
+      const q = (searchInput.value || '').toLowerCase().trim();
+      const items = document.querySelectorAll('.cutoff-item');
+      let matches = 0;
+
+      items.forEach((item) => {
+        const data = item.dataset.date || '';
+        const visible = q === '' || data.includes(q);
+        item.style.display = visible ? '' : 'none';
+        if (visible) matches++;
+      });
+
+      // Auto-expand year groups when searching
+      document.querySelectorAll('.year-group').forEach((group) => {
+        if (q !== '') {
+          group.open = true;
+        }
+      });
+
+      emptyState.classList.toggle('hidden', matches > 0 || q === '');
+    }
+
+    searchInput.addEventListener('input', applyFilter);
+
+    // Stop click propagation inside the panel so it doesn't close
+    document.getElementById('cutoff-panel').addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+
+    // Caret rotation per <details> state
+    document.querySelectorAll('.year-group').forEach((group) => {
+      group.addEventListener('toggle', () => {
+        const caret = group.querySelector('.year-caret');
+        if (!caret) return;
+        caret.classList.toggle('ph-caret-down', group.open);
+        caret.classList.toggle('ph-caret-right', !group.open);
+      });
+    });
+  })();
+
+  // ════════ Flag for review — recipient logic ════════
+  (function () {
+    const recipientList = document.getElementById('recipient-list');
+    const customInput = document.getElementById('custom-email-input');
+    const addBtn = document.getElementById('add-recipient-btn');
+    const countEl = document.getElementById('recipient-count');
+    const pillsEl = document.getElementById('selected-pills');
+    const submitBtn = document.getElementById('submit-flag-btn');
+    const toast = document.getElementById('flag-toast');
+    const toastDetail = document.getElementById('toast-detail');
+    const modal = document.getElementById('flag-modal');
+
+    function getSelected() {
+      return Array.from(document.querySelectorAll('.recipient-cbx:checked')).map((cb) => ({
+        email: cb.dataset.email,
+        name: cb.dataset.name,
+      }));
+    }
+
+    function renderPills() {
+      const selected = getSelected();
+      countEl.textContent = `${selected.length} recipient${selected.length === 1 ? '' : 's'} selected`;
+      countEl.className = selected.length === 0
+        ? 'text-[10px] font-primary font-bold text-text-muted'
+        : 'text-[10px] font-primary font-bold text-secondary';
+
+      pillsEl.innerHTML = selected.length === 0
+        ? '<span class="text-[11px] italic text-text-muted">No recipients selected</span>'
+        : selected.map((r) =>
+            `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-secondary text-white text-[10px] font-semibold font-primary">
+               <i class="ph ph-envelope-simple text-[10px]"></i>${r.name}
+             </span>`
+          ).join('');
+
+      submitBtn.disabled = selected.length === 0;
+      submitBtn.style.opacity = selected.length === 0 ? '0.5' : '1';
+      submitBtn.style.cursor = selected.length === 0 ? 'not-allowed' : 'pointer';
+    }
+
+    // Listen to all checkbox changes via event delegation
+    recipientList.addEventListener('change', renderPills);
+
+    // Urgency segmented control visual
+    document.querySelectorAll('input[name="urgency"]').forEach((r) => {
+      r.addEventListener('change', () => {
+        document.querySelectorAll('input[name="urgency"]').forEach((rr) => {
+          const label = rr.closest('label');
+          label.classList.remove('bg-danger-bg', 'text-danger', 'bg-warning-bg', 'text-warning', 'bg-border', 'text-text');
+        });
+        const sel = document.querySelector('input[name="urgency"]:checked');
+        if (!sel) return;
+        const label = sel.closest('label');
+        if (sel.value === 'high') label.classList.add('bg-danger-bg', 'text-danger');
+        else if (sel.value === 'medium') label.classList.add('bg-warning-bg', 'text-warning');
+        else label.classList.add('bg-border', 'text-text');
+      });
+    });
+
+    // Add custom email
+    function addCustom() {
+      const email = (customInput.value || '').trim();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        customInput.style.borderColor = '#DC2626';
+        setTimeout(() => { customInput.style.borderColor = ''; }, 1500);
+        return;
+      }
+      // Avoid duplicates
+      if (document.querySelector(`.recipient-cbx[data-email="${email}"]`)) {
+        customInput.value = '';
+        return;
+      }
+      const name = email.split('@')[0].replace(/[.\-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      const initials = name.split(' ').map(s => s[0]).slice(0, 2).join('').toUpperCase();
+      const row = document.createElement('label');
+      row.className = 'flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-bg recipient-row';
+      row.innerHTML = `
+        <input type="checkbox" class="recipient-cbx accent-secondary" data-email="${email}" data-name="${name}" checked/>
+        <div class="w-7 h-7 rounded-full bg-text-secondary text-white grid place-items-center text-[10px] font-bold font-primary">${initials}</div>
+        <div class="flex-1 min-w-0">
+          <div class="text-sm font-semibold text-text">${name}</div>
+          <div class="text-[11px] text-text-secondary font-mono truncate">${email}</div>
+        </div>
+        <span class="text-[10px] text-text-secondary font-primary">Custom</span>
+      `;
+      recipientList.appendChild(row);
+      customInput.value = '';
+      renderPills();
+    }
+
+    addBtn.addEventListener('click', addCustom);
+    customInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); addCustom(); }});
+
+    // Submit
+    submitBtn.addEventListener('click', () => {
+      const selected = getSelected();
+      if (selected.length === 0) return;
+
+      const reasons = Array.from(document.querySelectorAll('.reason-cbx:checked'))
+        .map(cb => cb.closest('label').querySelector('span').textContent);
+      const urgency = document.querySelector('input[name="urgency"]:checked')?.value;
+
+      // Console log (in real Angular this would be Pendo event + HTTP POST)
+      console.log('[Flag for review · submit]', {
+        facility_id: 'FAC-2024-COV-2241',
+        cut_off_date: '2026-03-31',
+        reasons,
+        urgency,
+        recipients: selected,
+      });
+
+      modal.classList.add('hidden');
+      toastDetail.textContent = `Notification sent to ${selected.length} recipient${selected.length === 1 ? '' : 's'} · ${urgency} urgency`;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 4500);
+    });
+
+    // Initial render
+    renderPills();
+  })();
+</script>
+</body>
+</html>
