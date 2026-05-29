@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asset View — Columnas por Empresa</title>
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web">
+  <style>
+    /* ── CXC Design System — Font Imports ──────────────────────────────── */
+    @import url('https://fonts.googleapis.com/css2?family=Sofia+Pro:wght@400;500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+    /* Clear Sans: fuente oficial del DS — no disponible en Google Fonts público.
+       Noto Sans actúa como fallback visual. --font-ui declara la intención. */
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      /* ── CXC Design System Tokens ──────────────────────── */
+      --bg: #F8FAFC;            /* Slate-50  — app background */
+      --surface: #FFFFFF;
+      --border: #E2E8F0;        /* Slate-200 */
+      --border-strong: #CBD5E1; /* Slate-300 */
+      --text: #334155;          /* Slate-700 — primary text */
+      --text-secondary: #64748B;/* Slate-500 — secondary text */
+      --text-muted: #94A3B8;    /* Slate-400 */
+
+      /* Brand */
+      --primary: #1F2733;       /* Primary-800 */
+      --secondary: #910057;     /* Secondary-600 (Magenta brand) */
+      --secondary-active: #840058; /* Secondary-700 */
+
+      /* States */
+      --green: #16A34A;  --green-bg: #F0FDF4;  /* success_green */
+      --yellow: #D97706; --yellow-bg: #FFFBEB; /* accent_1_amber */
+      --orange: #EA580C; --orange-bg: #FFF7ED; /* warning_orange */
+      --red: #DC2626;    --red-bg: #FEF2F2;    /* danger_red */
+      --blue: #0284C7;   --blue-bg: #F0F9FF;   /* info_sky */
+
+      --shadow: 0 1px 3px rgba(0,0,0,.10),0 1px 2px rgba(0,0,0,.06);
+      --shadow-md: 0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.06);
+      --radius: 8px; --radius-sm: 6px; --radius-lg: 12px;
+
+      /* Typography */
+      --font-primary: 'Sofia Pro', -apple-system, sans-serif;
+      --font-ui: 'Clear Sans', 'Noto Sans', -apple-system, sans-serif; /* Clear Sans = oficial DS */
+      --font-mono: 'Space Mono', monospace;
+    }
+    body { font-family: var(--font-ui); background:var(--bg); color:var(--text); font-size:14px; line-height:1.5; padding-top:52px; }
+
+    /* NAV — Topbar: fixed, background Slate-50, border-bottom Slate-200 (design system §4) */
+    .top-nav { background:var(--bg); border-bottom:1px solid var(--border); padding:0 24px; display:flex; align-items:center; height:52px; gap:8px; position:fixed; top:0; left:0; right:0; z-index:1100; }
+    .nav-logo-img { height:24px; width:auto; display:block; } /* logo 24px exacto — regla design system */
+    .nav-sep { color:var(--border-strong); font-size:18px; }
+    .nav-title { color:var(--text-secondary); font-size:0.875rem; font-family:var(--font-ui); }
+    .nav-right { margin-left:auto; font-size:0.75rem; color:var(--text-muted); background:var(--bg); border:1px solid var(--border); padding:4px 10px; border-radius:20px; }
+
+    /* SIDEBAR — fixed, Slate-50 (design system §4) */
+    .sidebar { background:var(--bg); border-right:1px solid var(--border); position:fixed; top:52px; left:0; width:200px; height:calc(100vh - 52px); overflow-y:auto; overflow-x:hidden; z-index:1000; padding:12px 8px; }
+    .sidebar-cat { font-size:0.625rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:.8px; padding:8px 8px 4px; font-family:var(--font-primary); }
+    .sidebar-item { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:var(--radius-sm); cursor:pointer; font-size:0.875rem; font-weight:500; color:var(--text); transition:background .1s; }
+    .sidebar-item:hover { background:#CBD5E1; }
+    .sidebar-item.active { background:#E2E8F0; color:var(--text); }
+    .sidebar-item.active .sidebar-icon { color:#840058; }
+    .sidebar-icon { font-size:16px; flex-shrink:0; }
+
+    /* COMPANY SELECTOR */
+    .company-bar { background:var(--surface); border-bottom:1px solid var(--border); padding:0 24px; display:flex; align-items:center; gap:4px; margin-left:200px; }
+    .co-tab { display:flex; align-items:center; gap:8px; padding:14px 20px; cursor:pointer; border-bottom:2px solid transparent; font-size:13px; font-weight:500; color:var(--text-secondary); transition:all .15s; white-space:nowrap; }
+    .co-tab:hover { color:var(--text); background:var(--bg); }
+    .co-tab.active { color:var(--co-color,var(--primary)); border-bottom-color:var(--co-color,var(--primary)); }
+    .co-dot { width:8px; height:8px; border-radius:50%; background:var(--co-color,var(--primary)); flex-shrink:0; }
+    .co-badge { font-size:10px; background:var(--bg); border:1px solid var(--border); color:var(--text-muted); padding:1px 6px; border-radius:10px; font-weight:400; }
+    .co-label { font-size:10px; padding:2px 6px; border-radius:4px; font-weight:700; letter-spacing:.3px; text-transform:uppercase; }
+
+    /* FACILITY HEADER */
+    .fac-header { background:var(--surface); border-bottom:1px solid var(--border); padding:12px 24px; display:flex; align-items:center; gap:16px; margin-left:200px; }
+    .fac-name { font-weight:700; font-size:0.9375rem; font-family:var(--font-primary); color:var(--text); }
+    .fac-meta { font-size:0.75rem; color:var(--text-secondary); font-family:var(--font-ui); }
+    .fac-chip { font-size:0.6875rem; background:var(--bg); border:1px solid var(--border); color:var(--text-secondary); padding:3px 8px; border-radius:4px; font-family:var(--font-ui); }
+
+    /* MAIN — white card, margin 24px, radius 8px (design system §4) */
+    .main { background:var(--surface); margin:24px; margin-left:calc(200px + 24px); border-radius:var(--radius); padding:20px 24px; display:flex; flex-direction:column; gap:16px; }
+
+    /* KPI CARDS — design system: bg Slate-50, border #E2E8F0, radius 12px, padding 16px, NO shadow */
+    .kpi-row { display:flex; gap:12px; flex-wrap:wrap; }
+    .kpi-card { background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-lg); padding:16px; flex:1; min-width:140px; /* box-shadow: none — design system §5 */ }
+    .kpi-card.company-kpi { border-color:var(--co-color,var(--secondary)); border-width:1.5px; }
+    .kpi-icon { font-size:18px; margin-bottom:8px; }
+    .kpi-value { font-size:2rem; font-weight:700; letter-spacing:-.5px; color:var(--text); font-family:var(--font-ui); }
+    .kpi-label { font-size:0.6875rem; color:var(--text-muted); margin-top:2px; text-transform:uppercase; letter-spacing:.4px; font-weight:700; font-family:var(--font-ui); }
+    .kpi-sub { font-size:0.6875rem; color:var(--text-secondary); margin-top:4px; font-family:var(--font-ui); }
+    .kpi-company-tag { font-size:0.625rem; font-weight:500; color:var(--co-color,var(--secondary)); letter-spacing:.3px; text-transform:uppercase; margin-bottom:4px; font-family:var(--font-primary); }
+
+    /* STATUS DIST */
+    .status-dist { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:16px 20px; }
+    .dist-title { font-size:0.6875rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.6px; margin-bottom:12px; font-family:var(--font-primary); }
+    .dist-row { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+    .dist-label { width:60px; font-size:0.8125rem; color:var(--text-secondary); font-family:var(--font-ui); }
+    .dist-bar-bg { flex:1; height:8px; background:var(--border); border-radius:4px; overflow:hidden; } /* Slate-200 #E2E8F0 */
+    .dist-bar-fill { height:100%; border-radius:4px; transition:width .4s; }
+    .dist-pct { width:32px; text-align:right; font-size:0.8125rem; font-weight:700; color:var(--text); font-family:var(--font-ui); }
+
+    /* TOOLBAR */
+    .toolbar { display:flex; gap:10px; align-items:center; }
+    .search-wrap { position:relative; flex:1; }
+    .search-icon { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:14px; }
+    /* Input focus: border #27272A, ring Slate-200 (design system §5) */
+    .search-input { width:100%; padding:8px 12px 8px 32px; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); font-size:0.8125rem; color:var(--text); outline:none; font-family:var(--font-ui); height:40px; box-sizing:border-box; }
+    .search-input:hover { border-color:var(--border-strong); }
+    .search-input:focus { border-color:#27272A; box-shadow:0 0 0 3px var(--border); }
+    /* Buttons — Primary: #1F2733 / Secondary: Slate-200 / Text Brand: #910057 (design system §5) */
+    .btn { display:flex; align-items:center; gap:6px; padding:8px 14px; border-radius:var(--radius); font-size:0.8125rem; font-weight:500; cursor:pointer; border:1px solid var(--border); background:var(--surface); color:var(--text-secondary); transition:all .15s; white-space:nowrap; font-family:var(--font-ui); }
+    .btn:hover { background:var(--bg); color:var(--text); border-color:var(--border-strong); }
+    .btn-primary { background:var(--primary); color:#fff; border-color:var(--primary); }
+    .btn-primary:hover { filter:brightness(0.88); }
+
+    /* COMPANY COLUMNS BANNER */
+    .co-cols-banner { display:flex; align-items:center; gap:8px; padding:8px 12px; border-radius:var(--radius); font-size:12px; font-weight:500; }
+
+    /* TABLE */
+    .table-wrap { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); box-shadow:var(--shadow); overflow:hidden; }
+    .table-scroll { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; min-width:900px; }
+    thead tr { background:#F8FAFC; }
+    th { padding:10px 12px; text-align:left; font-size:0.6875rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.5px; border-bottom:1px solid var(--border); white-space:nowrap; cursor:pointer; user-select:none; font-family:var(--font-primary); }
+    th:hover { color:var(--text); }
+    th:first-child  { position:sticky; left:0;     z-index:3; background:#F8FAFC; }
+    th:nth-child(2) { position:sticky; left:108px; z-index:3; background:#F8FAFC; }
+    th:nth-child(3) { position:sticky; left:208px; z-index:3; background:#F8FAFC; box-shadow:2px 0 6px rgba(0,0,0,.06); }
+    th.company-col { background:var(--co-tint,#F8FAFC); color:var(--co-color,var(--primary)); }
+    th.co-group-start { border-left:2px solid var(--co-color,var(--primary)); }
+    .co-col-header { display:flex; align-items:center; gap:4px; }
+    td { padding:10px 12px; border-bottom:1px solid var(--border); vertical-align:middle; white-space:nowrap; color:var(--text); }
+    td:first-child  { position:sticky; left:0;     z-index:1; background:var(--surface); }
+    td:nth-child(2) { position:sticky; left:108px; z-index:1; background:var(--surface); }
+    td:nth-child(3) { position:sticky; left:208px; z-index:1; background:var(--surface); box-shadow:2px 0 6px rgba(0,0,0,.06); }
+    td.company-col { background:color-mix(in srgb,var(--co-color,var(--primary)) 3%,white); }
+    td.co-group-start { border-left:2px solid color-mix(in srgb,var(--co-color,var(--primary)) 30%,white); }
+    tr:last-child td { border-bottom:none; }
+    tr:hover td { background:#F8FAFC; }
+    tr:hover td:first-child, tr:hover td:nth-child(2), tr:hover td:nth-child(3) { background:#F8FAFC; }
+    tr:hover td.company-col { background:color-mix(in srgb,var(--co-color,var(--primary)) 6%,white); }
+    /* skeleton loading */
+    .skel-line { height:12px; background:linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%); background-size:400% 100%; animation:shimmer 1.4s ease-in-out infinite; border-radius:4px; width:80%; }
+    @keyframes shimmer { 0%{background-position:100% 0} 100%{background-position:-100% 0} }
+    /* KPI filter banner — amber tokens from design system */
+    .kpi-filter-banner { display:none; align-items:center; gap:8px; padding:8px 14px; border-radius:var(--radius); background:#FFFBEB; border:1px solid #FCD34D; color:#92400E; font-size:0.75rem; font-weight:500; font-family:var(--font-ui); }
+    .sort-icon { font-size:10px; opacity:.4; }
+    th.sorted .sort-icon { opacity:1; }
+
+    /* BADGES */
+    .badge { display:inline-flex; align-items:center; padding:2px 8px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+    .badge-current    { background:var(--green-bg); color:var(--green); }
+    .badge-delinquent { background:var(--yellow-bg); color:var(--yellow); }
+    .badge-defaulted  { background:var(--red-bg); color:var(--red); }
+    .badge-dpd-0 { background:var(--green-bg); color:var(--green); }
+    .badge-dpd-1 { background:var(--yellow-bg); color:var(--yellow); }
+    .badge-dpd-2 { background:var(--orange-bg); color:var(--orange); }
+    .badge-dpd-3 { background:var(--red-bg); color:var(--red); }
+    .badge-dpd-4 { background:var(--red-bg); color:var(--red); }
+    .eleg-yes { color:var(--green); font-weight:700; }
+    .eleg-no { color:var(--red); font-weight:700; cursor:default; }
+    .badge-guaranty-vigente { background:var(--green-bg); color:var(--green); }
+    .badge-guaranty-proceso { background:var(--orange-bg); color:var(--orange); }
+    .badge-guaranty-ejecutada { background:var(--red-bg); color:var(--red); }
+    .score-pill { display:inline-block; padding:2px 7px; border-radius:20px; font-size:11px; font-weight:700; }
+    .score-high { background:var(--green-bg); color:var(--green); }
+    .score-mid { background:var(--yellow-bg); color:var(--yellow); }
+    .score-low { background:var(--red-bg); color:var(--red); }
+    .ltv-ok { color:var(--green); font-weight:700; }
+    .ltv-warn { color:var(--orange); font-weight:700; }
+    .ltv-bad { color:var(--red); font-weight:700; }
+    .progress-bar { display:flex; align-items:center; gap:6px; }
+    .pb-track { width:48px; height:5px; background:#E2E8F0; border-radius:3px; overflow:hidden; }
+    .pb-fill { height:100%; border-radius:3px; background:var(--co-color,var(--primary)); }
+
+    /* PAGINATION */
+    .pagination { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-top:1px solid var(--border); font-size:12px; color:var(--text-secondary); }
+    .page-btns { display:flex; gap:4px; }
+    .page-btn { padding:4px 8px; border:1px solid var(--border); border-radius:4px; cursor:pointer; background:var(--surface); font-size:12px; }
+    .page-btn.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+    .page-btn:hover:not(.active) { background:var(--bg); }
+
+    /* MODALS */
+    .modal-overlay { position:fixed; inset:0; background:rgba(15,23,42,.5); display:flex; align-items:center; justify-content:center; z-index:1000; backdrop-filter:blur(2px); animation:fadeIn .15s; }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    .modal-box { background:var(--surface); border-radius:var(--radius-lg); box-shadow:0 20px 60px rgba(0,0,0,.2); width:720px; max-width:95vw; max-height:90vh; display:flex; flex-direction:column; overflow:hidden; animation:slideUp .15s; }
+    @keyframes slideUp { from{transform:translateY(12px);opacity:0} to{transform:translateY(0);opacity:1} }
+    .modal-header { display:flex; align-items:flex-start; justify-content:space-between; padding:24px 28px 20px; }
+    .modal-title { font-size:1.125rem; font-weight:700; color:var(--text); letter-spacing:-.3px; font-family:var(--font-primary); }
+    .modal-sub { font-size:0.8125rem; color:var(--text-secondary); margin-top:4px; font-family:var(--font-ui); }
+    .modal-close { background:none; border:none; cursor:pointer; font-size:18px; color:var(--text-muted); padding:4px 6px; border-radius:4px; line-height:1; }
+    .modal-close:hover { color:var(--text); background:var(--bg); }
+    .modal-divider { height:1px; background:var(--border); flex-shrink:0; }
+    .modal-body { padding:24px 28px; overflow-y:auto; }
+    .modal-footer { display:flex; align-items:center; justify-content:space-between; padding:16px 28px; background:var(--bg); }
+    .filter-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px 28px; }
+    .filter-field label { display:block; font-size:0.75rem; font-weight:700; color:var(--text-secondary); margin-bottom:7px; letter-spacing:.3px; text-transform:uppercase; font-family:var(--font-primary); }
+    .filter-select { width:100%; padding:9px 32px 9px 12px; border:1px solid var(--border-strong); border-radius:var(--radius-sm); font-size:0.8125rem; color:var(--text); cursor:pointer; appearance:none; background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748B' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat calc(100% - 12px) 50%; transition:border-color .15s; font-family:var(--font-ui); height:40px; }
+    .filter-select:hover { border-color:var(--text-muted); }
+    .filter-select:focus { outline:none; border-color:#27272A; box-shadow:0 0 0 3px var(--border); }
+    .col-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px; }
+    .col-check-item { display:flex; align-items:center; gap:9px; cursor:pointer; padding:8px 10px; border-radius:var(--radius-sm); transition:background .1s; }
+    .col-check-item:hover { background:var(--bg); }
+    .col-check-item input[type=checkbox] { width:16px; height:16px; accent-color:var(--primary); cursor:pointer; flex-shrink:0; }
+    .col-check-item span { font-size:13px; color:var(--text); }
+    .btn-link { background:none; border:none; cursor:pointer; font-size:13px; color:var(--text-secondary); padding:0; text-decoration:underline; text-underline-offset:3px; }
+    .btn-link:hover { color:var(--text); }
+    /* Filter active — usa secondary magenta (Text Brand color del design system) */
+    .filter-badge { display:inline-flex; align-items:center; justify-content:center; background:var(--secondary); color:#fff; border-radius:10px; padding:1px 6px; font-size:0.625rem; font-weight:700; margin-left:4px; }
+    .filter-btn-active { color:var(--secondary)!important; border-color:var(--secondary)!important; background:#FFF5FB!important; } /* secondary-50 — tint justificado: active state del color de marca */
+    .chip { display:inline-flex; align-items:center; gap:5px; background:#FFF5FB; border:1px solid color-mix(in srgb,var(--secondary) 20%,white); color:var(--secondary); border-radius:20px; padding:3px 10px; font-size:0.75rem; font-weight:500; font-family:var(--font-ui); }
+    .chip-x { cursor:pointer; font-size:14px; line-height:1; color:var(--secondary); opacity:.7; margin-left:2px; }
+    .chip-x:hover { opacity:1; }
+
+    /* TOOLTIP */
+    [data-tooltip] { position:relative; }
+    [data-tooltip]::after { content:attr(data-tooltip); position:absolute; bottom:calc(100%+6px); left:50%; transform:translateX(-50%); background:#1E293B; color:#fff; font-size:11px; padding:5px 8px; border-radius:5px; white-space:nowrap; pointer-events:none; opacity:0; transition:opacity .15s; z-index:100; max-width:220px; white-space:normal; text-align:left; line-height:1.4; }
+    [data-tooltip]:hover::after { opacity:1; }
+  </style>
+  <script src="./real-data.js"></script>
+</head>
+<body>
+
+<!-- TOP NAV — logo oficial CXC (24px height, alineado izquierda — design system §4) -->
+<div class="top-nav" id="topNav">
+  <img src="https://stg.suite.cxc.com.mx/logos/cxc_fullcolor.svg" alt="CXC" class="nav-logo-img">
+  <span class="nav-sep">/</span>
+  <span class="nav-title">Facilities</span>
+  <span class="nav-sep">/</span>
+  <span class="nav-title" id="navFacility">—</span>
+  <div class="nav-right" id="navCorte">Corte: Feb 2026</div>
+</div>
+
+<!-- SIDEBAR — fixed, Slate-50 (design system §4) -->
+<nav class="sidebar">
+  <div class="sidebar-cat">Monitoring</div>
+  <div class="sidebar-item active">
+    <i class="ph ph-chart-bar sidebar-icon"></i>
+    <span>Asset View</span>
+  </div>
+  <div class="sidebar-item">
+    <i class="ph ph-buildings sidebar-icon"></i>
+    <span>Originators</span>
+  </div>
+  <div class="sidebar-item">
+    <i class="ph ph-currency-dollar sidebar-icon"></i>
+    <span>Facilities</span>
+  </div>
+  <div class="sidebar-cat" style="margin-top:16px">Analytics</div>
+  <div class="sidebar-item">
+    <i class="ph ph-chart-line sidebar-icon"></i>
+    <span>Portfolio</span>
+  </div>
+  <div class="sidebar-item">
+    <i class="ph ph-file-text sidebar-icon"></i>
+    <span>Reports</span>
+  </div>
+</nav>
+
+<!-- COMPANY SELECTOR -->
+<div class="company-bar" id="companyBar"></div>
+
+<!-- FACILITY HEADER -->
+<div class="fac-header">
+  <div>
+    <div class="fac-name" id="facName">—</div>
+    <div class="fac-meta" id="facMeta">—</div>
+  </div>
+  <span class="fac-chip" id="facChip">—</span>
+  <span class="fac-chip">Tab: Assets</span>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- KPIs -->
+  <div class="kpi-row" id="kpiRow"></div>
+  <div class="kpi-filter-banner" id="kpiFilterBanner"><i class="ph ph-warning" style="font-size:14px"></i> KPIs reflect the filtered view &mdash; remove filters to see full portfolio values</div>
+
+  <!-- STATUS DIST -->
+  <div class="status-dist">
+    <div class="dist-title">Status Distribution</div>
+    <div class="dist-row" id="distRowActivo" style="cursor:help">
+      <div class="dist-label">Current</div>
+      <div class="dist-bar-bg"><div class="dist-bar-fill" id="barActivo" style="background:#16A34A"></div></div>
+      <div class="dist-pct" id="pctActivo">—</div>
+    </div>
+    <div class="dist-row" id="distRowMoroso" style="cursor:help">
+      <div class="dist-label">Delinquent</div>
+      <div class="dist-bar-bg"><div class="dist-bar-fill" id="barMoroso" style="background:#D97706"></div></div>
+      <div class="dist-pct" id="pctMoroso">—</div>
+    </div>
+    <div class="dist-row" id="distRowVencido" style="cursor:help">
+      <div class="dist-label">Defaulted</div>
+      <div class="dist-bar-bg"><div class="dist-bar-fill" id="barVencido" style="background:#DC2626"></div></div>
+      <div class="dist-pct" id="pctVencido">—</div>
+    </div>
+  </div>
+
+  <!-- ROLE SELECTOR (LEN-284 · HU-1.6 PII matrix demo) -->
+  <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;margin-bottom:12px;flex-wrap:wrap">
+    <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;font-family:'Sofia Sans',sans-serif">
+      <i class="ph ph-user-circle" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>
+      Acting as
+    </span>
+    <select id="roleSelect" onchange="onRoleChange(this.value)"
+            style="padding:6px 12px;border:1px solid #CBD5E1;border-radius:6px;background:#fff;font-size:13px;font-family:'Noto Sans',sans-serif;color:#334155;cursor:pointer">
+      <option value="analyst">Lender Analyst</option>
+      <option value="admin">Lender Admin (no PII permission)</option>
+      <option value="admin_pii">Lender Admin (with PII permission)</option>
+      <option value="super_admin" selected>Lender Super Admin</option>
+      <option value="cxc">CXC / Superadmin</option>
+    </select>
+    <span id="roleMatrix" style="display:flex;gap:6px;flex-wrap:wrap;margin-left:auto"></span>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <i class="ph ph-magnifying-glass search-icon"></i>
+      <input class="search-input" id="searchInput" placeholder="Search by name, Tax ID, Asset ID…" oninput="refresh()">
+    </div>
+    <button class="btn" id="filterBtn" onclick="openFilterModal()"><i class="ph ph-funnel"></i> Filters</button>
+    <button class="btn" id="colsBtn" onclick="onColsClick()"><i class="ph ph-columns"></i> Columns</button>
+    <button class="btn" id="auditBtn" onclick="openAuditModal()" style="display:none"><i class="ph ph-clipboard-text"></i> Audit log</button>
+    <button class="btn btn-primary" onclick="exportCSV()"><i class="ph ph-download-simple"></i> Export CSV</button>
+  </div>
+  <div id="filterChips" style="display:flex;gap:6px;flex-wrap:wrap;min-height:0"></div>
+
+  <!-- COMPANY COLUMNS BANNER -->
+  <div class="co-cols-banner" id="coBanner"></div>
+
+  <!-- TABLE -->
+  <div class="table-wrap">
+    <div class="table-scroll">
+      <table id="assetTable">
+        <thead><tr id="tableHead"></tr></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+    <div class="pagination">
+      <span id="pageInfo">—</span>
+      <div class="page-btns" id="pageBtns"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FILTER MODAL -->
+<div id="filterModal" class="modal-overlay" style="display:none" onclick="closeFilterModal(event)">
+  <div class="modal-box" style="width:680px">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Filter Assets</div>
+        <div class="modal-sub">Narrow down your asset list using the options below.</div>
+      </div>
+      <button class="modal-close" onclick="closeFilterModal()"><i class="ph ph-x"></i></button>
+    </div>
+    <div class="modal-divider"></div>
+    <div class="modal-body filter-grid" id="filterBody"></div>
+    <div class="modal-divider"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="resetFilters()">Reset All</button>
+      <button class="btn btn-primary" id="applyFilterBtn" onclick="applyFilters()">Show results</button>
+    </div>
+  </div>
+</div>
+
+<!-- COLUMN MODAL -->
+<div id="colModal" class="modal-overlay" style="display:none" onclick="closeColModal(event)">
+  <div class="modal-box" style="width:700px">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Select Visible Columns</div>
+        <div class="modal-sub">Choose which columns you want to display in the table.</div>
+      </div>
+      <button class="modal-close" onclick="closeColModal()"><i class="ph ph-x"></i></button>
+    </div>
+    <div class="modal-divider"></div>
+    <div class="modal-body col-grid" id="colBody"></div>
+    <div class="modal-divider"></div>
+    <div class="modal-footer">
+      <div style="display:flex;gap:20px">
+        <button class="btn-link" onclick="selectAllCols()">Select All</button>
+        <button class="btn-link" onclick="deselectAllCols()">Deselect All</button>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn" onclick="closeColModal()">Cancel</button>
+        <button class="btn btn-primary" id="applyColBtn" onclick="applyColVisibility()">Apply</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ AUDIT LOG MODAL · LEN-284 HU-1.4 ════════ -->
+<div id="auditModal" class="modal-overlay" style="display:none" onclick="closeAuditModal(event)">
+  <div class="modal-box" style="width:880px;max-width:95vw">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title"><i class="ph ph-clipboard-text" style="vertical-align:-2px;margin-right:4px"></i> Audit log · CSV exports &amp; views</div>
+        <div class="modal-sub">Silent log of every data access. Visible only to Lender Super Admin and CXC roles.</div>
+      </div>
+      <button class="modal-close" onclick="closeAuditModal()"><i class="ph ph-x"></i></button>
+    </div>
+    <div class="modal-divider"></div>
+    <div class="modal-body" style="padding:0">
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead>
+          <tr style="background:#F8FAFC">
+            <th style="text-align:left;padding:10px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0">User</th>
+            <th style="text-align:left;padding:10px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0">Timestamp</th>
+            <th style="text-align:left;padding:10px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0">Action</th>
+            <th style="text-align:left;padding:10px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0">Filters applied</th>
+            <th style="text-align:right;padding:10px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0">Records</th>
+            <th style="text-align:left;padding:10px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0">PII access</th>
+          </tr>
+        </thead>
+        <tbody id="auditBody"></tbody>
+      </table>
+    </div>
+    <div class="modal-divider"></div>
+    <div class="modal-footer">
+      <div style="font-size:11px;color:#94A3B8;font-family:'Space Mono',monospace">
+        Stored in <code>fct_assets_audit_log</code> · retention 7 years per CNBV
+      </div>
+      <button class="btn btn-primary" onclick="closeAuditModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── COMPANY CONFIGS ────────────────────────────────────────────────────────
+const COMPANIES = {
+  kueski: {
+    id: 'kueski',
+    name: 'Kueski',
+    color: '#7E22CE', // purple-700 — design system registry
+    tint: '#FAF5FF',  // purple-50
+    facility: 'mart_kueski.delta_sharing_testing_kueski_5759_lld_fetched_data_filtered',
+    meta: 'Originator: Kueski · Type: Personal Loan (cash) · Lender: Credit Saison · Facility: 5759',
+    chip: 'MXN · $450M facility',
+    kpiExtra: { icon: '<i class="ph ph-brain"></i>', label: 'Avg. Loan Score', getValue: (d) => (d.reduce((s,r)=>s+r._loan_score,0)/d.length).toFixed(2), sub: 'loan_score · 0–1 scale' },
+    extraCols: [
+      { key: '_loan_score',   head: 'Loan Score',          tip: 'loan_score — credit score of the loan (0–1 scale)', render: (v) => {
+        const cls = v>=0.75?'score-high':v>=0.5?'score-mid':'score-low';
+        return `<span class="score-pill ${cls}">${v.toFixed(2)}</span>`;
+      }},
+      { key: '_product_id',   head: 'Product',             tip: 'product_id — cash / pay / cash_installments', render: (v) => v },
+      { key: '_num_eco',      head: 'Ecosystem Loan #',    tip: 'disbursed_loan_number_ecosystem — total loans by this borrower in Kueski ecosystem', render: (v) => v },
+      { key: '_user_status',  head: 'Kueski DPD Bucket',   tip: 'user_status — Par < 0, Par 1-14, Par 15-29…', render: (v) => {
+        const cls = v==='Par < 0'?'badge-dpd-0':v.includes('1-14')||v.includes('15-29')?'badge-dpd-1':v.includes('30')||v.includes('60')?'badge-dpd-2':'badge-dpd-3';
+        return `<span class="badge ${cls}">${v}</span>`;
+      }},
+      { key: '_multiloan',    head: 'Multi-loan',          tip: 'is_multiloan_user — borrower has multiple active loans', render: (v) => v?'Yes':'No' },
+      { key: '_multiproduct', head: 'Multi-product',       tip: 'is_multiproduct_user — borrower uses multiple Kueski products', render: (v) => v?'Yes':'No' },
+      { key: '_write_off',    head: 'Charge-off Date',     tip: 'write_off_date — charge-off date (NA if not charged off)', render: (v) => v||'<span style="color:#94A3B8">NA</span>' },
+      { key: '_mora_pend',    head: 'Accrued Interest',    tip: 'moratory_interest_pending — accrued penalty interest outstanding', render: (v) => v>0?`<span style="color:#DC2626">${fmtMXN(v)}</span>`:`<span style="color:#94A3B8">$0</span>` },
+      { key: '_last_pmt',     head: 'Last Payment',        tip: 'date_last_payment — date of last payment received', render: (v) => v },
+      { key: '_k_industry',  head: 'Industry',            tip: 'merchant_industry — null for cash products (no merchant). Available for pay / cash_installments only.', render: (v) => v ? `<span style="font-size:12px">${v}</span>` : `<span style="color:#94A3B8;font-size:11px" data-tooltip="null in BQ — cash products have no associated merchant">null · cash</span>` },
+    ],
+    genExtra: () => {
+      const userStatuses = ['Par < 0','Par < 0','Par < 0','Par < 0','Par 1-14','Par 15-29','Par 30-59','Par 60+'];
+      const writeOff = Math.random()>.93;
+      const _product_id = randEl(['cash','cash','cash','pay','cash_installments']);
+      return {
+        _loan_score: parseFloat((Math.random()*0.55+0.4).toFixed(2)),
+        _product_id,
+        _num_eco: rnd(1,34),
+        _user_status: randEl(userStatuses),
+        _multiloan: Math.random()>.7,
+        _multiproduct: Math.random()>.5,
+        _write_off: writeOff ? `${rnd(2024,2025)}-${String(rnd(1,12)).padStart(2,'0')}-${String(rnd(1,28)).padStart(2,'0')}` : null,
+        _mora_pend: writeOff ? rnd(50,800) : 0,
+        _last_pmt: `${rnd(2025,2026)}-${String(rnd(1,3)).padStart(2,'0')}-${String(rnd(1,28)).padStart(2,'0')}`,
+        // merchant_industry: null para cash (no hay merchant). Solo pay/cash_installments tienen valor
+        _k_industry: _product_id === 'cash' ? null : randEl(['technology','telecommunications','retail','financial services','education']),
+      };
+    },
+    montoRange: [750, 50000],
+    tipos: ['cash','pay','cash_installments'],
+    count: 1840,
+  },
+  nexu: {
+    id: 'nexu',
+    name: 'Nexu',
+    color: '#D97706',
+    tint: '#FFFBEB',
+    facility: 'mart_nexu_bbva.fct_nexu_bbva_5879_clip',
+    meta: 'Originator: Nexu · Type: Auto Lease · Lender: PROMECAP · Facility: 5879',
+    chip: 'MXN · $1.2B facility',
+    kpiExtra: { icon: '<i class="ph ph-car"></i>', label: 'Avg. LTV', getValue: (d) => (d.reduce((s,r)=>s+r._ltv,0)/d.length).toFixed(1)+'%', sub: 'LTV precalculated in BQ · montofactura as denominator' },
+    extraCols: [
+      { key: '_ltv',       head: 'LTV',                tip: 'LTV — precalculated in BQ as string "49.98%" · denominator: montofactura', render: (v) => { const cls=v>90?'ltv-bad':v>75?'ltv-warn':'ltv-ok'; return `<span class="${cls}">${v.toFixed(1)}%</span>`; }},
+      { key: '_factura',   head: 'Invoice Value',      tip: 'montofactura — vehicle invoice value (LTV denominator)', render: (v) => fmtMXN(v) },
+      { key: '_renta',     head: 'Monthly Lease Pmt.', tip: 'pagomensual — monthly lease payment', render: (v) => fmtMXN(v) },
+      { key: '_tipo_veh',  head: 'Vehicle Type',       tip: 'Nuevo_Seminuevo — vehicle condition (New / Used)', render: (v) => v },
+      { key: '_año_mod',   head: 'Model Year',         tip: 'modelodeauto — vehicle model year (⚠ make not available in BQ)', render: (v) => v },
+      { key: '_vin',       head: 'VIN',                tip: 'vin — vehicle identification number (cross-reference with RUG)', render: (v) => `<span style="font-family:monospace;font-size:11px;color:#64748B">${v}</span>` },
+      { key: '_serie',     head: 'Serial No.',         tip: 'numerodeserie — chassis serial number', render: (v) => `<span style="font-family:monospace;font-size:11px;color:#64748B">${v}</span>` },
+      { key: '_enganche',  head: 'Down Payment',       tip: 'pagoinicialsinseguroconiva — initial payment excluding insurance and VAT', render: (v) => fmtMXN(v) },
+      { key: '_tipo_tasa', head: 'Rate Type',          tip: 'tipotasa — Fixed / Variable', render: (v) => v },
+      { key: '_vto_seg',   head: 'Policy Expiry',      tip: 'fechadevencimientodepolizadeseguro — vehicle insurance policy expiry date', render: (v) => v },
+    ],
+    genExtra: () => {
+      const factura = rnd(180,620)*1000;
+      const saldo = rnd(Math.round(factura*0.3), Math.round(factura*0.85));
+      const ltv = parseFloat((saldo/factura*100).toFixed(1));
+      const año = rnd(2021,2025);
+      return {
+        _ltv: ltv,
+        _factura: factura,
+        _renta: rnd(6,22)*1000,
+        _tipo_veh: randEl(['New','New','New','Used']),
+        _año_mod: String(año),
+        _vin: randVIN(),
+        _serie: randVIN().slice(0,13),
+        _enganche: rnd(30,200)*1000,
+        _tipo_tasa: randEl(['Fixed','Fixed','Fixed','Variable']),
+        _vto_seg: `${año+2}-${String(rnd(1,12)).padStart(2,'0')}-28`,
+      };
+    },
+    montoRange: [120000, 550000],
+    tipos: ['Lease'],
+    count: 4312,
+  },
+  creditas: {
+    id: 'creditas',
+    name: 'Creditas',
+    color: '#16A34A', // success_green-600 — design system registry
+    tint: '#F0FDF4',  // success_green-50
+    facility: 'mart_creditas.fct_creditas_F4157020_clip',
+    meta: 'Originator: Creditas · Type: Auto Loan · Lender: BBVA Spark · Facility: F4157020',
+    chip: 'MXN · $800M facility',
+    kpiExtra: { icon: '<i class="ph ph-car"></i>', label: 'Avg. LTV', getValue: (d) => (d.reduce((s,r)=>s+r._ltv_actual,0)/d.length).toFixed(1)+'%', sub: 'monto_prin_ces / valor_bien · full portfolio' },
+    extraCols: [
+      { key: '_marca',     head: 'Make',              tip: 'desc_activo — vehicle make (LAND ROVER, FORD, KIA…)', render: (v) => v },
+      { key: '_modelo',    head: 'Model',             tip: 'modelo — vehicle model (EVOQUE, FIESTA…)', render: (v) => v },
+      { key: '_anio',      head: 'Year',              tip: 'anio_auto — vehicle year', render: (v) => v },
+      { key: '_valor_bien',head: 'Appraised Value',   tip: 'valor_bien — appraised value of the vehicle (LTV denominator)', render: (v) => fmtMXN(v) },
+      { key: '_ltv_actual',head: 'LTV',               tip: 'monto_prin_ces / valor_bien × 100 — calculated in backend', render: (v) => { const cls=v>80?'ltv-bad':v>65?'ltv-warn':'ltv-ok'; return `<span class="${cls}">${v.toFixed(1)}%</span>`; }},
+      { key: '_num_serie', head: 'Serial No.',        tip: 'num_serie — vehicle serial number / VIN', render: (v) => `<span style="font-family:monospace;font-size:11px;color:#64748B">${v}</span>` },
+      { key: '_max_dpd',   head: 'Max. Historical DPD',tip: 'max_dias_atraso — maximum days past due ever recorded', render: (v) => v>0?`<span style="color:#EA580C;font-weight:700">${v}d</span>`:`<span style="color:#16A34A">0d</span>` },
+      { key: '_aseg',      head: 'Insurer',           tip: 'tipo_poliza — vehicle insurance company', render: (v) => v },
+      { key: '_vto_pol',   head: 'Policy Expiry',     tip: 'vencimiento_poliza — insurance policy expiry date', render: (v) => v },
+    ],
+    genExtra: () => {
+      const autos = {
+        'LAND ROVER':['EVOQUE','DEFENDER','DISCOVERY'],
+        'FORD':['FIESTA','MUSTANG','ECOSPORT','RANGER'],
+        'KIA':['RIO','FORTE','SPORTAGE','SOUL'],
+        'NISSAN':['VERSA','SENTRA','KICKS','X-TRAIL'],
+        'CHEVROLET':['AVEO','ONIX','TRAX','EQUINOX'],
+      };
+      const marca = randEl(Object.keys(autos));
+      const modelo = randEl(autos[marca]);
+      const anio = String(rnd(2014,2024));
+      const valor_bien = rnd(120,500)*1000;
+      const saldo_ces = rnd(Math.round(valor_bien*0.3), Math.round(valor_bien*0.9));
+      const ltv = parseFloat((saldo_ces/valor_bien*100).toFixed(1));
+      const aseguradoras = ['HDI SEGUROS','GNP SEGUROS','AXA SEGUROS','QUALITAS','MAPFRE'];
+      return {
+        _marca: marca,
+        _modelo: modelo,
+        _anio: anio,
+        _valor_bien: valor_bien,
+        _ltv_actual: ltv,
+        _num_serie: randVIN().slice(0,17),
+        _max_dpd: randEl([0,0,0,0,5,15,30,45,90]),
+        _aseg: randEl(aseguradoras),
+        _vto_pol: `${rnd(2025,2027)}-${String(rnd(1,12)).padStart(2,'0')}-15`,
+      };
+    },
+    montoRange: [75000, 450000],
+    tipos: ['Auto Loan','Auto Guarantee'],
+    count: 987,
+  },
+  aplazo: {
+    id: 'aplazo',
+    name: 'Aplazo',
+    color: '#0EA5E9',
+    tint: '#F0F9FF',
+    facility: 'mart_aplazo.fct_aplazo_bbva_1458440_loan_tape',
+    meta: 'Originator: Aplazo · Type: BNPL / POS Financing · Lender: Alloy · Facility: 1458440',
+    chip: 'MXN · $250M facility',
+    kpiExtra: { icon: '<i class="ph ph-package"></i>', label: 'Collection Rate', getValue: (d) => { const ratio=d.reduce((s,r)=>s+r._pmt_received,0)/Math.max(d.reduce((s,r)=>s+r._pmt_scheduled,0),1); return (ratio*100).toFixed(0)+'%'; }, sub: 'SUM(payment_received) / SUM(payment_scheduled)' },
+    extraCols: [
+      { key: '_industry',    head: 'Merchant Category',  tip: 'merchant_industry — merchant sector (⚠ merchant_name not available in loan_tape)', render: (v) => v },
+      { key: '_installments',head: 'Installments',       tip: 'installments — total number of installments in the plan', render: (v) => v },
+      { key: '_cust_type',   head: 'Customer Type',      tip: 'customer_type — repeat / new', render: (v) => v==='repeat'?'<span style="color:#16A34A;font-weight:700">Repeat</span>':'<span style="color:#64748B">New</span>' },
+      { key: '_down_pmt',    head: 'Has Down Payment',   tip: 'has_down_payment — whether the borrower paid a down payment', render: (v) => v?'Yes':'No' },
+      { key: '_pmt_scheduled',head:'Sched. Payment',     tip: 'payment_amount_scheduled — total scheduled payment at cut-off', render: (v) => fmtMXN(v) },
+      { key: '_pmt_received', head:'Received Payment',   tip: 'payment_amount_received — total payment received at cut-off', render: (v,row) => {
+        const pct = row._pmt_scheduled>0?v/row._pmt_scheduled:0;
+        const cls = pct>=1?'ltv-ok':pct>=0.5?'ltv-warn':'ltv-bad';
+        return `<span class="${cls}">${fmtMXN(v)}</span>`;
+      }, needsRow: true},
+      { key: '_comm_fee',    head: 'Outstanding Fee',    tip: 'outstanding_commission_fee — commission fee still pending collection', render: (v) => fmtMXN(v) },
+      { key: '_charged_off', head: 'Charged-off Principal', tip: 'principal_charged_off — principal written off', render: (v) => v>0?`<span style="color:#DC2626;font-weight:700">${fmtMXN(v)}</span>`:`<span style="color:#94A3B8">$0</span>` },
+    ],
+    genExtra: () => {
+      const industries = ['health & beauty','health & beauty','technology','technology','travel','fashion','home','appliances','sports','education'];
+      const installments = randEl([3,5,5,6,6,12,12,18,24]);
+      const principal = rnd(600,15000);
+      const pmt_s = principal * randEl([1.1,1.2,1.35,1.4]);
+      const pmt_r = pmt_s * (Math.random()*0.6+0.3);
+      return {
+        _industry: randEl(industries),
+        _installments: installments,
+        _cust_type: randEl(['repeat','repeat','repeat','new']),
+        _down_pmt: Math.random()>.6,
+        _pmt_scheduled: Math.round(pmt_s),
+        _pmt_received: Math.round(pmt_r),
+        _comm_fee: Math.round(principal * 0.15 * Math.random()),
+        _charged_off: Math.random()>.93?rnd(500,5000):0,
+      };
+    },
+    montoRange: [600, 15000],
+    tipos: ['BNPL'],
+    count: 6241,
+  },
+};
+
+// ─── SHARED DATA ────────────────────────────────────────────────────────────
+const ESTADOS = ['CDMX','CDMX','Estado de México','Jalisco','Nuevo León','Puebla','Guanajuato','Querétaro','Veracruz','Yucatán'];
+const NOMBRES_PILA = ['Juan','María','Carlos','Ana','Jorge','Laura','Miguel','Diana','Roberto','Sofía','Luis','Claudia','Fernando','Valeria','Arturo'];
+const APELLIDOS = ['García','Martínez','López','Hernández','González','Pérez','Rodríguez','Sánchez','Torres','Ramírez','Flores','Vargas','Morales','Castillo','Reyes'];
+
+function rnd(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+function randEl(arr){ return arr[rnd(0,arr.length-1)]; }
+function randVIN(){ const c='ABCDEFGHJKLMNPRSTUVWXYZ0123456789'; return Array.from({length:17},()=>c[rnd(0,c.length-1)]).join(''); }
+// dpd_dias es el campo raw INT64. bucket_dpd se DERIVA de él — nunca al revés.
+function dpd_to_bucket(d){ if(d===0)return'0'; if(d<=30)return'1-30'; if(d<=60)return'31-60'; if(d<=90)return'61-90'; return'90+'; }
+function fmtMXN(n){ return '$'+Math.round(n).toLocaleString('es-MX'); }
+
+function genDataset(co) {
+  // ✅ Use REAL BigQuery data when available · falls back to mock generation
+  if (window.REAL_ASSET_DATA && window.REAL_ASSET_DATA[co.id] && window.REAL_ASSET_DATA[co.id].length > 0) {
+    console.log(`[asset-view] Using REAL data for ${co.id} · ${window.REAL_ASSET_DATA[co.id].length} records from BigQuery`);
+    return window.REAL_ASSET_DATA[co.id];
+  }
+  console.log(`[asset-view] Fallback to mock data for ${co.id}`);
+  const n = 200;
+  const arr = [];
+  for (let i=0;i<n;i++){
+    const id = 10000+i;
+    const estatus = randEl(['current','current','current','current','delinquent','delinquent','defaulted']);
+    const dpd_dias = estatus==='current'?0:estatus==='delinquent'?rnd(1,90):rnd(91,180);
+    const dpd = dpd_to_bucket(dpd_dias);
+    const monto = rnd(...co.montoRange);
+    const saldo = Math.round(monto*(Math.random()*.7+.2));
+    const tipo = randEl(co.tipos);
+    const yr=rnd(2021,2024), mo=String(rnd(1,12)).padStart(2,'0'), da=String(rnd(1,28)).padStart(2,'0');
+    const plazo = rnd(6,48);
+    const rem = rnd(1,plazo);
+    const eleg = estatus==='activo'?Math.random()>.12:Math.random()>.65;
+    const rfc = randEl(['XXXX##','RFC###','XXXX###','NDA']);
+    const nombre = randEl(NOMBRES_PILA);
+    const ap_paterno = randEl(APELLIDOS);
+    const ap_materno = randEl(APELLIDOS);
+    const cesYr = rnd(Math.max(2020,yr-1),yr), cesMo=String(rnd(1,12)).padStart(2,'0'), cesDa=String(rnd(1,28)).padStart(2,'0');
+    // fecha_cesion: Nexu/Creditas tienen tabla CXCTA real (JOIN). Kueski/Aplazo usan disbursement_date como proxy
+    const hasCesionReal = (co.id === 'nexu' || co.id === 'creditas');
+    const fecha_cesion = hasCesionReal ? `${cesYr}-${cesMo}-${cesDa}` : `${yr}-${mo}-${da}`;
+    // plazo_total: Nexu/Creditas en meses directamente. Kueski: loan_term_kueski en días → CEILING(/30). Aplazo: term_days → CEILING(/30)
+    let plazo_total = plazo; // meses (Nexu/Creditas)
+    let _plazo_norm = false; // flag: plazo fue normalizado desde días
+    if (co.id === 'kueski') {
+      const loan_term_dias = rnd(14, 90); // loan_term_kueski en días (cash: 14-45d, cash_installments: 60-90d)
+      plazo_total = Math.max(1, Math.ceil(loan_term_dias / 30));
+      _plazo_norm = true;
+    } else if (co.id === 'aplazo') {
+      const term_days = randEl([90, 150, 180, 270, 360, 540, 720]); // term_days en BQ (3-24 meses)
+      plazo_total = Math.ceil(term_days / 30);
+      _plazo_norm = true;
+    }
+    arr.push({
+      asset_id:`CR-${id}`, debtor_id:`CL-${4000+i}`,
+      nombre, ap_paterno, ap_materno, rfc, estado:randEl(ESTADOS), estatus, elegibilidad:eleg,
+      tipo_credito:tipo, monto_original:monto, saldo_actual:saldo, dpd_dias, bucket_dpd:dpd,
+      fecha_disposicion:`${yr}-${mo}-${da}`,
+      fecha_vencimiento:`${yr+Math.ceil(plazo/12)}-${mo}-${da}`,
+      fecha_cesion, _cesion_approx:!hasCesionReal,
+      plazo_total, _plazo_norm, plazo_remanente:rem, tasa:(rnd(120,360)/10),
+      ...co.genExtra(),
+    });
+  }
+  return arr;
+}
+
+// ─── ROLE & PERMISSIONS · LEN-284 ────────────────────────────────────────────
+// Matrix per JIRA:
+//                       │ View │ PII  │ CSV │ Col cfg │ Audit │
+//   Lender Analyst      │  ✓   │  ✗   │  ✓  │   ✗     │   ✗   │
+//   Lender Admin        │  ✓   │  ⚙   │  ✓  │   ✓     │   ✗   │  (PII only with permission)
+//   Lender Super Admin  │  ✓   │  ✓   │  ✓  │   ✓     │   ✓   │
+//   CXC / Superadmin    │  ✓   │  ✓   │  ✓  │   ✓     │   ✓   │
+let currentRole = 'super_admin';
+const ROLE_LABELS = {
+  analyst: 'Lender Analyst',
+  admin: 'Lender Admin',
+  admin_pii: 'Lender Admin (+PII)',
+  super_admin: 'Lender Super Admin',
+  cxc: 'CXC / Superadmin',
+};
+function canSeePII()     { return ['admin_pii','super_admin','cxc'].includes(currentRole); }
+function canConfigCols() { return ['admin','admin_pii','super_admin','cxc'].includes(currentRole); }
+function canSeeAudit()   { return ['super_admin','cxc'].includes(currentRole); }
+
+// Audit log entries seeded for demo
+let auditLog = [
+  { user:'luis.gomez@bbva.com',     when:'2026-04-03 09:14 CT', action:'CSV Export', filters:'status=delinquent, dpd_bucket=61-90',  records:38,  pii:true  },
+  { user:'eduardo.lopez@bbva.com',  when:'2026-04-02 16:21 CT', action:'View',       filters:'(none)',                                records:100, pii:false },
+  { user:'maria.hernandez@bbva.com',when:'2026-04-02 11:08 CT', action:'CSV Export', filters:'state=Jalisco',                         records:12,  pii:true  },
+  { user:'luis.gomez@bbva.com',     when:'2026-04-01 08:55 CT', action:'View',       filters:'origination_year=2024',                 records:47,  pii:true  },
+  { user:'staff@cxc.com.mx',        when:'2026-03-31 18:40 CT', action:'CSV Export', filters:'(none)',                                records:200, pii:true  },
+];
+
+function onRoleChange(role){
+  currentRole = role;
+  // Toggle Audit button visibility
+  document.getElementById('auditBtn').style.display = canSeeAudit() ? 'inline-flex' : 'none';
+  // Toggle Columns button enabled state
+  const colsBtn = document.getElementById('colsBtn');
+  if (canConfigCols()) {
+    colsBtn.style.opacity = '1';
+    colsBtn.style.cursor = 'pointer';
+    colsBtn.removeAttribute('data-tooltip');
+  } else {
+    colsBtn.style.opacity = '0.5';
+    colsBtn.style.cursor = 'not-allowed';
+    colsBtn.setAttribute('data-tooltip','Only Lender Admin and above can configure columns');
+  }
+  renderRoleMatrix();
+  renderAll(); // re-render table with new PII state
+}
+
+function onColsClick(){
+  if (!canConfigCols()) return; // gated by role
+  openColModal();
+}
+
+function renderRoleMatrix(){
+  const cap = (ok, label) => `<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:999px;background:${ok?'#F0FDF4':'#FEF2F2'};color:${ok?'#16A34A':'#DC2626'};font-size:10px;font-weight:700;font-family:'Sofia Sans',sans-serif">
+    <i class="ph ${ok?'ph-check':'ph-x'}" style="font-size:10px"></i>${label}</span>`;
+  document.getElementById('roleMatrix').innerHTML =
+    cap(true,'View') + cap(canSeePII(),'PII') + cap(true,'CSV') + cap(canConfigCols(),'Columns') + cap(canSeeAudit(),'Audit');
+}
+
+function openAuditModal(){
+  if (!canSeeAudit()) return;
+  const rows = auditLog.map(l=>`
+    <tr>
+      <td style="padding:10px 12px;border-bottom:1px solid #E2E8F0;font-family:'Space Mono',monospace;font-size:11px;color:#334155">${l.user}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #E2E8F0;font-family:'Space Mono',monospace;font-size:11px;color:#64748B">${l.when}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #E2E8F0">
+        ${l.action==='CSV Export'
+          ? `<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;background:#F0F9FF;color:#0284C7;font-size:11px;font-weight:700"><i class="ph ph-download-simple" style="font-size:11px"></i>${l.action}</span>`
+          : `<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;background:#F8FAFC;color:#64748B;font-size:11px;font-weight:700"><i class="ph ph-eye" style="font-size:11px"></i>${l.action}</span>`}
+      </td>
+      <td style="padding:10px 12px;border-bottom:1px solid #E2E8F0;font-family:'Space Mono',monospace;font-size:11px;color:${l.filters==='(none)'?'#94A3B8':'#334155'}">${l.filters}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #E2E8F0;text-align:right;font-family:'Space Mono',monospace;font-weight:700">${l.records.toLocaleString('en-US')}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #E2E8F0">
+        ${l.pii
+          ? `<span style="color:#DC2626;font-size:11px;font-weight:700"><i class="ph ph-lock-open" style="font-size:11px;vertical-align:-1px"></i> Unmasked</span>`
+          : `<span style="color:#94A3B8;font-size:11px">Masked</span>`}
+      </td>
+    </tr>
+  `).join('');
+  document.getElementById('auditBody').innerHTML = rows;
+  document.getElementById('auditModal').style.display='flex';
+}
+function closeAuditModal(e){
+  if(!e||e.target===e.currentTarget) document.getElementById('auditModal').style.display='none';
+}
+
+function appendAuditEntry(action, filters, records){
+  auditLog.unshift({
+    user: ROLE_LABELS[currentRole] + ' · demo@cxc.local',
+    when: new Date().toISOString().slice(0,16).replace('T',' ') + ' CT',
+    action, filters, records, pii: canSeePII(),
+  });
+}
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+let currentCo = 'kueski';
+let datasets = {};
+let filtered = [];
+let currentPage = 1;
+const PAGE = 25;
+let sortCol = null, sortDir = 1;
+
+function getData(id){ if(!datasets[id]) datasets[id]=genDataset(COMPANIES[id]); return datasets[id]; }
+
+// ─── INIT ───────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  buildCompanyBar();
+  // initialize role-based UI on first load
+  document.getElementById('roleSelect').value = currentRole;
+  onRoleChange(currentRole);
+  switchCompany('kueski');
+});
+
+function buildCompanyBar(){
+  const bar = document.getElementById('companyBar');
+  bar.innerHTML = Object.values(COMPANIES).map(co=>
+    `<div class="co-tab" id="tab-${co.id}" onclick="switchCompany('${co.id}')" style="--co-color:${co.color}">
+      <div class="co-dot" style="background:${co.color}"></div>
+      <span>${co.name}</span>
+    </div>`
+  ).join('');
+}
+
+function showSkeleton(){
+  const co = COMPANIES[currentCo];
+  const allCols = getAllCols(co);
+  document.getElementById('tableBody').innerHTML = Array.from({length:10}).map(()=>
+    `<tr>${allCols.map(()=>'<td><div class="skel-line"></div></td>').join('')}</tr>`
+  ).join('');
+  document.getElementById('pageInfo').innerHTML = '<span style="color:#94A3B8">Loading…</span>';
+  document.getElementById('pageBtns').innerHTML = '';
+}
+
+function switchCompany(id){
+  currentCo = id;
+  currentPage = 1;
+  sortCol = null;
+  hiddenCols = new Set();
+  activeFilters = {};
+  document.getElementById('searchInput').value = '';
+  document.querySelectorAll('.co-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(`tab-${id}`).classList.add('active');
+  const co = COMPANIES[id];
+  document.documentElement.style.setProperty('--co-color', co.color);
+  document.documentElement.style.setProperty('--co-tint', co.tint);
+  document.getElementById('navFacility').textContent = co.name;
+  document.getElementById('facName').textContent = co.facility;
+  document.getElementById('facMeta').textContent = co.meta;
+  document.getElementById('facChip').textContent = co.chip;
+  showSkeleton();
+  setTimeout(()=>renderAll(), 350);
+}
+
+function renderAll(){
+  const co = COMPANIES[currentCo];
+  const data = getData(currentCo);
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  filtered = data.filter(r=>{
+    if(search && !r.asset_id.toLowerCase().includes(search) && !r.debtor_id.toLowerCase().includes(search) && !r.nombre.toLowerCase().includes(search) && !r.rfc.toLowerCase().includes(search)) return false;
+    for(const def of FILTER_DEFS){
+      const val = activeFilters[def.key];
+      if(!val) continue;
+      if(String(def.getVal(r)) !== val) return false;
+    }
+    return true;
+  });
+  if(sortCol){ filtered.sort((a,b)=>{ const va=a[sortCol],vb=b[sortCol]; return (va<vb?-1:va>vb?1:0)*sortDir; }); }
+  renderKPIs(co, filtered);
+  renderDist(filtered);
+  renderBanner(co);
+  renderTableWithVis(co, filtered);
+  updateFilterBtn();
+}
+
+function refresh(){ currentPage=1; renderAll(); }
+
+// ─── KPIs ───────────────────────────────────────────────────────────────────
+function kpiCard(icon, value, label, sub, tooltip){
+  return `<div class="kpi-card" ${tooltip?`data-tooltip="${tooltip}"`:''} style="cursor:${tooltip?'help':'default'}">
+    <div class="kpi-icon">${icon}</div>
+    <div class="kpi-value">${value}</div>
+    <div class="kpi-label">${label}</div>
+    <div class="kpi-sub">${sub}</div>
+  </div>`;
+}
+
+function renderKPIs(co, data){
+  const activosData = data.filter(r=>r.estatus==='current');
+  const totalActivos = activosData.length;
+  const exposure = activosData.reduce((s,r)=>s+r.saldo_actual,0);
+  const montoOrig = data.reduce((s,r)=>s+r.monto_original,0);
+  const montoCount = data.filter(r=>r.monto_original>0).length;
+  const ticket = montoCount?montoOrig/montoCount:0;
+  const tasaData = data.filter(r=>r.tasa>0 && r.saldo_actual>0);
+  const tasaSaldo = tasaData.reduce((s,r)=>s+r.saldo_actual,0);
+  const tasa = tasaSaldo>0?tasaData.reduce((s,r)=>s+r.tasa*r.saldo_actual,0)/tasaSaldo:0;
+  const extraVal = co.kpiExtra.getValue(data.length?data:[{_score:0,_ltv_actual:0,_cuotas_pag:0,_cuotas_tot:1}]);
+
+  document.getElementById('kpiRow').innerHTML = `
+    ${kpiCard('<i class="ph ph-check-square"></i>', totalActivos.toLocaleString('en-US'), 'Current Assets', `of ${data.length.toLocaleString('en-US')} in view`, 'Loans with status=Current. Formula: COUNT WHERE status = current')}
+    ${kpiCard('<i class="ph ph-currency-dollar"></i>', fmtMXN(exposure), 'Total Exposure', 'Outstanding balance — current only', 'Sum of outstanding balance for current assets. Formula: Σ outstanding WHERE status = current')}
+    ${kpiCard('<i class="ph ph-chart-bar"></i>', fmtMXN(montoOrig), 'Original Principal', 'Total disbursed', 'Initial principal across all assets in facility. Formula: Σ orig_principal')}
+    ${kpiCard('<i class="ph ph-ticket"></i>', fmtMXN(ticket), 'Avg. Ticket', `over ${montoCount.toLocaleString('en-US')} assets`, 'Average original principal. Excludes assets with no amount. Formula: Σ orig_principal / N valid')}
+    ${kpiCard('<i class="ph ph-percent"></i>', tasa.toFixed(2)+'%', 'Wtd. Avg. Rate', 'Weighted by outstanding balance', 'Weighted average interest rate. Excludes assets with no rate or balance=0. Formula: Σ(rate × balance) / Σ balance')}
+    <div class="kpi-card company-kpi" style="border-color:${co.color};cursor:help" data-tooltip="${co.kpiExtra.sub}">
+      <div class="kpi-company-tag" style="color:${co.color}">${co.name}</div>
+      <div class="kpi-icon">${co.kpiExtra.icon}</div>
+      <div class="kpi-value" style="color:${co.color}">${extraVal}</div>
+      <div class="kpi-label">${co.kpiExtra.label}</div>
+      <div class="kpi-sub">${co.kpiExtra.sub}</div>
+    </div>`;
+}
+
+// ─── DIST ────────────────────────────────────────────────────────────────────
+function renderDist(data){
+  const total = data.length || 1;
+  const a = data.filter(r=>r.estatus==='current').length;
+  const m = data.filter(r=>r.estatus==='delinquent').length;
+  const v = data.filter(r=>r.estatus==='defaulted').length;
+  const pctA=Math.round(a/total*100), pctM=Math.round(m/total*100), pctV=Math.round(v/total*100);
+  document.getElementById('barActivo').style.width = pctA+'%';
+  document.getElementById('barMoroso').style.width = pctM+'%';
+  document.getElementById('barVencido').style.width = pctV+'%';
+  document.getElementById('pctActivo').textContent = pctA+'%';
+  document.getElementById('pctMoroso').textContent = pctM+'%';
+  document.getElementById('pctVencido').textContent = pctV+'%';
+  document.getElementById('distRowActivo').setAttribute('data-tooltip',`Current · ${a.toLocaleString('en-US')} assets · ${pctA}% of total`);
+  document.getElementById('distRowMoroso').setAttribute('data-tooltip',`Delinquent · ${m.toLocaleString('en-US')} assets · ${pctM}% of total`);
+  document.getElementById('distRowVencido').setAttribute('data-tooltip',`Defaulted · ${v.toLocaleString('en-US')} assets · ${pctV}% of total`);
+}
+
+// ─── BANNER ──────────────────────────────────────────────────────────────────
+function renderBanner(co){
+  const banner = document.getElementById('coBanner');
+  banner.style.background = co.tint;
+  banner.style.border = `1px solid color-mix(in srgb, ${co.color} 25%, white)`;
+  banner.style.color = co.color;
+  banner.innerHTML = `<span style="font-size:16px">✦</span> <strong>${co.name}</strong> — ${co.extraCols.length} additional columns active · Business model data <span style="margin-left:auto;font-size:11px;color:#94A3B8">Per-facility config · CXC Staff</span>`;
+}
+
+// ─── TABLE ───────────────────────────────────────────────────────────────────
+const STANDARD_COLS = [
+  // ── sticky cols 1-3 (Asset ID · Status · Outstanding) ──
+  { key:'asset_id',         head:'Asset ID',         render:(v)=>`<span style="font-family:monospace;font-size:12px;color:#0284C7;font-weight:700">${v}</span>` },
+  { key:'estatus',          head:'Status',           render:(v,row)=>{
+    const labels = { current:'Current', delinquent:'Delinquent', defaulted:'Defaulted' };
+    const tip = v==='current'?'Current — 0 days past due':v==='delinquent'?`Delinquent — ${row.dpd_dias} days past due`:`Defaulted — ${row.dpd_dias} days past due`;
+    return `<span class="badge badge-${v}" data-tooltip="${tip}">${labels[v]||v}</span>`;
+  }, align:'center', needsRow:true },
+  { key:'saldo_actual',     head:'Outstanding',      render:(v)=>fmtMXN(v), align:'right' },
+  // ── remaining standard cols ──
+  { key:'debtor_id',        head:'Debtor ID',        render:(v)=>`<span style="font-family:monospace;font-size:12px;color:#64748B">${v}</span>` },
+  { key:'nombre',           head:'Borrower Name',    render:(v)=>canSeePII() ? `<span style="color:#334155">${v||'<span style=color:#CBD5E1>NA</span>'}</span>` : `<span style="color:#94A3B8" data-tooltip="PII masked — your role does not have permission to see borrower name">****</span>` },
+  { key:'ap_paterno',      head:'First Surname',    render:(v)=>canSeePII() ? `<span style="color:#334155">${v||'<span style=color:#CBD5E1>NA</span>'}</span>` : `<span style="color:#94A3B8">****</span>` },
+  { key:'ap_materno',      head:'Second Surname',   render:(v)=>canSeePII() ? `<span style="color:#334155">${v||'<span style=color:#CBD5E1>NA</span>'}</span>` : `<span style="color:#94A3B8">****</span>` },
+  { key:'rfc',              head:'Tax ID',           render:(v)=>{
+    if (v==='NA' || v==='NDA' || !v) return `<span style="color:#DC2626;font-size:11px">NDA</span>`;
+    return canSeePII()
+      ? `<span style="font-family:monospace;font-size:12px;color:#334155">${v}</span>`
+      : `<span style="color:#94A3B8;font-family:monospace;font-size:12px" data-tooltip="PII masked">XXXX##</span>`;
+  }},
+  { key:'estado',           head:'State',            render:(v)=>v },
+  { key:'elegibilidad',     head:'Eligibility',      render:()=>`<span style="color:#94A3B8;font-size:11px" data-tooltip="DEBT-01: eligibility field not yet available in BQ — will be added in a future release">NA</span>` },
+  { key:'tipo_credito',     head:'Asset Type',       render:(v)=>v },
+  { key:'monto_original',   head:'Orig. Principal',  render:(v)=>fmtMXN(v), align:'right' },
+  { key:'dpd_dias', head:'DPD', needsRow:true, render:(v,row)=>{ const m={'0':'dpd-0','1-30':'dpd-1','31-60':'dpd-2','61-90':'dpd-3','90+':'dpd-4'}; const cls=m[row.bucket_dpd]||'dpd-0'; return `<span class="badge badge-${cls}" data-tooltip="bucket: ${row.bucket_dpd}">${v}d</span>`; }, align:'center' },
+  { key:'fecha_disposicion',head:'Origination Date', render:(v)=>v },
+  { key:'fecha_vencimiento',head:'Maturity Date',    render:(v)=>v },
+  { key:'fecha_cesion',     head:'Assignment Date',  needsRow:true, render:(v,row)=>{
+    if (!v) return `<span style="color:#CBD5E1">NA</span>`;
+    if (row._cesion_approx) return `<span style="color:#94A3B8" data-tooltip="Proxy: assignment date not available in LLD. disbursement_date used as approximation. Actual value requires JOIN with CXCTA table.">~${v}</span>`;
+    return v;
+  }},
+  { key:'plazo_total',      head:'Term',             needsRow:true, render:(v,row)=>{
+    if (row._plazo_norm) return `<span data-tooltip="Normalized from days: CEILING(term_days / 30). BQ field: loan_term_kueski (Kueski) · term_days (Aplazo)." style="color:#64748B">${v}m*</span>`;
+    return `${v}m`;
+  }, align:'center'},
+  { key:'plazo_remanente',  head:'Rem. Term',        render:(v)=>`${v}m`, align:'center' },
+  { key:'tasa',             head:'Int. Rate',        render:(v)=>`${v}%`, align:'right' },
+];
+
+function sortBy(key){ sortDir = sortCol===key ? -sortDir : 1; sortCol=key; renderAll(); }
+function goPage(p){ currentPage=p; renderAll(); }
+
+// ─── FILTER & COLUMN STATE ────────────────────────────────────────────────────
+let activeFilters = {};
+let hiddenCols = new Set();
+let pendingHidden = new Set();
+
+const FILTER_DEFS = [
+  { key:'estatus',      label:'Status',        allLabel:'All statuses',  getOpts:()=>['current','delinquent','defaulted'],    getVal:(r)=>r.estatus },
+  { key:'bucket_dpd',  label:'Days Past Due', allLabel:'All DPD',       getOpts:()=>['0','1-30','31-60','61-90','90+'],      getVal:(r)=>r.bucket_dpd },
+  { key:'tipo_credito',label:'Asset Type',    allLabel:'All types',     getOpts:()=>COMPANIES[currentCo].tipos,              getVal:(r)=>r.tipo_credito },
+  { key:'estado',      label:'State',         allLabel:'All states',    getOpts:()=>[...new Set(ESTADOS)].sort(),            getVal:(r)=>r.estado },
+  { key:'_vto_yr',     label:'Maturity Year', allLabel:'All years',     getOpts:()=>['2025','2026','2027','2028'],           getVal:(r)=>r.fecha_vencimiento.slice(0,4) },
+  { key:'_dis_yr',     label:'Origination Year',allLabel:'All years',   getOpts:()=>['2021','2022','2023','2024'],           getVal:(r)=>r.fecha_disposicion.slice(0,4) },
+];
+
+function getAllCols(co){
+  return [...STANDARD_COLS, ...co.extraCols.map((c,i)=>({...c,isCompany:true,firstCompany:i===0}))];
+}
+
+function renderTableWithVis(co,data){
+  const allCols = getAllCols(co).filter(c=>!hiddenCols.has(c.key));
+  const start=(currentPage-1)*PAGE;
+  const page=data.slice(start,start+PAGE);
+  document.getElementById('tableHead').innerHTML = allCols.map(c=>{
+    const cls=[c.isCompany?'company-col':'',c.firstCompany?'co-group-start':'',sortCol===c.key?'sorted':''].filter(Boolean).join(' ');
+    const sortMark=sortCol===c.key?(sortDir===1?' ↑':' ↓'):'';
+    const tip=c.isCompany?` data-tooltip="${c.tip||c.head}"`:c.key==='elegibilidad'?' data-tooltip="DEBT-01: campo no disponible en BQ — versión futura"':'';
+    return `<th class="${cls}" onclick="sortBy('${c.key}')"${tip}>${c.isCompany?`<div class="co-col-header"><span style="color:${co.color};margin-right:2px">✦</span>${c.head}</div>`:c.head} <span class="sort-icon">${sortMark||'↕'}</span></th>`;
+  }).join('');
+  // empty state
+  if (data.length === 0) {
+    const hasSearch = document.getElementById('searchInput').value.trim();
+    const hasFilters = Object.keys(activeFilters).length > 0;
+    const msg = (hasSearch || hasFilters)
+      ? 'No assets match your filters.'
+      : 'No data available for this cut-off date.';
+    const sub = (hasSearch || hasFilters) ? 'Try adjusting your search or filters.' : '';
+    document.getElementById('tableBody').innerHTML = `<tr><td colspan="${allCols.length}" style="text-align:center;padding:56px 24px;color:#94A3B8"><div style="font-size:32px;margin-bottom:12px"><i class="ph ph-tray" style="color:#CBD5E1"></i></div><div style="font-size:14px;font-weight:500;color:#64748B">${msg}</div>${sub?`<div style="font-size:12px;margin-top:6px">${sub}</div>`:''}</td></tr>`;
+    document.getElementById('pageInfo').textContent = '0 assets';
+    document.getElementById('pageBtns').innerHTML = '';
+    return;
+  }
+  document.getElementById('tableBody').innerHTML = page.map(row=>{
+    const cells=allCols.map(c=>{
+      const val=row[c.key];
+      const rendered=c.render(val,row);
+      const cls=[c.isCompany?'company-col':'',c.firstCompany?'co-group-start':''].filter(Boolean).join(' ');
+      const style=c.align==='right'?'text-align:right':c.align==='center'?'text-align:center':'';
+      return `<td class="${cls}" style="${style}">${rendered??'<span style="color:#CBD5E1">NA</span>'}</td>`;
+    }).join('');
+    return `<tr>${cells}</tr>`;
+  }).join('');
+  const total=data.length, facilityTotal=COMPANIES[currentCo].count, pages=Math.ceil(total/PAGE);
+  const totalLabel = total < facilityTotal
+    ? `${total.toLocaleString('en-US')} results <span style="color:#94A3B8">(${facilityTotal.toLocaleString('en-US')} in facility)</span>`
+    : `${facilityTotal.toLocaleString('en-US')} assets`;
+  document.getElementById('pageInfo').innerHTML=`Showing ${(start+1).toLocaleString('en-US')}–${Math.min(start+PAGE,total).toLocaleString('en-US')} of ${totalLabel}`;
+  const btns=[];
+  for(let p=1;p<=Math.min(pages,7);p++) btns.push(`<button class="page-btn${p===currentPage?' active':''}" onclick="goPage(${p})">${p}</button>`);
+  if(pages>7) btns.push(`<span style="padding:4px;color:#94A3B8">…${pages}</span>`);
+  document.getElementById('pageBtns').innerHTML=btns.join('');
+}
+
+// ─── FILTER MODAL ─────────────────────────────────────────────────────────────
+function openFilterModal(){
+  document.getElementById('colModal').style.display='none';
+  buildFilterModal();
+  document.getElementById('filterModal').style.display='flex';
+}
+function closeFilterModal(e){
+  if(!e||e.target===e.currentTarget) document.getElementById('filterModal').style.display='none';
+}
+function buildFilterModal(){
+  const body=document.getElementById('filterBody');
+  body.innerHTML=FILTER_DEFS.map(def=>{
+    const opts=def.getOpts();
+    const cur=activeFilters[def.key]||'';
+    return `<div class="filter-field">
+      <label>${def.label}</label>
+      <select class="filter-select" data-key="${def.key}" onchange="updateFilterCount()">
+        <option value="">${def.allLabel}</option>
+        ${opts.map(o=>`<option value="${o}" ${cur===o?'selected':''}>${String(o).charAt(0).toUpperCase()+String(o).slice(1)}</option>`).join('')}
+      </select>
+    </div>`;
+  }).join('');
+  updateFilterCount();
+}
+function updateFilterCount(){
+  const data=getData(currentCo);
+  const tmp={};
+  document.querySelectorAll('#filterBody select').forEach(s=>{ if(s.value) tmp[s.dataset.key]=s.value; });
+  const count=data.filter(r=>{
+    for(const def of FILTER_DEFS){ const v=tmp[def.key]; if(!v) continue; if(String(def.getVal(r))!==v) return false; }
+    return true;
+  }).length;
+  document.getElementById('applyFilterBtn').textContent=`Show ${count.toLocaleString('en-US')} results`;
+}
+function applyFilters(){
+  activeFilters={};
+  document.querySelectorAll('#filterBody select').forEach(s=>{ if(s.value) activeFilters[s.dataset.key]=s.value; });
+  document.getElementById('filterModal').style.display='none';
+  currentPage=1; renderAll();
+}
+function resetFilters(){
+  activeFilters={};
+  document.querySelectorAll('#filterBody select').forEach(s=>s.value='');
+  updateFilterCount();
+  renderAll();
+}
+function updateFilterBtn(){
+  const count=Object.values(activeFilters).filter(Boolean).length;
+  const btn=document.getElementById('filterBtn');
+  if(count>0){
+    btn.innerHTML=`<i class="ph ph-funnel"></i> Filters <span class="filter-badge">${count}</span>`;
+    btn.classList.add('filter-btn-active');
+  } else {
+    btn.innerHTML='<i class="ph ph-funnel"></i> Filters';
+    btn.classList.remove('filter-btn-active');
+  }
+  // KPI filter banner
+  const banner = document.getElementById('kpiFilterBanner');
+  banner.style.display = count > 0 ? 'flex' : 'none';
+  // chips
+  const chips=document.getElementById('filterChips');
+  const defs=FILTER_DEFS.filter(d=>activeFilters[d.key]);
+  chips.innerHTML=defs.map(d=>`<span class="chip">${d.label}: <strong>${activeFilters[d.key]}</strong><span class="chip-x" onclick="removeFilter('${d.key}')">×</span></span>`).join('');
+}
+function removeFilter(key){
+  delete activeFilters[key];
+  currentPage=1;
+  renderAll();
+}
+
+function exportCSV(){
+  const co=COMPANIES[currentCo];
+  const allCols=getAllCols(co).filter(c=>!hiddenCols.has(c.key));
+  const headers=allCols.map(c=>c.head);
+  const piiOk = canSeePII();
+  const piiCols = new Set(['nombre','ap_paterno','ap_materno','rfc']);
+  const rows=filtered.map(row=>allCols.map(c=>{
+    let v=row[c.key];
+    // HU-1.6: mask PII in CSV if role does not have permission
+    if (piiCols.has(c.key) && !piiOk) v = '****';
+    if(v===null||v===undefined) return 'NA';
+    if(typeof v==='string'&&v.includes(',')) return `"${v}"`;
+    return v;
+  }));
+  const csv=[headers.join(','),...rows.map(r=>r.join(','))].join('\n');
+  const now=new Date();
+  const ts=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
+  const filename=`facility-${co.id}_assets_${ts}.csv`;
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=filename; a.click();
+  URL.revokeObjectURL(url);
+  // HU-1.4 audit log entry
+  const filtersStr = Object.keys(activeFilters).length === 0
+    ? '(none)'
+    : Object.entries(activeFilters).map(([k,v])=>`${k}=${v}`).join(', ');
+  appendAuditEntry('CSV Export', filtersStr, filtered.length);
+  console.log('[AUDIT EXPORT]',{role:currentRole,facility:co.id,records:filtered.length,cols:allCols.length,filters:{...activeFilters},pii_unmasked:piiOk,timestamp:new Date().toISOString()});
+}
+
+// ─── COLUMN MODAL ─────────────────────────────────────────────────────────────
+function openColModal(){
+  document.getElementById('filterModal').style.display='none';
+  pendingHidden=new Set(hiddenCols);
+  buildColModal();
+  document.getElementById('colModal').style.display='flex';
+}
+function closeColModal(e){
+  if(!e||e.target===e.currentTarget) document.getElementById('colModal').style.display='none';
+}
+function buildColModal(){
+  const co=COMPANIES[currentCo];
+  const allCols=getAllCols(co);
+  document.getElementById('colBody').innerHTML=allCols.map(c=>{
+    const checked=!pendingHidden.has(c.key)?'checked':'';
+    const lbl=c.isCompany?`<span style="color:${co.color}">✦ ${c.head}</span>`:c.head;
+    return `<label class="col-check-item">
+      <input type="checkbox" data-key="${c.key}" ${checked} onchange="updateColApplyBtn()">
+      <span>${c.isCompany?`<span style="color:${co.color}">✦ </span>${c.head}`:c.head}</span>
+    </label>`;
+  }).join('');
+  updateColApplyBtn();
+}
+function updateColApplyBtn(){
+  const co=COMPANIES[currentCo];
+  const total=getAllCols(co).length;
+  const visible=[...document.querySelectorAll('#colBody input[type=checkbox]')].filter(c=>c.checked).length;
+  document.getElementById('applyColBtn').textContent=`Apply (${visible} / ${total})`;
+}
+function selectAllCols(){ document.querySelectorAll('#colBody input[type=checkbox]').forEach(c=>c.checked=true); updateColApplyBtn(); }
+function deselectAllCols(){ document.querySelectorAll('#colBody input[type=checkbox]').forEach(c=>c.checked=false); updateColApplyBtn(); }
+function applyColVisibility(){
+  hiddenCols=new Set();
+  document.querySelectorAll('#colBody input[type=checkbox]').forEach(c=>{ if(!c.checked) hiddenCols.add(c.dataset.key); });
+  document.getElementById('colModal').style.display='none';
+  renderAll();
+}
+
+// keyboard close
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeFilterModal(); closeColModal(); } });
+</script>
+</body>
+</html>
