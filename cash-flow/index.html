@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Directory · LEASE MD F/1600 · LenderHub</title>
+<title>Cash Flow · LEASE MD F/1600 · LenderHub</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web" />
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:wght@400;500;700&family=Noto+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -13,25 +13,13 @@
     theme: {
       extend: {
         colors: {
-          primary: '#1F2733',
-          secondary: '#910057',
-          'secondary-active': '#840058',
-          'secondary-bg': '#FDF2F8',
-          bg: '#F8FAFC',
-          surface: '#FFFFFF',
-          border: '#E2E8F0',
-          'border-strong': '#CBD5E1',
-          text: '#334155',
-          'text-secondary': '#64748B',
-          'text-muted': '#94A3B8',
-          success: '#16A34A',
-          'success-bg': '#F0FDF4',
-          warning: '#B45309',
-          'warning-bg': '#FFFBEB',
-          danger: '#DC2626',
-          'danger-bg': '#FEF2F2',
-          info: '#0284C7',
-          'info-bg': '#F0F9FF',
+          primary: '#1F2733', secondary: '#910057', 'secondary-active': '#840058', 'secondary-bg': '#FDF2F8',
+          bg: '#F8FAFC', surface: '#FFFFFF', border: '#E2E8F0', 'border-strong': '#CBD5E1',
+          text: '#334155', 'text-secondary': '#64748B', 'text-muted': '#94A3B8',
+          success: '#16A34A', 'success-bg': '#F0FDF4',
+          warning: '#B45309', 'warning-bg': '#FFFBEB',
+          danger: '#DC2626', 'danger-bg': '#FEF2F2',
+          info: '#0284C7', 'info-bg': '#F0F9FF',
         },
         fontFamily: {
           primary: ['Sofia Sans', 'system-ui', 'sans-serif'],
@@ -61,26 +49,14 @@
   body.secondary-hidden .reopen-secondary { display: flex; }
   body.primary-collapsed .reopen-secondary { left: 72px; }
   .nav-label, .nav-caret { transition: opacity 150ms ease; }
-
   body { font-family: 'Noto Sans', system-ui, sans-serif; color: #334155; }
   h1, h2, h3, h4 { font-family: 'Sofia Sans', system-ui, sans-serif; }
-
-  /* Toast */
-  .toast {
-    position: fixed; bottom: 24px; right: 24px; z-index: 1100;
-    background: #1F2733; color: #fff; padding: 10px 16px; border-radius: 8px;
-    display: flex; align-items: center; gap: 8px; font-size: 13px;
-    box-shadow: 0 4px 12px rgba(0,0,0,.15);
-    opacity: 0; transform: translateY(8px); transition: opacity 200ms, transform 200ms;
-    pointer-events: none;
-  }
-  .toast.show { opacity: 1; transform: translateY(0); }
+  .cf-frame { width: 100%; height: calc(100vh - 280px); min-height: 500px; border: 0; border-radius: 8px; background: #FFFFFF; }
 </style>
 </head>
 
 <body class="bg-bg text-text m-0 p-0">
 
-<!-- TOPBAR -->
 <header class="fixed top-0 left-0 right-0 h-[52px] bg-bg border-b border-border flex items-center justify-between px-6 z-50">
   <img src="https://stg.suite.cxc.com.mx/logos/cxc_fullcolor.svg" alt="CXC" class="h-6 w-auto" />
   <div class="flex items-center gap-4">
@@ -90,7 +66,6 @@
   </div>
 </header>
 
-<!-- PRIMARY SIDEBAR -->
 <aside class="primary-sidebar fixed top-[52px] left-0 h-[calc(100vh-52px)] bg-bg border-r border-border p-3 z-40 overflow-y-auto flex flex-col gap-1">
   <button onclick="document.body.classList.toggle('primary-collapsed')" class="self-end w-7 h-7 rounded-md grid place-items-center hover:bg-border-strong text-text-secondary mb-1" title="Toggle primary sidebar"><i class="ph ph-sidebar text-base"></i></button>
   <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text font-semibold bg-border cursor-pointer" title="Portfolio Monitoring"><i class="ph ph-chart-line-up text-secondary-active flex-shrink-0"></i><span class="nav-label text-sm whitespace-nowrap overflow-hidden">Portfolio Monitoring</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
@@ -101,7 +76,6 @@
   <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-seal-check flex-shrink-0"></i><span class="nav-label whitespace-nowrap overflow-hidden">RUG Smart Search</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
 </aside>
 
-<!-- SECONDARY SIDEBAR -->
 <aside class="secondary-sidebar fixed top-[52px] w-[260px] h-[calc(100vh-52px)] bg-bg border-r border-border p-4 z-30 overflow-y-auto">
   <nav class="text-xs text-text-secondary mb-3 flex items-center gap-1.5">
     <a href="../LEN-521-facility-health-signals.html" class="hover:text-text">Facilities</a>
@@ -116,23 +90,26 @@
   <div class="flex flex-col gap-1">
     <a href="../LEN-521-facility-health-signals.html" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-chart-line"></i><span>Insights</span></a>
     <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-squares-four"></i><span>Concentrations</span></a>
-    <a href="../cash-flow/index.html" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-arrows-left-right"></i><span>Cash flow</span></a>
+    <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text font-semibold bg-border cursor-pointer"><i class="ph ph-arrows-left-right text-secondary-active"></i><span class="text-sm">Cash flow</span></a>
     <a href="../asset-view/index.html" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-cube"></i><span>Asset view</span></a>
     <a href="../general-information/index.html" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-file-text"></i><span>General information</span></a>
     <a href="../report-repository/index.html" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-archive"></i><span>Report repository</span></a>
-    <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text font-semibold bg-border cursor-pointer"><i class="ph ph-envelope text-secondary-active"></i><span class="text-sm">Directory</span></a>
+    <a href="../directory/index.html" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-envelope"></i><span>Directory</span></a>
     <a href="../covenants/index.html" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-shield-check"></i><span>Covenants</span></a>
     <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-coins"></i><span>Financials</span></a>
   </div>
 </aside>
 
-<!-- Reopen button -->
 <button onclick="document.body.classList.remove('secondary-hidden')" class="reopen-secondary fixed top-[68px] z-30 w-8 h-8 rounded-md bg-surface border border-border shadow-card items-center justify-center hover:bg-bg text-text-secondary" title="Show facility sidebar"><i class="ph ph-caret-double-right text-base"></i></button>
 
-<!-- ════════ MAIN ════════ -->
 <main class="app-main bg-surface m-6 mt-[76px] rounded-lg p-6 min-h-[calc(100vh-100px)]">
 
-  <!-- Page header -->
+  <nav class="text-xs text-text-secondary mb-2 flex items-center gap-1.5">
+    <a href="../LEN-521-facility-health-signals.html" class="hover:text-text">Facilities</a>
+    <i class="ph ph-caret-right text-[10px]"></i>
+    <span class="text-text font-semibold">LEASE MD F/1600</span>
+  </nav>
+
   <div class="flex items-center gap-3 mb-5">
     <button onclick="document.body.classList.toggle('secondary-hidden')" class="w-9 h-9 rounded-md border border-border grid place-items-center hover:bg-bg text-text-secondary"><i class="ph ph-sidebar text-lg"></i></button>
     <h1 class="font-primary text-2xl font-bold text-text m-0 uppercase tracking-tight">LEASE MD F/1600</h1>
@@ -140,62 +117,49 @@
 
   <hr class="border-0 border-t border-border mb-5"/>
 
-  <div class="mb-6">
-    <h2 class="font-primary text-base font-bold text-text m-0">Directory</h2>
-    <p class="text-sm text-text-secondary m-0 mt-0.5">Here you can find the contact information of those responsible for analyzing your operation.</p>
+  <div class="mb-5">
+    <h2 class="font-primary text-base font-bold text-text m-0">Cash Flow</h2>
+    <p class="text-sm text-text-secondary m-0 mt-0.5">Collections, payments, and distributions across the trust accounts.</p>
   </div>
 
-  <!-- ════════ CONTACT CARDS GRID ════════ -->
-  <div id="contactsGrid" class="grid grid-cols-3 gap-4 max-[1100px]:grid-cols-2 max-[700px]:grid-cols-1"></div>
+  <!-- Tabs -->
+  <div class="flex gap-2 border-b border-border mb-5">
+    <button id="tab-history" onclick="switchTab('history')" class="cf-tab px-4 py-2 text-sm font-semibold border-b-2 border-secondary -mb-px font-primary text-text">
+      <i class="ph ph-clock-counter-clockwise mr-1"></i> Payment History
+    </button>
+    <button id="tab-collection" onclick="switchTab('collection')" class="cf-tab px-4 py-2 text-sm font-medium border-b-2 border-transparent -mb-px font-primary text-text-secondary hover:text-text">
+      <i class="ph ph-chart-bar mr-1"></i> Collection Chart
+    </button>
+    <a href="./payment-history.html" target="_blank" class="ml-auto inline-flex items-center gap-1 text-xs text-text-secondary hover:text-text" title="Open in new tab">
+      <i class="ph ph-arrow-square-out"></i> Open standalone
+    </a>
+  </div>
+
+  <!-- Iframes (only one visible at a time) -->
+  <iframe id="frame-history" class="cf-frame" src="./payment-history.html" title="Payment History"></iframe>
+  <iframe id="frame-collection" class="cf-frame hidden" src="./collection-chart.html" title="Collection Chart"></iframe>
 
 </main>
 
-<!-- Toast -->
-<div id="toast" class="toast"><i class="ph ph-check-circle"></i><span id="toastMsg">Email copied</span></div>
-
 <script>
-  // ════════ Contact data ════════
-  const CONTACTS = [
-    { initials: 'DR', name: 'Daniel Rojas Jiménez',     title: 'Operations VP',      email: 'drojas@cxc.com.mx',     team: 'operations' },
-    { initials: 'LO', name: 'Luis Ortíz Rodríguez',     title: 'Operations Manager', email: 'lortiz@cxc.com.mx',     team: 'operations' },
-    { initials: 'FP', name: 'Fabiola Pérez Maldonado',  title: 'Operations Analyst', email: 'fperez@cxc.com.mx',     team: 'operations' },
-    { initials: 'LB', name: 'Laura Bustamante',         title: 'Audit VP',           email: 'lbustamante@cxc.com.mx',team: 'audit' },
-    { initials: 'CM', name: 'Cristina Mendoza',         title: 'Audit Manager',      email: 'cmendoza@cxc.com.mx',   team: 'audit' },
-    { initials: 'NA', name: 'Nayelly Arroyo Noriega',   title: 'Audit Analyst',      email: 'narroyo@cxc.com.mx',    team: 'audit' },
-  ];
-
-  function renderContacts() {
-    const grid = document.getElementById('contactsGrid');
-    grid.innerHTML = CONTACTS.map(c => `
-      <article class="bg-surface border border-border rounded-xl p-5 flex flex-col gap-3 hover:border-border-strong transition-colors">
-        <header class="flex items-center gap-3">
-          <div class="w-11 h-11 rounded-full bg-secondary-bg text-secondary grid place-items-center font-bold font-primary text-sm flex-shrink-0">
-            ${c.initials}
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="font-primary font-bold text-text uppercase tracking-tight text-sm leading-tight">${c.name}</div>
-            <div class="text-xs text-text-secondary mt-0.5">${c.title}</div>
-          </div>
-        </header>
-        <button onclick="copyEmail('${c.email}')"
-                class="flex items-center gap-2 text-secondary text-sm font-medium hover:underline self-start"
-                title="Copy email">
-          <span class="font-mono uppercase">${c.email}</span>
-          <i class="ph ph-copy text-sm"></i>
-        </button>
-      </article>
-    `).join('');
+  function switchTab(tab){
+    const tabs = ['history','collection'];
+    tabs.forEach(t => {
+      const btn = document.getElementById('tab-'+t);
+      const frame = document.getElementById('frame-'+t);
+      if (t === tab){
+        btn.classList.add('border-secondary','text-text','font-semibold');
+        btn.classList.remove('border-transparent','text-text-secondary','font-medium');
+        frame.classList.remove('hidden');
+      } else {
+        btn.classList.remove('border-secondary','text-text','font-semibold');
+        btn.classList.add('border-transparent','text-text-secondary','font-medium');
+        frame.classList.add('hidden');
+      }
+    });
+    // Update "Open standalone" link
+    document.querySelector('a[title="Open in new tab"]').href = tab === 'history' ? './payment-history.html' : './collection-chart.html';
   }
-
-  function copyEmail(email) {
-    navigator.clipboard?.writeText(email);
-    const toast = document.getElementById('toast');
-    document.getElementById('toastMsg').textContent = `${email} copied to clipboard`;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 2200);
-  }
-
-  renderContacts();
 </script>
 
 </body>

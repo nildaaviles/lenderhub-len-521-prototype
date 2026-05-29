@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Payment History — Single Facility</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sofia+Pro:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Clear+Sans:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css"/>
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<style>
+:root {
+  --primary:        #1F2733;
+  --secondary:      #910057;
+  --secondary-500:  #C92693;
+  --secondary-100:  #FFEBF8;
+  --secondary-200:  #FCD4EF;
+
+  --bg:             #F8FAFC;
+  --surface:        #FFFFFF;
+  --border:         #E2E8F0;
+  --border-strong:  #CBD5E1;
+  --text:           #334155;
+  --text-secondary: #64748B;
+  --text-muted:     #94A3B8;
+
+  --slate-400:  #94A3B8;
+  --slate-600:  #475569;
+  --slate-700:  #334155;
+
+  --green:     #16A34A; --green-bg:  #F0FDF4; --green-200: #BBF7D0;
+  --yellow:    #D97706; --yellow-bg: #FFFBEB;
+  --red:       #DC2626; --red-bg:    #FEF2F2;
+
+  --radius-sm: 6px; --radius: 8px; --radius-lg: 12px;
+  --shadow-md: 0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.06);
+
+  --font-primary: 'Sofia Pro', -apple-system, sans-serif;
+  --font-ui:      'Clear Sans', -apple-system, sans-serif;
+  --font-mono:    'Space Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-ui); font-size: 1rem;
+  color: var(--text); background: var(--bg);
+  min-height: 100vh; display: flex;
+  align-items: flex-start; justify-content: center;
+  padding: 40px 24px;
+}
+
+/* ── Card wrapper ── */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  width: 100%; max-width: 900px;
+  padding: 28px 32px;
+  box-shadow: var(--shadow-md);
+}
+
+/* ── Card header ── */
+.card-header {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; margin-bottom: 24px;
+}
+.card-header-left {}
+.card-title {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-primary); font-size: 0.875rem;
+  font-weight: 700; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--text);
+  margin-bottom: 2px;
+}
+.card-title i { font-size: 16px; color: var(--text-secondary); }
+.card-subtitle {
+  font-family: var(--font-ui); font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+.facility-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--secondary-100); border: 1px solid var(--secondary-200);
+  border-radius: 20px; padding: 4px 12px;
+  font-family: var(--font-ui); font-size: 0.75rem;
+  font-weight: 700; color: var(--secondary);
+}
+
+/* ── KPI mini strip ── */
+.kpi-mini {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 12px; margin-bottom: 24px;
+}
+.kpi-mini-card {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 12px 16px;
+}
+.kpi-mini-label {
+  font-family: var(--font-ui); font-size: 0.625rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .07em;
+  color: var(--text-secondary); margin-bottom: 4px;
+}
+.kpi-mini-value {
+  font-family: var(--font-ui); font-size: 1.25rem; font-weight: 700;
+  color: var(--text); line-height: 1;
+}
+.kpi-mini-value.magenta { color: var(--secondary-500); }
+.kpi-mini-value.slate   { color: var(--slate-600); }
+.kpi-mini-sub {
+  font-family: var(--font-ui); font-size: 0.625rem;
+  color: var(--text-muted); margin-top: 3px;
+}
+.pct-pill {
+  display: inline-block; padding: 1px 6px;
+  border-radius: 4px; font-size: 0.625rem; font-weight: 700;
+}
+.pct-pill.magenta { background: var(--secondary-100); color: var(--secondary); }
+.pct-pill.slate   { background: var(--bg); color: var(--slate-600); border: 1px solid var(--border); }
+
+/* ── Chart area ── */
+.chart-wrap { position: relative; height: 260px; margin-bottom: 16px; }
+
+/* ── Legend ── */
+.legend {
+  display: flex; align-items: center; gap: 20px;
+  justify-content: center; margin-bottom: 20px; flex-wrap: wrap;
+}
+.legend-item {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-ui); font-size: 0.75rem;
+  color: var(--text-secondary); font-weight: 500;
+}
+.l-box {
+  width: 12px; height: 12px; border-radius: 3px;
+}
+
+/* ── Ratio bar ── */
+.ratio-section { margin-bottom: 0; }
+.ratio-label {
+  font-family: var(--font-ui); font-size: 0.75rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em;
+  color: var(--text-secondary); margin-bottom: 8px;
+}
+.ratio-bar-wrap {
+  display: flex; height: 8px; border-radius: 99px;
+  overflow: hidden; margin-bottom: 8px;
+}
+.ratio-principal {
+  background: var(--secondary-500);
+  transition: width .6s ease;
+}
+.ratio-interest {
+  background: var(--slate-400);
+  flex: 1;
+}
+.ratio-bar-labels {
+  display: flex; justify-content: space-between;
+  font-family: var(--font-ui); font-size: 0.75rem;
+}
+.ratio-bar-labels .lbl-p { color: var(--secondary-500); font-weight: 700; }
+.ratio-bar-labels .lbl-i { color: var(--slate-600); font-weight: 700; }
+
+/* ── Tooltip ── */
+#tt {
+  position: absolute; background: var(--primary); color: #fff;
+  border-radius: var(--radius); padding: 12px 16px;
+  font-family: var(--font-ui); font-size: 0.75rem;
+  pointer-events: none; opacity: 0; transition: opacity .15s;
+  min-width: 210px; z-index: 20; box-shadow: var(--shadow-md);
+}
+#tt .tt-date {
+  font-family: var(--font-primary); font-size: 0.875rem;
+  font-weight: 700; color: #E2E8F0; margin-bottom: 8px;
+}
+#tt .tt-row {
+  display: flex; justify-content: space-between;
+  gap: 20px; margin-bottom: 4px;
+}
+#tt .tt-row .lbl { color: #94A3B8; }
+#tt .tt-row .val { font-weight: 700; color: #fff; }
+#tt .tt-row .val.magenta { color: #FDB0E4; }
+#tt .tt-row .val.slate   { color: #CBD5E1; }
+#tt hr { border: none; border-top: 1px solid rgba(255,255,255,.12); margin: 8px 0; }
+#tt .tt-total {
+  display: flex; justify-content: space-between;
+  gap: 20px; font-weight: 700; color: #fff;
+}
+#tt .tt-ratio {
+  font-size: 0.7rem; color: #94A3B8; margin-top: 4px;
+  display: flex; justify-content: space-between;
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- Header -->
+  <div class="card-header">
+    <div class="card-header-left">
+      <div class="card-title">
+        <i class="ph ph-hand-coins"></i>
+        Payment History
+      </div>
+      <div class="card-subtitle">Principal and Interest · Monthly breakdown</div>
+    </div>
+    <div class="facility-tag">
+      <i class="ph ph-buildings" style="font-size:12px"></i>
+      Facility A — BBVA Spark
+    </div>
+  </div>
+
+  <!-- KPI mini strip -->
+  <div class="kpi-mini">
+    <div class="kpi-mini-card">
+      <div class="kpi-mini-label">Total Paid (Period)</div>
+      <div class="kpi-mini-value">$100.1M</div>
+      <div class="kpi-mini-sub">Dec 2025 – Apr 2026</div>
+    </div>
+    <div class="kpi-mini-card">
+      <div class="kpi-mini-label">Total Principal</div>
+      <div class="kpi-mini-value magenta">$35.4M</div>
+      <div class="kpi-mini-sub"><span class="pct-pill magenta">35.4%</span> of total paid</div>
+    </div>
+    <div class="kpi-mini-card">
+      <div class="kpi-mini-label">Total Interest</div>
+      <div class="kpi-mini-value slate">$64.7M</div>
+      <div class="kpi-mini-sub"><span class="pct-pill slate">64.6%</span> of total paid</div>
+    </div>
+    <div class="kpi-mini-card">
+      <div class="kpi-mini-label">Last Payment</div>
+      <div class="kpi-mini-value">$20.6M</div>
+      <div class="kpi-mini-sub">Apr 2026</div>
+    </div>
+  </div>
+
+  <!-- Chart -->
+  <div class="chart-wrap">
+    <div id="tt">
+      <div class="tt-date" id="tt-date"></div>
+      <div class="tt-row">
+        <span class="lbl">Principal</span>
+        <span class="val magenta" id="tt-p"></span>
+      </div>
+      <div class="tt-row">
+        <span class="lbl">Interest</span>
+        <span class="val slate" id="tt-i"></span>
+      </div>
+      <hr/>
+      <div class="tt-total">
+        <span>Total</span><span id="tt-total"></span>
+      </div>
+      <div class="tt-ratio" id="tt-ratio"></div>
+    </div>
+    <canvas id="chart"></canvas>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item">
+      <div class="l-box" style="background:#C92693"></div>
+      Principal
+    </div>
+    <div class="legend-item">
+      <div class="l-box" style="background:#94A3B8"></div>
+      Interest
+    </div>
+  </div>
+
+  <!-- Ratio bar — cumulative split -->
+  <div class="ratio-section">
+    <div class="ratio-label">Cumulative Split</div>
+    <div class="ratio-bar-wrap">
+      <!-- Principal 35.4% -->
+      <div class="ratio-principal" style="width:35.4%"></div>
+      <div class="ratio-interest"></div>
+    </div>
+    <div class="ratio-bar-labels">
+      <span class="lbl-p">Principal · $35.4M · 35.4%</span>
+      <span class="lbl-i">Interest · $64.7M · 64.6%</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const labels = ['Dec 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026'];
+
+/* Real-ish data: principal + interest per month */
+const principal = [3.2, 5.8, 6.1, 4.5, 15.8];
+const interest  = [8.3, 15.1, 13.7, 22.8, 4.8];
+
+const fmtM = v => `$${v.toFixed(2)}M`;
+
+const ctx = document.getElementById('chart').getContext('2d');
+
+new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels,
+    datasets: [
+      {
+        label: 'Principal',
+        data: principal,
+        backgroundColor: '#C92693',
+        borderRadius: { topLeft: 4, topRight: 4, bottomLeft: 0, bottomRight: 0 },
+        borderSkipped: false,
+        order: 1,
+      },
+      {
+        label: 'Interest',
+        data: interest,
+        backgroundColor: '#94A3B8',
+        borderRadius: { topLeft: 4, topRight: 4, bottomLeft: 0, bottomRight: 0 },
+        borderSkipped: false,
+        order: 2,
+      },
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        enabled: false,
+        external({ chart, tooltip }) {
+          const tip = document.getElementById('tt');
+          if (tooltip.opacity === 0) { tip.style.opacity = 0; return; }
+
+          const i  = tooltip.dataPoints[0].dataIndex;
+          const pV = principal[i];
+          const iV = interest[i];
+          const tot = pV + iV;
+          const pPct = ((pV / tot) * 100).toFixed(1);
+          const iPct = ((iV / tot) * 100).toFixed(1);
+
+          document.getElementById('tt-date').textContent  = labels[i];
+          document.getElementById('tt-p').textContent     = fmtM(pV);
+          document.getElementById('tt-i').textContent     = fmtM(iV);
+          document.getElementById('tt-total').textContent = fmtM(tot);
+          document.getElementById('tt-ratio').textContent = `Principal ${pPct}%  ·  Interest ${iPct}%`;
+
+          const wrap = chart.canvas.parentNode;
+          let x = tooltip.caretX + 16;
+          let y = tooltip.caretY - 44;
+          if (x + 220 > wrap.clientWidth) x = tooltip.caretX - 230;
+          tip.style.left    = x + 'px';
+          tip.style.top     = Math.max(0, y) + 'px';
+          tip.style.opacity = 1;
+        }
+      }
+    },
+    scales: {
+      x: {
+        stacked: true,
+        grid: { display: false },
+        ticks: {
+          font: { family: "'Clear Sans', sans-serif", size: 12 },
+          color: '#94A3B8',
+        },
+        border: { display: false },
+      },
+      y: {
+        stacked: true,
+        grid: { color: 'rgba(0,0,0,0.04)' },
+        ticks: {
+          font: { family: "'Space Mono', monospace", size: 10 },
+          color: '#94A3B8',
+          callback: v => `$${v}M`,
+          stepSize: 5,
+        },
+        border: { display: false },
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
