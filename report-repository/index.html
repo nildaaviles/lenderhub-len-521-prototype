@@ -189,6 +189,77 @@
 
 </main>
 
+<!-- ════════ AI CHAT · RAG over reports ════════ -->
+<button id="aiChatFab" onclick="toggleAiChat(true)"
+        class="fixed bottom-6 right-6 z-[1150] inline-flex items-center gap-2 px-4 py-3 rounded-full bg-primary text-white shadow-card hover:opacity-90 font-primary font-semibold text-sm">
+  <span class="relative inline-flex w-6 h-6 rounded-full bg-secondary items-center justify-center">
+    <i class="ph-fill ph-sparkle text-white text-sm"></i>
+    <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-success animate-pulse"></span>
+  </span>
+  Chat with your data
+</button>
+
+<div id="aiChatBackdrop" class="hidden fixed inset-0 z-[1140] bg-primary/30 backdrop-blur-[2px]" onclick="toggleAiChat(false)"></div>
+
+<aside id="aiChatPanel" class="fixed top-0 right-0 bottom-0 z-[1145] w-[480px] max-w-[95vw] bg-surface border-l border-border shadow-card transform translate-x-full transition-transform duration-300 ease-out flex flex-col">
+
+  <header class="flex items-center gap-3 px-5 py-4 border-b border-border bg-bg">
+    <span class="relative inline-flex w-9 h-9 rounded-md bg-primary items-center justify-center flex-shrink-0">
+      <i class="ph-fill ph-sparkle text-white"></i>
+      <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-success animate-pulse"></span>
+    </span>
+    <div class="flex-1 min-w-0">
+      <div class="font-primary font-bold text-text text-sm">Chat with your data</div>
+      <div class="text-[11px] text-text-secondary flex items-center gap-1.5">
+        <i class="ph ph-database text-[11px]"></i> RAG over 117 reports · gpt-4o-mini
+      </div>
+    </div>
+    <button onclick="toggleAiChat(false)" class="w-8 h-8 rounded-md grid place-items-center hover:bg-border text-text-secondary"><i class="ph ph-x"></i></button>
+  </header>
+
+  <div id="aiMessages" class="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+    <div class="flex gap-2.5">
+      <span class="w-7 h-7 rounded-full bg-secondary-bg text-secondary grid place-items-center flex-shrink-0 mt-0.5"><i class="ph-fill ph-sparkle text-xs"></i></span>
+      <div class="flex-1">
+        <div class="bg-bg border border-border rounded-lg px-3.5 py-2.5 text-sm text-text">
+          <p class="m-0 mb-2">Hola · puedo responder preguntas sobre los <strong>117 reportes</strong> de este repositorio — salud del colateral, breaches de covenants, cash flow y métricas por originador.</p>
+          <p class="m-0 text-xs text-text-secondary">Prueba con una pregunta sugerida o escribe la tuya.</p>
+        </div>
+
+        <div class="grid grid-cols-1 gap-1.5 mt-3">
+          <button onclick="askAi('¿Cuál fue el último reporte de aforo y cuál es el cushion actual?')" class="text-left text-xs text-text bg-surface border border-border rounded-md px-3 py-2 hover:bg-bg hover:border-border-strong">
+            <i class="ph ph-shield-check text-secondary mr-1"></i> ¿Cuál fue el último reporte de aforo y cuál es el cushion actual?
+          </button>
+          <button onclick="askAi('¿Qué reportes tienen breach de covenant en los últimos 3 cortes?')" class="text-left text-xs text-text bg-surface border border-border rounded-md px-3 py-2 hover:bg-bg hover:border-border-strong">
+            <i class="ph ph-warning text-warning mr-1"></i> ¿Qué reportes tienen breach de covenant en los últimos 3 cortes?
+          </button>
+          <button onclick="askAi('Resume el reporte de discrepancias de la semana pasada')" class="text-left text-xs text-text bg-surface border border-border rounded-md px-3 py-2 hover:bg-bg hover:border-border-strong">
+            <i class="ph ph-list-magnifying-glass text-info mr-1"></i> Resume el reporte de discrepancias de la semana pasada
+          </button>
+          <button onclick="askAi('¿Cuánto se distribuyó en Marzo 2026 y a qué cuentas?')" class="text-left text-xs text-text bg-surface border border-border rounded-md px-3 py-2 hover:bg-bg hover:border-border-strong">
+            <i class="ph ph-arrows-left-right text-success mr-1"></i> ¿Cuánto se distribuyó en Marzo 2026 y a qué cuentas?
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="border-t border-border bg-surface px-4 py-3">
+    <form onsubmit="event.preventDefault(); const v=document.getElementById('aiInput').value.trim(); if(v){ askAi(v); document.getElementById('aiInput').value=''; }" class="flex items-end gap-2">
+      <textarea id="aiInput" rows="1" placeholder="Ask anything about your reports…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.form.requestSubmit();}"
+                class="flex-1 px-3 py-2 text-sm border border-border-strong rounded-md focus:border-secondary focus:outline-none resize-none max-h-32"></textarea>
+      <button type="submit" class="w-10 h-10 rounded-md bg-primary text-white grid place-items-center hover:opacity-90 flex-shrink-0">
+        <i class="ph-bold ph-paper-plane-right"></i>
+      </button>
+    </form>
+    <div class="flex items-center gap-3 mt-2 text-[10px] text-text-muted">
+      <span><i class="ph ph-lightning text-[10px]"></i> Avg response: 1.4s</span>
+      <span><i class="ph ph-shield-check text-[10px]"></i> Data stays in your tenant</span>
+      <span class="ml-auto font-mono">↵ send · ⇧↵ newline</span>
+    </div>
+  </footer>
+</aside>
+
 <div id="toast" class="toast"><i class="ph ph-check-circle"></i><span id="toastMsg">Downloaded</span></div>
 
 <script>
@@ -347,6 +418,245 @@
   }
 
   renderTable();
+
+  // ════════ AI CHAT · mocked RAG retrieval + streaming ════════
+  function toggleAiChat(open){
+    const panel = document.getElementById('aiChatPanel');
+    const backdrop = document.getElementById('aiChatBackdrop');
+    const fab = document.getElementById('aiChatFab');
+    if (open){
+      panel.classList.remove('translate-x-full');
+      backdrop.classList.remove('hidden');
+      fab.classList.add('hidden');
+      setTimeout(()=>document.getElementById('aiInput').focus(), 300);
+    } else {
+      panel.classList.add('translate-x-full');
+      backdrop.classList.add('hidden');
+      fab.classList.remove('hidden');
+    }
+  }
+
+  // Mocked knowledge base: question patterns → curated answers with citations
+  const MOCK_RESPONSES = {
+    aforo: {
+      sources: [
+        { id:'r-mar26', title:'Reporte Mensual F/1600 · Mar 2026',                        type:'PDF', team:'operations', date:'31/03/2026', snippet:'…Aforo reportado 1.28 vs requerido 1.35 — déficit 0.07 (5.2% below minimum)…' },
+        { id:'r-feb26', title:'Reporte Mensual F/1600 · Feb 2026',                        type:'XLSX', team:'operations', date:'29/02/2026', snippet:'…Aforo reportado 1.34 — margen sobre mínimo 0.07pp (en frontera)…' },
+        { id:'cr-mar26',title:'Certificación de Covenants F/1600 · Q1 2026',              type:'PDF', team:'audit',      date:'15/04/2026', snippet:'…Aforo trimestral: 1.30 promedio, oscilación entre 1.34 (Dec 25) y 1.28 (Mar 26). Tendencia decreciente…' },
+      ],
+      answer: `El **último reporte de aforo** (cut-off Mar 31, 2026) muestra:
+
+• **Reportado: 1.28** vs **Requerido: 1.35**
+• **Déficit: −0.07** · 5.2% por debajo del mínimo
+• **Status: Non-compliant** desde Feb 2026
+
+El **cushion** se ha comprimido durante 3 cortes consecutivos: 1.40 (Dec) → 1.34 (Feb, no compliant) → 1.28 (Mar). En tasa anualizada, el aforo está cayendo ~0.06pp/mes — si se mantiene la tendencia, el siguiente corte cruzaría 1.22 (covenant técnico de default acelerado).
+
+**Recomendación:** flagear para risk committee y solicitar plan de cura al originador (LEASE MD) antes del corte de Abril.`,
+    },
+
+    breach: {
+      sources: [
+        { id:'cr-mar26', title:'Certificación de Covenants F/1600 · Q1 2026',             type:'PDF', team:'audit',      date:'15/04/2026', snippet:'…3 covenants en breach: Aforo (1.28<1.35), Mora 90+ (9.18%>8%), Account Balance (2/4 cuentas)…' },
+        { id:'r-mar26',  title:'Reporte Mensual F/1600 · Mar 2026',                       type:'PDF', team:'operations', date:'31/03/2026', snippet:'…Aging 90+ 9.18% — cruzó covenant cap de 8% por primera vez…' },
+        { id:'r-feb26',  title:'Reporte Mensual F/1600 · Feb 2026',                       type:'XLSX',team:'operations', date:'29/02/2026', snippet:'…Aging 90+ 7.96% · margen 4 bps al cap…' },
+        { id:'r-jan26',  title:'Reporte Mensual F/1600 · Jan 2026',                       type:'PDF', team:'operations', date:'31/01/2026', snippet:'…Aging 90+ 7.70% · primera vez por encima de 7%…' },
+      ],
+      answer: `Detecté **3 covenants en breach** en los últimos 3 cortes:
+
+1. **Aforo / Overcollateralization** · Reportado 1.28 vs requerido 1.35 (Mar 2026)
+2. **Mora 90+ días** · 9.18% vs cap 8% — **cruzó por primera vez en Mar 2026**
+3. **Account Balance** · 2 de 4 cuentas del fideicomiso en breach (Payment Reserve −$5.86M, Liquidity Fund −$1.57M)
+
+**Trayectoria del 90+ aging:** 7.70% (Jan) → 7.96% (Feb) → 9.18% (Mar). Subida estricta 3 cortes consecutivos.
+
+**Cross-reference:** los 3 breaches son simultáneos en Marzo 2026 — pattern típico de deterioro sistémico del pool subyacente. La Certificación de Covenants Q1 lo confirma como un evento, no ruido.`,
+    },
+
+    discrepancias: {
+      sources: [
+        { id:'rd-w22', title:'Reporte de Discrepancias F/1600 · Sem 22 (May 18-24)',       type:'PDF', team:'operations', date:'24/05/2026', snippet:'…Se identificaron 14 contratos con diferencia entre cobranza reportada y aplicada. Monto total: $1.24M…' },
+        { id:'rd-w21', title:'Reporte de Discrepancias F/1600 · Sem 21 (May 11-17)',       type:'PDF', team:'operations', date:'17/05/2026', snippet:'…12 discrepancias · $0.87M · principal: timing de aplicación entre cobranza y depósito al fideicomiso…' },
+      ],
+      answer: `El **Reporte de Discrepancias de la semana pasada** (Sem 22 · May 18-24, 2026) identifica:
+
+• **14 contratos** con diferencia entre cobranza reportada y aplicada
+• **Monto total en discrepancia: $1.24M** (vs $0.87M la semana anterior — incremento del 43%)
+• **Causa raíz principal:** timing de aplicación entre BIVA cobranza y depósito al fideicomiso (T+1 vs T+2)
+
+**Pattern:** las discrepancias están **subiendo 4 semanas consecutivas** ($0.45M → $0.72M → $0.87M → $1.24M). Esto coincide con la migración del sistema de cobranza del originador en Abril.
+
+**Acción sugerida:** abrir Data Request a JC Soto (DWH) para reconciliar el batch de aplicación del 20-22 May antes del corte mensual.`,
+    },
+
+    distribucion: {
+      sources: [
+        { id:'inst-mar', title:'Instrucción de Distribución F/1600 · Mar 2026',           type:'PDF', team:'operations', date:'05/04/2026', snippet:'…Total distribuido $19.4M · Capital $4.5M · Interés $14.9M…' },
+        { id:'r-mar26',  title:'Reporte Mensual F/1600 · Mar 2026',                       type:'PDF', team:'operations', date:'31/03/2026', snippet:'…Waterfall ejecutado: Senior 65%, Mezz 28%, Equity 7%. Reserva no se inyectó por estado actual del aforo…' },
+        { id:'val-mar',  title:'Reporte de Validación de Derechos al Cobro · Mar 2026',   type:'XLSX',team:'audit',      date:'26/03/2026', snippet:'…Cobranza neta del mes $20.6M de la cual $19.4M se asignó al pago de servicio de deuda…' },
+      ],
+      answer: `En **Marzo 2026** se distribuyeron **$19.40M** según la Instrucción de Distribución (firmada 05/Abr):
+
+**Composición del pago:**
+• Capital: **$4.50M** (16.5% del total)
+• Interés: **$14.90M** (76.8%)
+• Comisiones: **$0.00M** (waivers vigentes)
+
+**Cuentas afectadas:**
+1. **Collection Account A** → outflow $19.40M al servicio de deuda
+2. **Payment Reserve Fund** → no se inyectó capital (cuenta sigue en breach de $5.86M)
+3. **Liquidity Fund** → no recibió flujo (sigue en breach de $1.57M)
+
+**Observación crítica:** el waterfall sirvió primero el servicio de deuda pero **no recuperó las reservas en breach**. Esto explica por qué Account Balance sigue en Non-Compliant — la cobranza alcanzó para pagar interés/principal pero no para curar el fideicomiso.`,
+    },
+
+    default: {
+      sources: [
+        { id:'r-mar26', title:'Reporte Mensual F/1600 · Mar 2026', type:'PDF', team:'operations', date:'31/03/2026', snippet:'…Snapshot completo de la facility al corte…' },
+      ],
+      answer: `Mock RAG response: el modelo recuperó los reportes más relevantes para tu pregunta y los analizó.
+
+En producción esta respuesta vendría del LLM (gpt-4o-mini) con un contexto construido sobre los chunks vectorizados de los **117 reportes** de este repositorio. El pipeline real sería:
+
+1. **Embed** la pregunta con \`text-embedding-3-small\`
+2. **Retrieve top-k** chunks por similitud coseno desde el vector store
+3. **Re-rank** los chunks con un cross-encoder
+4. **Generate** la respuesta con citations vía OpenAI/Anthropic API
+5. **Stream** los tokens al UI
+
+Para esta demo, las respuestas están mockeadas con 4 patrones predefinidos: aforo, breach, discrepancias, distribución.`,
+    },
+  };
+
+  function matchIntent(question){
+    const q = question.toLowerCase();
+    if (/(aforo|overcollat|cushion|oc\b)/i.test(q)) return 'aforo';
+    if (/(breach|covenant|incumplim|cruzó|cruzo)/i.test(q)) return 'breach';
+    if (/(discrep|reconcilia|diferencia)/i.test(q)) return 'discrepancias';
+    if (/(distrib|waterfall|reparto)/i.test(q)) return 'distribucion';
+    return 'default';
+  }
+
+  function teamChipMini(team){
+    const cls = team==='audit' ? 'bg-audit-bg text-audit' : 'bg-info-bg text-info';
+    const label = team==='audit' ? 'Audit' : 'Operations';
+    return `<span class="inline-block px-1.5 py-0.5 rounded text-[9px] font-bold font-primary ${cls}">${label}</span>`;
+  }
+
+  function escapeHtml(s){ return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  function appendUserMessage(text){
+    const msgs = document.getElementById('aiMessages');
+    msgs.insertAdjacentHTML('beforeend', `
+      <div class="flex gap-2.5 justify-end">
+        <div class="max-w-[85%]">
+          <div class="bg-primary text-white rounded-lg px-3.5 py-2.5 text-sm">${escapeHtml(text)}</div>
+        </div>
+        <span class="w-7 h-7 rounded-full bg-border text-text-secondary grid place-items-center flex-shrink-0 mt-0.5 text-xs font-bold font-primary">CV</span>
+      </div>
+    `);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function appendRetrievalBubble(){
+    const msgs = document.getElementById('aiMessages');
+    const id = 'retrieval-' + Date.now();
+    msgs.insertAdjacentHTML('beforeend', `
+      <div class="flex gap-2.5" id="${id}">
+        <span class="w-7 h-7 rounded-full bg-secondary-bg text-secondary grid place-items-center flex-shrink-0 mt-0.5"><i class="ph-fill ph-sparkle text-xs"></i></span>
+        <div class="flex-1">
+          <div class="bg-bg border border-border rounded-lg px-3.5 py-2.5 text-xs text-text-secondary inline-flex items-center gap-2">
+            <span class="inline-flex gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" style="animation-delay:0ms"></span>
+              <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" style="animation-delay:150ms"></span>
+              <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" style="animation-delay:300ms"></span>
+            </span>
+            <span id="${id}-label">Retrieving from 117 reports…</span>
+          </div>
+        </div>
+      </div>
+    `);
+    msgs.scrollTop = msgs.scrollHeight;
+    return id;
+  }
+
+  function renderSourcesPanel(sources){
+    return `
+      <div class="mt-2 bg-bg border border-border rounded-md p-2.5">
+        <div class="text-[10px] font-primary font-bold uppercase tracking-wider text-text-secondary mb-2 flex items-center gap-1.5">
+          <i class="ph ph-link-simple text-[11px]"></i> Sources · ${sources.length} reports
+        </div>
+        <div class="space-y-1.5">
+          ${sources.map((s, i) => `
+            <div class="bg-surface border border-border rounded p-2 text-xs">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="inline-block w-4 h-4 rounded bg-secondary text-white text-[9px] font-bold grid place-items-center flex-shrink-0">${i+1}</span>
+                <span class="font-semibold text-text">${s.title}</span>
+                ${teamChipMini(s.team)}
+                <span class="inline-block px-1 py-0.5 rounded text-[9px] font-bold border border-border bg-bg text-text-secondary">${s.type}</span>
+                <span class="ml-auto text-[10px] text-text-muted font-mono">${s.date}</span>
+              </div>
+              <div class="text-[11px] text-text-secondary italic mt-1 leading-snug">${s.snippet}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  function appendAiResponse(answer, sources){
+    const msgs = document.getElementById('aiMessages');
+    const html = answer
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n\n/g, '</p><p class="m-0 mb-2">')
+      .replace(/^/, '<p class="m-0 mb-2">')
+      .replace(/$/, '</p>')
+      .replace(/^•\s/gm, '• ');
+    msgs.insertAdjacentHTML('beforeend', `
+      <div class="flex gap-2.5">
+        <span class="w-7 h-7 rounded-full bg-secondary-bg text-secondary grid place-items-center flex-shrink-0 mt-0.5"><i class="ph-fill ph-sparkle text-xs"></i></span>
+        <div class="flex-1">
+          <div class="bg-bg border border-border rounded-lg px-3.5 py-2.5 text-sm text-text leading-relaxed">
+            ${html}
+          </div>
+          ${renderSourcesPanel(sources)}
+          <div class="flex items-center gap-2 mt-2 text-[10px] text-text-muted">
+            <button class="hover:text-text inline-flex items-center gap-1"><i class="ph ph-thumbs-up text-[11px]"></i> Helpful</button>
+            <button class="hover:text-text inline-flex items-center gap-1"><i class="ph ph-thumbs-down text-[11px]"></i></button>
+            <span class="ml-auto font-mono">Retrieved ${sources.length} · 1.${Math.floor(Math.random()*9)}s</span>
+          </div>
+        </div>
+      </div>
+    `);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function askAi(question){
+    appendUserMessage(question);
+    const intent = matchIntent(question);
+    const mock = MOCK_RESPONSES[intent];
+    const retrId = appendRetrievalBubble();
+
+    // Simulate progressive retrieval — show source titles popping in
+    setTimeout(() => {
+      const label = document.getElementById(`${retrId}-label`);
+      if (label) label.textContent = `Found ${mock.sources.length} relevant reports…`;
+    }, 700);
+    setTimeout(() => {
+      const label = document.getElementById(`${retrId}-label`);
+      if (label) label.textContent = `Generating answer with gpt-4o-mini…`;
+    }, 1200);
+
+    // Final response after ~1.6s
+    setTimeout(() => {
+      const ret = document.getElementById(retrId);
+      if (ret) ret.remove();
+      appendAiResponse(mock.answer, mock.sources);
+    }, 1700);
+
+    // Pendo event (in real Angular)
+    console.log('[ai-chat]', { question, intent, source_count: mock.sources.length, timestamp: new Date().toISOString() });
+  }
 </script>
 
 </body>
