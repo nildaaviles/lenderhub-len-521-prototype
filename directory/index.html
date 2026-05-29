@@ -45,9 +45,9 @@
 </script>
 
 <style>
-  .primary-sidebar { width: 208px; transition: width 250ms cubic-bezier(.4,0,.2,1); }
-  .secondary-sidebar { transform: translateX(0); transition: transform 250ms cubic-bezier(.4,0,.2,1), left 250ms cubic-bezier(.4,0,.2,1); left: 208px; }
-  main.app-main { transition: margin-left 250ms cubic-bezier(.4,0,.2,1); margin-left: 492px; }
+  .primary-sidebar { width: 232px; transition: width 250ms cubic-bezier(.4,0,.2,1); }
+  .secondary-sidebar { transform: translateX(0); transition: transform 250ms cubic-bezier(.4,0,.2,1), left 250ms cubic-bezier(.4,0,.2,1); left: 232px; }
+  main.app-main { transition: margin-left 250ms cubic-bezier(.4,0,.2,1); margin-left: 516px; }
   body.primary-collapsed .primary-sidebar { width: 64px; }
   body.primary-collapsed .primary-sidebar .nav-label,
   body.primary-collapsed .primary-sidebar .nav-caret { opacity: 0; pointer-events: none; }
@@ -57,7 +57,7 @@
   body.primary-collapsed main.app-main { margin-left: 348px; }
   body.secondary-hidden main.app-main { margin-left: 232px; }
   body.primary-collapsed.secondary-hidden main.app-main { margin-left: 88px; }
-  .reopen-secondary { display: none; left: 216px; transition: left 250ms cubic-bezier(.4,0,.2,1); }
+  .reopen-secondary { display: none; left: 240px; transition: left 250ms cubic-bezier(.4,0,.2,1); }
   body.secondary-hidden .reopen-secondary { display: flex; }
   body.primary-collapsed .reopen-secondary { left: 72px; }
   .nav-label, .nav-caret { transition: opacity 150ms ease; }
@@ -93,14 +93,14 @@
 <!-- PRIMARY SIDEBAR -->
 <aside class="primary-sidebar fixed top-[52px] left-0 h-[calc(100vh-52px)] bg-bg border-r border-border p-3 z-40 overflow-y-auto flex flex-col gap-1">
   <button onclick="document.body.classList.toggle('primary-collapsed')" class="self-end w-7 h-7 rounded-md grid place-items-center hover:bg-border-strong text-text-secondary mb-1" title="Toggle primary sidebar"><i class="ph ph-sidebar text-base"></i></button>
-  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text font-semibold bg-border cursor-pointer" title="Portfolio Monitoring"><i class="ph ph-chart-line-up text-secondary-active flex-shrink-0"></i><span class="nav-label text-sm whitespace-nowrap overflow-hidden">Portfolio Monitoring</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
-  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-coins flex-shrink-0"></i><span class="nav-label whitespace-nowrap overflow-hidden">Financials</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
-  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-buildings flex-shrink-0"></i><span class="nav-label whitespace-nowrap overflow-hidden">Companies</span></a>
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text font-semibold bg-border cursor-pointer" title="Portfolio Monitoring"><i class="ph ph-chart-line-up text-secondary-active flex-shrink-0"></i><span class="nav-label text-sm truncate">Portfolio Monitoring</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-coins flex-shrink-0"></i><span class="nav-label truncate">Financials</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-buildings flex-shrink-0"></i><span class="nav-label truncate">Companies</span></a>
   <hr class="border-0 border-t border-border my-2" />
-  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-graph flex-shrink-0"></i><span class="nav-label whitespace-nowrap overflow-hidden">Data Studio</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
-  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-seal-check flex-shrink-0"></i><span class="nav-label whitespace-nowrap overflow-hidden">RUG Smart Search</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
-  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-robot flex-shrink-0"></i><span class="nav-label whitespace-nowrap overflow-hidden">AI Verification Agent</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
-  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-gear flex-shrink-0"></i><span class="nav-label whitespace-nowrap overflow-hidden">Admin</span></a>
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-graph flex-shrink-0"></i><span class="nav-label truncate">Data Studio</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-seal-check flex-shrink-0"></i><span class="nav-label truncate">RUG Smart Search</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-robot flex-shrink-0"></i><span class="nav-label truncate">AI Verification Agent</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-gear flex-shrink-0"></i><span class="nav-label truncate">Admin</span></a>
 </aside>
 
 <!-- SECONDARY SIDEBAR -->

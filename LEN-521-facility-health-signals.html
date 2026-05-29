@@ -62,7 +62,7 @@
 
 <style>
   /* ════════ Sidebar transitions ════════ */
-  .primary-sidebar { width: 208px; transition: width 250ms cubic-bezier(.4,0,.2,1); }
+  .primary-sidebar { width: 232px; transition: width 250ms cubic-bezier(.4,0,.2,1); }
   .secondary-sidebar { transform: translateX(0); transition: transform 250ms cubic-bezier(.4,0,.2,1); }
   main.app-main { transition: margin-left 250ms cubic-bezier(.4,0,.2,1); }
 
@@ -77,19 +77,19 @@
   body.secondary-hidden .secondary-sidebar { transform: translateX(-105%); }
 
   /* Main margin adapts to sidebar states */
-  main.app-main { margin-left: 492px; }                                /* default: both visible */
+  main.app-main { margin-left: 516px; }                                /* default: both visible (232 + 260 + 24) */
   body.primary-collapsed main.app-main { margin-left: 348px; }         /* 64 + 260 + 24 */
-  body.secondary-hidden main.app-main { margin-left: 232px; }          /* 208 + 24 */
+  body.secondary-hidden main.app-main { margin-left: 256px; }          /* 232 + 24 */
   body.primary-collapsed.secondary-hidden main.app-main { margin-left: 88px; } /* 64 + 24 */
 
   /* Secondary sidebar position adapts to primary state */
-  .secondary-sidebar { left: 208px; transition: transform 250ms cubic-bezier(.4,0,.2,1), left 250ms cubic-bezier(.4,0,.2,1); }
+  .secondary-sidebar { left: 232px; transition: transform 250ms cubic-bezier(.4,0,.2,1), left 250ms cubic-bezier(.4,0,.2,1); }
   body.primary-collapsed .secondary-sidebar { left: 64px; }
 
   /* Show toggle button (re-open secondary) when hidden — floats on left edge of main */
   .reopen-secondary {
     display: none;
-    left: 216px; /* primary expanded (208 + 8) */
+    left: 240px; /* primary expanded (232 + 8) */
     transition: left 250ms cubic-bezier(.4,0,.2,1);
   }
   body.secondary-hidden .reopen-secondary { display: flex; }
@@ -182,37 +182,37 @@
   </button>
   <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text font-semibold bg-border cursor-pointer" title="Portfolio Monitoring">
     <i class="ph ph-chart-line-up text-secondary-active flex-shrink-0"></i>
-    <span class="nav-label text-sm whitespace-nowrap overflow-hidden">Portfolio Monitoring</span>
+    <span class="nav-label text-sm truncate">Portfolio Monitoring</span>
     <i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i>
   </a>
   <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer" title="Financials">
     <i class="ph ph-coins flex-shrink-0"></i>
-    <span class="nav-label whitespace-nowrap overflow-hidden">Financials</span>
+    <span class="nav-label truncate">Financials</span>
     <i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i>
   </a>
   <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer" title="Companies">
     <i class="ph ph-buildings flex-shrink-0"></i>
-    <span class="nav-label whitespace-nowrap overflow-hidden">Companies</span>
+    <span class="nav-label truncate">Companies</span>
   </a>
   <hr class="border-0 border-t border-border my-2" />
   <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer" title="Data Studio">
     <i class="ph ph-graph flex-shrink-0"></i>
-    <span class="nav-label whitespace-nowrap overflow-hidden">Data Studio</span>
+    <span class="nav-label truncate">Data Studio</span>
     <i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i>
   </a>
   <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer" title="RUG Smart Search">
     <i class="ph ph-seal-check flex-shrink-0"></i>
-    <span class="nav-label whitespace-nowrap overflow-hidden">RUG Smart Search</span>
+    <span class="nav-label truncate">RUG Smart Search</span>
     <i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i>
   </a>
   <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer" title="AI Verification Agent">
     <i class="ph ph-robot flex-shrink-0"></i>
-    <span class="nav-label whitespace-nowrap overflow-hidden">AI Verification Agent</span>
+    <span class="nav-label truncate">AI Verification Agent</span>
     <i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i>
   </a>
   <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer" title="Admin">
     <i class="ph ph-gear flex-shrink-0"></i>
-    <span class="nav-label whitespace-nowrap overflow-hidden">Admin</span>
+    <span class="nav-label truncate">Admin</span>
   </a>
 </aside>
 
