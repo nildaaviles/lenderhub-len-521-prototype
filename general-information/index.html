@@ -92,7 +92,13 @@
 <aside class="primary-sidebar fixed top-[52px] left-0 h-[calc(100vh-52px)] bg-bg border-r border-border p-3 z-40 overflow-y-auto flex flex-col gap-1">
   <button onclick="document.body.classList.toggle('primary-collapsed')" class="self-end w-7 h-7 rounded-md grid place-items-center hover:bg-border-strong text-text-secondary mb-1" title="Toggle primary sidebar"><i class="ph ph-sidebar text-base"></i></button>
   <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text font-semibold bg-border cursor-pointer" title="Portfolio Monitoring"><i class="ph ph-chart-line-up text-secondary-active flex-shrink-0"></i><span class="nav-label text-sm truncate">Portfolio Monitoring</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
-  <a href="../flujo-de-fondos/index.html" class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer" title="Flujo de Fondos"><i class="ph ph-flow-arrow flex-shrink-0"></i><span class="nav-label truncate">Flujo de Fondos</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
+  <div class="flex flex-col">
+    <a onclick="toggleFlujos()" class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer" title="Flujo de Fondos"><i class="ph ph-flow-arrow flex-shrink-0"></i><span class="nav-label truncate">Flujo de Fondos</span><i id="flujosCaret" class="nav-caret ph ph-caret-right ml-auto text-xs text-text-muted"></i></a>
+    <div id="flujosKids" class="nav-group-children hidden flex flex-col gap-0.5 mt-1 ml-2 pl-3 border-l border-border">
+      <a href="../flujo-de-fondos/index.html" class="flex items-center gap-2 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-arrow-down flex-shrink-0"></i><span class="nav-label truncate">Disposiciones</span><span class="nav-label ml-auto inline-flex items-center justify-center min-w-[22px] h-[18px] px-1.5 rounded-full bg-warning-bg text-warning border border-warning text-[10px] font-bold font-primary">2</span></a>
+      <a class="flex items-center gap-2 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-arrow-up flex-shrink-0"></i><span class="nav-label truncate">Distribuciones</span><span class="nav-label ml-auto inline-flex items-center justify-center min-w-[22px] h-[18px] px-1.5 rounded-full bg-warning-bg text-warning border border-warning text-[10px] font-bold font-primary">1</span></a>
+    </div>
+  </div>
   <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-coins flex-shrink-0"></i><span class="nav-label truncate">Financials</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
   <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-buildings flex-shrink-0"></i><span class="nav-label truncate">Companies</span></a>
   <hr class="border-0 border-t border-border my-2" />
@@ -434,5 +440,6 @@
 
 </main>
 
+<script>function toggleFlujos(){const k=document.getElementById("flujosKids"),c=document.getElementById("flujosCaret");const h=k.classList.toggle("hidden");c.classList.toggle("ph-caret-down",!h);c.classList.toggle("ph-caret-right",h);}</script>
 </body>
 </html>
