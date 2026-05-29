@@ -274,30 +274,49 @@
                 class="flex items-center gap-2 px-3 py-1.5 border border-border-strong rounded-md bg-surface hover:border-text-muted"
                 aria-haspopup="listbox" aria-expanded="false"
                 onclick="document.getElementById('currency-panel').classList.toggle('hidden')">
-          <span class="inline-flex w-5 h-3.5 rounded-sm overflow-hidden border border-border" aria-hidden="true">
-            <span style="background:#006847" class="flex-1"></span>
-            <span style="background:#FFFFFF" class="flex-1"></span>
-            <span style="background:#CE1126" class="flex-1"></span>
-          </span>
+          <!-- Mexico flag SVG -->
+          <svg viewBox="0 0 60 40" class="w-5 h-3.5 rounded-sm overflow-hidden border border-border" aria-hidden="true">
+            <rect width="20" height="40" fill="#006847"/>
+            <rect x="20" width="20" height="40" fill="#FFFFFF"/>
+            <rect x="40" width="20" height="40" fill="#CE1126"/>
+            <circle cx="30" cy="20" r="4" fill="none" stroke="#8B4513" stroke-width="0.8"/>
+            <path d="M26 20 Q30 17 34 20 Q30 23 26 20" fill="#5C8A3A"/>
+          </svg>
           <span class="text-sm font-semibold text-text">MXN</span>
           <i class="ph ph-caret-down text-xs text-text-muted ml-0.5"></i>
         </button>
-        <div id="currency-panel" class="hidden absolute mt-12 bg-surface border border-border rounded-lg shadow-card min-w-[180px] p-1.5 z-30">
+        <div id="currency-panel" class="hidden absolute mt-12 bg-surface border border-border rounded-lg shadow-card min-w-[200px] p-1.5 z-30">
           <div class="flex items-center gap-2 px-2.5 py-2 rounded-md bg-border font-semibold text-sm cursor-pointer">
-            <span class="inline-flex w-5 h-3.5 rounded-sm overflow-hidden border border-border" aria-hidden="true">
-              <span style="background:#006847" class="flex-1"></span>
-              <span style="background:#FFFFFF" class="flex-1"></span>
-              <span style="background:#CE1126" class="flex-1"></span>
-            </span>
+            <svg viewBox="0 0 60 40" class="w-5 h-3.5 rounded-sm overflow-hidden border border-border flex-shrink-0" aria-hidden="true">
+              <rect width="20" height="40" fill="#006847"/>
+              <rect x="20" width="20" height="40" fill="#FFFFFF"/>
+              <rect x="40" width="20" height="40" fill="#CE1126"/>
+              <circle cx="30" cy="20" r="4" fill="none" stroke="#8B4513" stroke-width="0.8"/>
+              <path d="M26 20 Q30 17 34 20 Q30 23 26 20" fill="#5C8A3A"/>
+            </svg>
             <span>MXN</span>
             <span class="text-xs text-text-secondary ml-auto">Mexican Peso</span>
           </div>
           <div class="flex items-center gap-2 px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer">
-            <span class="inline-flex w-5 h-3.5 rounded-sm overflow-hidden border border-border" aria-hidden="true">
-              <span style="background:#B22234" class="flex-1"></span>
-              <span style="background:#FFFFFF" class="flex-1"></span>
-              <span style="background:#3C3B6E" class="flex-1"></span>
-            </span>
+            <!-- USA flag SVG · 7 red + 6 white stripes + blue canton with 50 stars (simplified) -->
+            <svg viewBox="0 0 60 40" class="w-5 h-3.5 rounded-sm overflow-hidden border border-border flex-shrink-0" aria-hidden="true">
+              <rect width="60" height="40" fill="#B22234"/>
+              <rect y="3.08" width="60" height="3.08" fill="#FFFFFF"/>
+              <rect y="9.23" width="60" height="3.08" fill="#FFFFFF"/>
+              <rect y="15.38" width="60" height="3.08" fill="#FFFFFF"/>
+              <rect y="21.54" width="60" height="3.08" fill="#FFFFFF"/>
+              <rect y="27.69" width="60" height="3.08" fill="#FFFFFF"/>
+              <rect y="33.85" width="60" height="3.08" fill="#FFFFFF"/>
+              <rect width="24" height="21.54" fill="#3C3B6E"/>
+              <g fill="#FFFFFF">
+                <circle cx="3" cy="3" r="0.8"/><circle cx="7" cy="3" r="0.8"/><circle cx="11" cy="3" r="0.8"/><circle cx="15" cy="3" r="0.8"/><circle cx="19" cy="3" r="0.8"/>
+                <circle cx="5" cy="6" r="0.8"/><circle cx="9" cy="6" r="0.8"/><circle cx="13" cy="6" r="0.8"/><circle cx="17" cy="6" r="0.8"/>
+                <circle cx="3" cy="9" r="0.8"/><circle cx="7" cy="9" r="0.8"/><circle cx="11" cy="9" r="0.8"/><circle cx="15" cy="9" r="0.8"/><circle cx="19" cy="9" r="0.8"/>
+                <circle cx="5" cy="12" r="0.8"/><circle cx="9" cy="12" r="0.8"/><circle cx="13" cy="12" r="0.8"/><circle cx="17" cy="12" r="0.8"/>
+                <circle cx="3" cy="15" r="0.8"/><circle cx="7" cy="15" r="0.8"/><circle cx="11" cy="15" r="0.8"/><circle cx="15" cy="15" r="0.8"/><circle cx="19" cy="15" r="0.8"/>
+                <circle cx="5" cy="18" r="0.8"/><circle cx="9" cy="18" r="0.8"/><circle cx="13" cy="18" r="0.8"/><circle cx="17" cy="18" r="0.8"/>
+              </g>
+            </svg>
             <span>USD</span>
             <span class="text-xs text-text-secondary ml-auto">US Dollar</span>
           </div>
