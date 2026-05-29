@@ -270,6 +270,26 @@ body {
     </div>
   </div>
 
+  <!-- View table disclosure -->
+  <details style="margin-top:16px;border-top:1px solid #E2E8F0;padding-top:14px">
+    <summary style="display:inline-flex;align-items:center;gap:6px;color:#910057;font-size:12px;font-weight:600;font-family:'Sofia Sans',sans-serif;cursor:pointer;list-none">
+      <i class="ph ph-caret-right" style="font-size:12px"></i>
+      View table
+    </summary>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:10px;font-family:'Noto Sans',sans-serif">
+      <thead>
+        <tr style="background:#F8FAFC">
+          <th style="text-align:left;padding:10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0">Cut-off</th>
+          <th style="text-align:right;padding:10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0">Principal</th>
+          <th style="text-align:right;padding:10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0">Interest</th>
+          <th style="text-align:right;padding:10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0">Total</th>
+          <th style="text-align:right;padding:10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0">Principal %</th>
+        </tr>
+      </thead>
+      <tbody id="paymentTableBody"></tbody>
+    </table>
+  </details>
+
   <!-- Ratio bar — cumulative split -->
   <div class="ratio-section">
     <div class="ratio-label">Cumulative Split</div>
@@ -379,6 +399,35 @@ new Chart(ctx, {
     }
   }
 });
+
+// View table render
+(function renderPaymentTable(){
+  const tbody = document.getElementById('paymentTableBody');
+  if (!tbody) return;
+  let totalP = 0, totalI = 0;
+  const rows = labels.map((label, i) => {
+    const p = principal[i], it = interest[i];
+    const total = p + it;
+    const pct = total > 0 ? Math.round((p/total)*100) : 0;
+    totalP += p; totalI += it;
+    return `<tr>
+      <td style="padding:10px;border-bottom:1px solid #E2E8F0">${label}</td>
+      <td style="padding:10px;text-align:right;font-family:'Space Mono',monospace;border-bottom:1px solid #E2E8F0;color:#C92693;font-weight:600">$${p.toFixed(2)}M</td>
+      <td style="padding:10px;text-align:right;font-family:'Space Mono',monospace;border-bottom:1px solid #E2E8F0;color:#64748B">$${it.toFixed(2)}M</td>
+      <td style="padding:10px;text-align:right;font-family:'Space Mono',monospace;border-bottom:1px solid #E2E8F0;font-weight:700">$${total.toFixed(2)}M</td>
+      <td style="padding:10px;text-align:right;font-family:'Space Mono',monospace;border-bottom:1px solid #E2E8F0">${pct}%</td>
+    </tr>`;
+  }).join('');
+  const grand = totalP + totalI;
+  const grandPct = grand > 0 ? Math.round((totalP/grand)*100) : 0;
+  tbody.innerHTML = rows + `<tr style="background:#F8FAFC;border-top:2px solid #CBD5E1">
+    <td style="padding:10px;font-weight:700;font-family:'Sofia Sans',sans-serif;text-transform:uppercase;letter-spacing:.06em;font-size:10px;color:#64748B">Total · ${labels.length} cuts</td>
+    <td style="padding:10px;text-align:right;font-family:'Space Mono',monospace;font-weight:700;color:#C92693">$${totalP.toFixed(2)}M</td>
+    <td style="padding:10px;text-align:right;font-family:'Space Mono',monospace;font-weight:700">$${totalI.toFixed(2)}M</td>
+    <td style="padding:10px;text-align:right;font-family:'Space Mono',monospace;font-weight:700">$${grand.toFixed(2)}M</td>
+    <td style="padding:10px;text-align:right;font-family:'Space Mono',monospace;font-weight:700">${grandPct}%</td>
+  </tr>`;
+})();
 </script>
 </body>
 </html>

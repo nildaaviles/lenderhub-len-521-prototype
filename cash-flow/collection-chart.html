@@ -251,6 +251,26 @@
       <canvas id="chart"></canvas>
     </div>
 
+    <!-- View table disclosure -->
+    <details style="margin-top:16px;border-top:1px solid #E2E8F0;padding-top:14px">
+      <summary style="display:inline-flex;align-items:center;gap:6px;color:#910057;font-size:12px;font-weight:600;font-family:'Sofia Sans',sans-serif;cursor:pointer;list-none">
+        <i class="ph ph-caret-right" style="font-size:12px"></i>
+        View table
+      </summary>
+      <table id="collectionTable" style="width:100%;border-collapse:collapse;font-size:13px;margin-top:10px;font-family:'Noto Sans',sans-serif">
+        <thead>
+          <tr style="background:#F8FAFC">
+            <th style="text-align:left;padding:10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0">Cut-off</th>
+            <th style="text-align:right;padding:10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0">Expected</th>
+            <th style="text-align:right;padding:10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0">Collected</th>
+            <th style="text-align:right;padding:10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0">Variance</th>
+            <th style="text-align:right;padding:10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0">Coverage</th>
+          </tr>
+        </thead>
+        <tbody id="collectionTableBody"></tbody>
+      </table>
+    </details>
+
   </div>
 </div>
 
@@ -456,6 +476,43 @@
 
     chart.update();
     updateKpis();
+    renderTable();
+  }
+
+  function renderTable(){
+    const labels = datasets[current].labels;
+    const exp = datasets[current].expected;
+    const col = datasets[current].collected;
+    const tbody = document.getElementById('collectionTableBody');
+    let totalExp = 0, totalCol = 0;
+    const rows = labels.map((label, i) => {
+      const e = exp[i], c = col[i];
+      const variance = c - e;
+      const coverage = e > 0 ? Math.round((c/e)*100) : 0;
+      totalExp += e; totalCol += c;
+      const varColor = variance >= 0 ? '#16A34A' : '#DC2626';
+      const varSign = variance >= 0 ? '+' : '−';
+      const covColor = coverage >= 100 ? '#16A34A' : coverage >= 80 ? '#B45309' : '#DC2626';
+      return `<tr>
+        <td style="padding:10px;border-bottom:1px solid #E2E8F0">${label}</td>
+        <td style="padding:10px;text-align:right;font-family:'Space Mono',monospace;border-bottom:1px solid #E2E8F0">$${e.toFixed(1)}M</td>
+        <td style="padding:10px;text-align:right;font-family:'Space Mono',monospace;border-bottom:1px solid #E2E8F0;font-weight:600">$${c.toFixed(1)}M</td>
+        <td style="padding:10px;text-align:right;font-family:'Space Mono',monospace;border-bottom:1px solid #E2E8F0;color:${varColor};font-weight:600">${varSign}$${Math.abs(variance).toFixed(1)}M</td>
+        <td style="padding:10px;text-align:right;font-family:'Space Mono',monospace;border-bottom:1px solid #E2E8F0;color:${covColor};font-weight:700">${coverage}%</td>
+      </tr>`;
+    }).join('');
+    const totalVar = totalCol - totalExp;
+    const totalCov = totalExp > 0 ? Math.round((totalCol/totalExp)*100) : 0;
+    const totalVarColor = totalVar >= 0 ? '#16A34A' : '#DC2626';
+    const totalVarSign = totalVar >= 0 ? '+' : '−';
+    const totalCovColor = totalCov >= 100 ? '#16A34A' : totalCov >= 80 ? '#B45309' : '#DC2626';
+    tbody.innerHTML = rows + `<tr style="background:#F8FAFC;border-top:2px solid #CBD5E1">
+      <td style="padding:10px;font-weight:700;font-family:'Sofia Sans',sans-serif;text-transform:uppercase;letter-spacing:.06em;font-size:10px;color:#64748B">Total · ${labels.length} ${labels.length===1?'cut':'cuts'}</td>
+      <td style="padding:10px;text-align:right;font-family:'Space Mono',monospace;font-weight:700">$${totalExp.toFixed(1)}M</td>
+      <td style="padding:10px;text-align:right;font-family:'Space Mono',monospace;font-weight:700">$${totalCol.toFixed(1)}M</td>
+      <td style="padding:10px;text-align:right;font-family:'Space Mono',monospace;font-weight:700;color:${totalVarColor}">${totalVarSign}$${Math.abs(totalVar).toFixed(1)}M</td>
+      <td style="padding:10px;text-align:right;font-family:'Space Mono',monospace;font-weight:700;color:${totalCovColor}">${totalCov}%</td>
+    </tr>`;
   }
 
   document.querySelectorAll('#filters .filter-pill').forEach(pill => {
@@ -467,6 +524,7 @@
   });
 
   updateKpis();
+  renderTable();
 </script>
 </body>
 </html>
