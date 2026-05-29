@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LenderHub — Flujo de Disposición (CXC Design System)</title>
+
+<!-- Phosphor Icons (DS: iconography) -->
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css"/>
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css"/>
+<style>
+  /* DS: font imports */
+  @import url('https://fonts.googleapis.com/css2?family=Sofia+Sans:wght@400;500;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700&display=swap');
+
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  :root{
+    /* ===== DS TOKENS ===== */
+    --slate-50:#F8FAFC; --slate-100:#F1F5F9; --slate-200:#E2E8F0; --slate-300:#CBD5E1;
+    --slate-400:#94A3B8; --slate-500:#64748B; --slate-600:#475569; --slate-700:#334155; --slate-800:#1E293B;
+    --bg:#F8FAFC;            /* application background — Slate-50 */
+    --card:#FFFFFF;
+    --border:#E2E8F0;        /* Slate-200 */
+    --border-2:#CBD5E1;      /* Slate-300 */
+    --text:#334155;          /* primary text — Slate-700 */
+    --text-2:#64748B;        /* secondary text — Slate-500 */
+    --muted:#94A3B8;         /* Slate-400 */
+    --primary:#1F2733;       /* primary button */
+    --brand:#910057; --brand-700:#840058; --brand-500:#C92693; --brand-50:#FFF5FB; --brand-100:#FFEBF8;
+    --info:#0EA5E9; --info-50:#F0F9FF; --info-100:#E0F2FE; --info-700:#0369A1;
+    --success:#16A34A; --success-50:#F0FDF4; --success-100:#DCFCE7; --success-700:#15803D;
+    --warning:#D97706; --warning-50:#FFFBEB; --warning-100:#FEF3C7; --warning-700:#B45309;
+    --danger:#DC2626; --danger-50:#FEF2F2; --danger-100:#FEE2E2; --danger-700:#B91C1C;
+    --topbar-h:56px; --sidebar-w:224px;
+  }
+
+  /* DS: ui font = Clear Sans, headers = Sofia Pro. Forbidden: Arial, Segoe UI */
+  body{font-family:'Clear Sans','Noto Sans',sans-serif;background:var(--bg);color:var(--text);font-size:16px;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4,.font-head{font-family:'Sofia Sans','Clear Sans','Noto Sans',sans-serif}
+
+  /* ===================== TOPBAR (level 1) ===================== */
+  .topbar{position:fixed;top:0;left:0;right:0;height:var(--topbar-h);z-index:1100;background:var(--slate-50);
+    border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+  .tb-left{display:flex;align-items:center;gap:10px}
+  .tb-logo{height:24px;display:flex;align-items:center;gap:8px;font-family:'Sofia Sans',sans-serif;font-weight:700;font-size:1.15rem;color:var(--slate-800)}
+  .tb-logo .mk{width:24px;height:24px;border-radius:6px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700}
+  .tb-logo b{color:var(--brand)}
+  .tb-right{display:flex;align-items:center;gap:8px}
+  .tb-icon{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--slate-500);cursor:pointer;position:relative;font-size:18px}
+  .tb-icon:hover{background:var(--slate-200)}
+  .tb-dot{position:absolute;top:7px;right:8px;width:7px;height:7px;border-radius:50%;background:var(--danger);border:1.5px solid var(--slate-50)}
+
+  /* ACTING AS (sits with user profile, right of topbar) */
+  .acting{display:flex;align-items:center;gap:8px;padding-left:8px;border-left:1px solid var(--border);margin-left:4px}
+  .acting-lbl{font-size:0.625rem;color:var(--text-2);text-transform:uppercase;letter-spacing:0.6px;font-weight:700}
+  .seg{display:flex;background:#fff;border:1px solid var(--border);border-radius:8px;padding:2px;gap:2px}
+  .seg button{padding:6px 12px;border-radius:6px;border:none;background:transparent;color:var(--text-2);font-size:0.75rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:inherit}
+  .seg button.on-cxc{background:var(--info-100);color:var(--info-700)}
+  .seg button.on-lender{background:var(--brand-100);color:var(--brand)}
+  .avatar{width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;color:#fff}
+  .av-cxc{background:var(--info)} .av-len{background:var(--brand-500)}
+
+  /* ===================== LAYOUT (level 2) ===================== */
+  .sidebar{position:fixed;top:var(--topbar-h);left:0;width:var(--sidebar-w);height:calc(100vh - var(--topbar-h));
+    background:var(--slate-50);border-right:1px solid var(--border);overflow-y:auto;overflow-x:hidden;z-index:1000;padding:12px 10px}
+  .sb-org{padding:6px 8px 12px;font-size:0.7rem;color:var(--text-2);line-height:1.45}
+  .sb-org b{color:var(--text)}
+  .sb-cat{font-family:'Sofia Sans',sans-serif;font-size:0.625rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:12px 8px 4px}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:8px;border-radius:6px;font-size:1rem;color:var(--slate-700);font-weight:500;cursor:pointer;margin-bottom:2px}
+  .nav-item i{font-size:18px;color:var(--slate-700)}
+  .nav-item:hover{background:var(--slate-300);font-weight:600}
+  .nav-item.active{background:var(--slate-200);font-weight:600}
+  .nav-item.active i{color:var(--brand-700)}
+  .nav-item .pill{margin-left:auto;font-size:0.625rem;padding:1px 7px;border-radius:10px;font-weight:700}
+  .pill-amber{background:var(--warning-100);color:var(--warning-700)}
+
+  .main{margin-left:var(--sidebar-w);padding-top:var(--topbar-h);min-height:100vh}
+  .shell{background:var(--card);margin:24px;border-radius:8px;padding:24px;min-height:calc(100vh - var(--topbar-h) - 48px)}
+
+  /* ===================== ATOMS ===================== */
+  .badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:6px;font-size:0.75rem;font-weight:600}
+  .b-info{background:var(--info-100);color:var(--info-700)}
+  .b-success{background:var(--success-100);color:var(--success-700)}
+  .b-warning{background:var(--warning-100);color:var(--warning-700)}
+  .b-danger{background:var(--danger-100);color:var(--danger-700)}
+  .b-brand{background:var(--brand-100);color:var(--brand)}
+  .b-muted{background:var(--slate-100);color:var(--slate-500)}
+
+  .crumb{font-size:0.75rem;color:var(--text-2);margin-bottom:14px}
+  .crumb b{color:var(--text)}
+  .lnk{color:var(--brand-700);font-weight:600;cursor:pointer}  /* DS: links only secondary-700 */
+
+  /* DS BUTTONS — <p-button> equivalents */
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:6px;font-size:1rem;font-weight:600;cursor:pointer;border:1px solid transparent;font-family:inherit;line-height:1.2}
+  .btn i{font-size:16px}
+  .btn-primary{background:var(--primary);color:#fff}          /* only one per screen */
+  .btn-primary:hover{background:#11161e}
+  .btn-secondary{background:var(--slate-200);color:var(--slate-700)}
+  .btn-secondary:hover{background:var(--slate-300)}
+  .btn-outlined{background:#fff;border-color:var(--border);color:var(--slate-700)}
+  .btn-outlined:hover{background:var(--slate-50)}
+  .btn-text-brand{background:transparent;color:var(--brand)}
+  .btn-text-grey{background:transparent;color:var(--text-2)}
+  .btn[disabled]{opacity:.5;cursor:not-allowed}
+  .btn-block{width:100%;justify-content:center}
+
+  .page-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;gap:16px}
+  .page-head h1{font-size:2rem;font-weight:700;letter-spacing:-0.5px;margin-bottom:6px;color:var(--slate-800)}
+  .page-head .meta{font-size:0.9rem;color:var(--text-2);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+  /* KPI CARDS (DS: card_kpi) */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+  .kpi{background:var(--slate-50);border:1px solid var(--slate-50);border-radius:12px;padding:16px}
+  .kpi .t{font-weight:600;font-size:1rem;color:var(--text);margin-bottom:6px}
+  .kpi .v{font-weight:700;font-size:2rem;color:var(--slate-700);line-height:1.1}
+  .kpi .s{font-weight:400;font-size:0.9rem;color:var(--text-2);margin-top:4px}
+  .kpi.is-success .v{color:var(--success-700)} .kpi.is-warning .v{color:var(--warning-700)} .kpi.is-danger .v{color:var(--danger-700)}
+
+  /* CONTENT PANEL (non-KPI) */
+  .panel{border:1px solid var(--border);border-radius:8px;padding:18px;margin-bottom:16px}
+  .panel-title{font-family:'Sofia Sans',sans-serif;font-size:1.125rem;font-weight:600;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .panel-hint{font-size:0.9rem;color:var(--text-2);margin-bottom:14px}
+
+  .view{display:none} .view.active{display:block}
+
+  /* TABLE */
+  table.tbl{width:100%;border-collapse:collapse;font-size:0.9rem}
+  table.tbl th{text-align:left;font-size:0.75rem;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;padding:10px 12px;border-bottom:1px solid var(--border)}
+  table.tbl td{padding:12px;border-bottom:1px solid var(--slate-100);vertical-align:middle}
+  table.tbl tr:last-child td{border-bottom:none}
+  table.tbl tr.click{cursor:pointer}
+  table.tbl tr.click:hover td{background:var(--slate-50)}
+  .fac-name{font-weight:600;margin-bottom:2px}
+  .fac-sub{font-size:0.75rem;color:var(--text-2);display:flex;gap:6px;align-items:center}
+  .chip-aforo{display:inline-flex;padding:2px 8px;border-radius:6px;font-size:0.8rem;font-weight:700}
+  .ca-ok{background:var(--success-100);color:var(--success-700)} .ca-warn{background:var(--warning-100);color:var(--warning-700)} .ca-bad{background:var(--danger-100);color:var(--danger-700)}
+  .prog{display:flex;align-items:center;gap:8px}
+  .prog-bg{width:74px;height:6px;background:var(--slate-200);border-radius:4px} .prog-fl{height:6px;border-radius:4px}
+
+  /* AFORO GAUGE */
+  .gauge-track{position:relative;height:34px;background:var(--slate-100);border-radius:6px;overflow:hidden;border:1px solid var(--border);margin-top:8px}
+  .gauge-fill{position:absolute;left:0;top:0;height:100%;border-radius:5px 0 0 5px;transition:width .35s,background .35s}
+  .gauge-min{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--slate-700);z-index:3}
+  .gauge-min::after{content:'mín';position:absolute;top:-15px;left:50%;transform:translateX(-50%);font-size:0.625rem;color:var(--slate-700);font-weight:700}
+  .gauge-val{position:absolute;top:50%;left:12px;transform:translateY(-50%);font-size:0.9rem;font-weight:700;z-index:2;color:#fff}
+  .gauge-scale{display:flex;justify-content:space-between;font-size:0.625rem;color:var(--muted);margin-top:6px}
+
+  .kv{display:flex;justify-content:space-between;font-size:0.9rem;padding:8px 0;border-bottom:1px solid var(--border)}
+  .kv:last-child{border-bottom:none} .kv .k{color:var(--text-2)}
+  .arrow{color:var(--muted);margin:0 6px}
+  .bb-bar-bg{height:8px;background:var(--slate-200);border-radius:4px;margin-top:8px;overflow:hidden} .bb-bar-fill{height:100%;border-radius:4px}
+
+  .two-col{display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start}
+
+  /* CALLOUT */
+  .callout{border-radius:8px;padding:12px 14px;font-size:0.9rem;line-height:1.5;margin-top:14px}
+  .callout.ok{background:var(--success-50);border:1px solid var(--success-100);color:var(--success-700)}
+
+  /* FORM (inside modal) */
+  .field{margin-bottom:14px}
+  .field label{display:block;font-family:'Sofia Sans',sans-serif;font-size:0.9rem;font-weight:500;color:var(--slate-700);margin-bottom:4px}
+  .field input{width:100%;height:40px;padding:8px 12px;background:#fff;border:1px solid var(--border-2);border-radius:6px;color:var(--slate-700);font-size:1rem;font-family:'Clear Sans',sans-serif;outline:none}
+  .field input:hover{border-color:var(--slate-400)}
+  .field input:focus{border-color:#27272A;box-shadow:0 0 0 3px var(--slate-200)}
+  .amount-input{font-size:1.25rem!important;font-weight:700}
+  .chips{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+  .chip{padding:6px 10px;border-radius:6px;font-size:0.8rem;font-weight:600;cursor:pointer;background:#fff;color:var(--text-2);border:1px solid var(--border)}
+  .chip:hover{border-color:var(--slate-400);color:var(--text)}
+  .chip.active{background:var(--info-100);color:var(--info-700);border-color:var(--info)}
+
+  .sim{border-radius:8px;padding:14px;margin:6px 0 0;border:1px solid var(--border);background:var(--slate-50)}
+  .sim.ok{border-color:var(--success-100);background:var(--success-50)}
+  .sim.bad{border-color:var(--danger-100);background:var(--danger-50)}
+  .sim-title{font-family:'Sofia Sans',sans-serif;font-size:0.75rem;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;display:flex;justify-content:space-between}
+  .sim-row{display:flex;justify-content:space-between;font-size:0.9rem;padding:5px 0}
+  .sim-result{margin-top:10px;padding:9px 12px;border-radius:6px;display:flex;justify-content:space-between;font-size:0.9rem;font-weight:700}
+  .sim-result.ok{background:var(--success-100);color:var(--success-700)} .sim-result.bad{background:var(--danger-100);color:var(--danger-700)}
+  .sim-msg{font-size:0.8rem;line-height:1.45;margin-top:10px;padding:9px 12px;border-radius:6px}
+  .sim-msg.ok{background:var(--success-100);color:var(--success-700)} .sim-msg.bad{background:var(--danger-100);color:var(--danger-700)}
+
+  /* TIMELINE */
+  .timeline{display:flex;margin:6px 0 20px}
+  .tl-step{flex:1;display:flex;flex-direction:column;align-items:center;position:relative}
+  .tl-step:not(:last-child)::after{content:'';position:absolute;top:12px;left:50%;width:100%;height:2px;background:var(--border);z-index:0}
+  .tl-step.done::after{background:var(--success)}
+  .tl-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;z-index:1;position:relative}
+  .tl-dot.done{background:var(--success);color:#fff}
+  .tl-dot.active{background:var(--warning);color:#fff;box-shadow:0 0 0 3px var(--warning-100)}
+  .tl-dot.pending{background:var(--slate-100);color:var(--muted);border:1.5px solid var(--border)}
+  .tl-label{font-size:0.7rem;color:var(--text-2);margin-top:7px;text-align:center}
+  .tl-label.active{color:var(--warning-700);font-weight:700} .tl-label.done{color:var(--success-700)}
+
+  /* FLOWMAP stepper */
+  .flowmap{display:flex;align-items:center;gap:6px;font-size:0.75rem;color:var(--text-2);margin-bottom:18px;flex-wrap:wrap}
+  .fstep{padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:#fff}
+  .fstep.cur{border-color:var(--info);background:var(--info-50);color:var(--info-700);font-weight:600}
+  .fstep.cur.len{border-color:var(--brand);background:var(--brand-50);color:var(--brand);font-weight:600}
+  .fstep.fdone{color:var(--success-700);border-color:var(--success-100);background:var(--success-50)}
+  .farrow{color:var(--border-2)}
+
+  /* REQUEST HEADER (lender) */
+  .req-head{border:1px solid var(--warning-100);background:var(--warning-50);border-radius:8px;padding:18px 20px;margin-bottom:18px}
+  .req-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:14px}
+  .req-top h1{font-size:1.8rem;font-weight:700;letter-spacing:-0.5px;margin:8px 0 5px;color:var(--slate-800)}
+  .req-amount{text-align:right;white-space:nowrap}
+  .req-amount .l{font-size:0.75rem;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px}
+  .req-amount .v{font-size:1.8rem;font-weight:700;letter-spacing:-1px;color:var(--slate-800)}
+  .countdown{margin-top:4px;font-size:0.8rem;color:var(--warning-700);font-weight:700}
+  .req-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .meta-box{background:#fff;border:1px solid var(--warning-100);border-radius:8px;padding:10px 12px}
+  .meta-box .k{font-size:0.625rem;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+  .meta-box .v{font-size:0.9rem;font-weight:600}
+
+  .pos-row{display:flex;justify-content:space-between;font-size:0.9rem;padding:9px 0;border-bottom:1px solid var(--border)}
+  .pos-row:last-child{border-bottom:none} .pos-row .k{color:var(--text-2)}
+  .pos-delta{font-size:0.7rem;color:var(--success-700);font-weight:700}
+
+  textarea{width:100%;margin-top:10px;padding:8px 12px;background:#fff;border:1px solid var(--border-2);border-radius:6px;color:var(--slate-700);font-size:0.9rem;outline:none;resize:vertical;min-height:54px;font-family:'Clear Sans',sans-serif}
+  textarea:focus{border-color:#27272A;box-shadow:0 0 0 3px var(--slate-200)}
+
+  .ft-bar-bg{height:10px;background:var(--slate-200);border-radius:5px;overflow:hidden;margin:10px 0}
+  .ft-bar-fill{height:100%;border-radius:5px;background:var(--success);transition:width .4s}
+
+  /* ===================== MODAL (DS: p-dialog) ===================== */
+  .overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;z-index:1300;padding:24px}
+  .overlay.show{display:flex}
+  .dialog{background:#fff;border-radius:8px;width:100%;max-width:720px;min-width:480px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(15,23,42,.25)}
+  .dialog.sm{max-width:480px;min-width:auto}
+  .dlg-head{display:flex;align-items:flex-start;justify-content:space-between;padding:20px 22px 14px;border-bottom:1px solid var(--border)}
+  .dlg-head h3{font-family:'Sofia Sans',sans-serif;font-size:1.25rem;font-weight:700;color:var(--slate-800)}
+  .dlg-head p{font-size:0.8rem;color:var(--text-2);margin-top:3px}
+  .dlg-close{width:32px;height:32px;border-radius:6px;border:none;background:transparent;color:var(--text-2);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center}
+  .dlg-close:hover{background:var(--slate-100)}
+  .dlg-body{padding:20px 22px;overflow-y:auto}
+  .dlg-foot{padding:14px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+  .dlg-center{padding:26px;text-align:center}
+  .dlg-center .ic{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 14px}
+  .ic-info{background:var(--info-100);color:var(--info-700)} .ic-success{background:var(--success-100);color:var(--success-700)}
+  .dlg-center h3{font-family:'Sofia Sans',sans-serif;font-size:1.25rem;font-weight:700;margin-bottom:8px;color:var(--slate-800)}
+  .dlg-center p{font-size:0.9rem;color:var(--text-2);line-height:1.55;margin-bottom:18px}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:24px;right:24px;z-index:1400;background:#fff;border:1px solid var(--border);border-radius:8px;padding:14px 16px;max-width:360px;box-shadow:0 12px 30px rgba(15,23,42,.18);opacity:0;transform:translateY(8px);transition:.25s;pointer-events:none}
+  .toast.show{opacity:1;transform:translateY(0)}
+  .toast .t-title{font-family:'Sofia Sans',sans-serif;font-weight:700;margin-bottom:3px}
+
+  /* ===================== WATERFALL ===================== */
+  .wf-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:0.9rem}
+  .wf-row:last-child{border-bottom:none}
+  .wf-ic{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+  .wf-lbl{flex:1} .wf-lbl .s{font-size:0.75rem;color:var(--text-2)}
+  .wf-amt{font-weight:700;white-space:nowrap}
+  .wf-in{background:var(--info-100);color:var(--info-700)} .wf-fee{background:var(--slate-200);color:var(--slate-600)}
+  .wf-pay{background:var(--success-100);color:var(--success-700)} .wf-res{background:var(--brand-100);color:var(--brand)}
+
+  /* ===================== LETTER (carta generada) ===================== */
+  .dialog.lg{max-width:760px}
+  .letter{font-size:0.82rem;line-height:1.6;color:var(--slate-700)}
+  .letter .lt-head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--brand);padding-bottom:10px;margin-bottom:14px}
+  .letter .lt-mark{font-weight:700;color:var(--brand);font-size:0.8rem;letter-spacing:0.3px}
+  .letter .lt-title{font-family:'Sofia Sans',sans-serif;font-weight:700;font-size:1.05rem;color:var(--slate-800);margin-top:2px}
+  .letter .lt-date{text-align:right;font-size:0.78rem;color:var(--text-2);margin-bottom:12px}
+  .letter .lt-to{font-size:0.8rem;margin-bottom:12px;line-height:1.45}
+  .letter p{margin-bottom:10px;text-align:justify}
+  .letter ol{margin:8px 0 12px 22px} .letter li{margin-bottom:8px}
+  .letter table.lt-tbl{width:100%;border-collapse:collapse;margin:12px 0;font-size:0.75rem}
+  .letter .lt-tbl th{background:var(--brand);color:#fff;padding:7px 9px;text-align:left;font-weight:600;font-size:0.7rem}
+  .letter .lt-tbl td{padding:7px 9px;border-bottom:1px solid var(--border)}
+  .letter .lt-sign{text-align:center;margin-top:20px;font-size:0.8rem}
+  .letter .lt-sign .nm{border-top:1px solid var(--slate-400);display:inline-block;padding-top:5px;margin-top:34px;font-weight:600;min-width:220px}
+  .letter .lt-foot{margin-top:18px;padding-top:8px;border-top:1px solid var(--border);font-size:0.62rem;color:var(--muted);display:flex;justify-content:space-between}
+</style>
+</head>
+<body>
+
+  <!-- ===================== TOPBAR ===================== -->
+  <header class="topbar">
+    <div class="tb-left">
+      <div class="tb-logo"><span class="mk">C</span>Lender<b>Hub</b></div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-icon" title="Notificaciones"><i class="ph ph-bell"></i><span class="tb-dot"></span></div>
+      <div class="tb-icon" title="Perfil"><i class="ph ph-user-circle"></i></div>
+      <div class="acting">
+        <span class="acting-lbl">Acting as</span>
+        <div class="seg">
+          <button id="seg-cxc" class="on-cxc" data-role="cxc"><span class="avatar av-cxc">C</span> CXC Staff</button>
+          <button id="seg-lender" data-role="lender"><span class="avatar av-len">Cv</span> Covalto</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <nav class="sidebar">
+    <div class="sb-org" id="sb-org">Sesión: <b>CXC Operations</b><br/>Master Servicer</div>
+    <div class="sb-cat">Portafolio</div>
+    <div class="nav-item"><i class="ph ph-squares-four"></i> Overview</div>
+    <div class="nav-item"><i class="ph ph-stack"></i> Facilities</div>
+    <div class="nav-item"><i class="ph ph-chart-line-up"></i> Insights</div>
+    <div class="sb-cat">Flujos de Fondos</div>
+    <div class="nav-item" data-go="bandeja" data-role="cxc"><i class="ph ph-arrow-line-down"></i> Disposiciones <span class="pill pill-amber">2</span></div>
+    <div class="nav-item" data-go="lender" data-role="lender" style="display:none"><i class="ph ph-arrow-line-down"></i> Disposiciones <span class="pill pill-amber">1</span></div>
+    <div class="nav-item" data-go="dist-bandeja" data-role="cxc"><i class="ph ph-arrow-line-up"></i> Distribuciones <span class="pill pill-amber">1</span></div>
+    <div class="nav-item" data-go="dist-lender" data-role="lender" style="display:none"><i class="ph ph-arrow-line-up"></i> Distribuciones</div>
+    <div class="sb-cat">Riesgo</div>
+    <div class="nav-item"><i class="ph ph-warning-circle"></i> Alertas</div>
+    <div class="nav-item"><i class="ph ph-shield-check"></i> Covenants</div>
+  </nav>
+
+  <!-- ===================== MAIN ===================== -->
+  <main class="main">
+    <div class="shell">
+
+      <!-- FLOWMAP — DISPOSICIÓN -->
+      <div class="flowmap" id="flowmap-disp">
+        <span class="fstep" data-f="bandeja">1 · Bandeja CXC</span>
+        <span class="farrow">→</span>
+        <span class="fstep" data-f="solicitar">2 · Solicitar</span>
+        <span class="farrow">→</span>
+        <span class="fstep" data-f="lender">3 · Aprobar (Lender)</span>
+        <span class="farrow">→</span>
+        <span class="fstep" data-f="fondeo">4 · Fondeo + instrucción</span>
+      </div>
+      <!-- FLOWMAP — DISTRIBUCIÓN -->
+      <div class="flowmap" id="flowmap-dist" style="display:none">
+        <span class="fstep" data-f="dist-bandeja">1 · Bandeja CXC</span>
+        <span class="farrow">→</span>
+        <span class="fstep" data-f="dist-calcular">2 · Calcular cascada</span>
+        <span class="farrow">→</span>
+        <span class="fstep" data-f="dist-lender">3 · Lender recibe</span>
+        <span class="farrow">→</span>
+        <span class="fstep" data-f="dist-pagado">4 · Liquidada</span>
+      </div>
+
+      <!-- =============== VIEW 1: BANDEJA =============== -->
+      <section class="view active" id="view-bandeja">
+        <div class="page-head">
+          <div>
+            <h1>Disposiciones</h1>
+            <div class="meta">Bandeja de CXC · todas las facilities activas</div>
+          </div>
+          <button class="btn btn-primary" data-go="solicitar" data-role="cxc"><i class="ph ph-plus"></i> Nueva disposición</button>
+        </div>
+        <div class="kpis">
+          <div class="kpi"><div class="t">Disposiciones mayo</div><div class="v">8</div><div class="s">+2 vs. abril</div></div>
+          <div class="kpi is-warning"><div class="t">Pend. aprobación</div><div class="v">2</div><div class="s">acción del lender</div></div>
+          <div class="kpi"><div class="t">En fondeo</div><div class="v">1</div><div class="s">sindicada · 77%</div></div>
+          <div class="kpi is-success"><div class="t">Tiempo ciclo prom.</div><div class="v">1.8d</div><div class="s">↓ vs 3.2d baseline</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Activas y recientes</div>
+          <div class="panel-hint">Click en una fila para abrir el detalle. La fila de MasLeasing inicia el flujo de nueva disposición.</div>
+          <table class="tbl">
+            <thead><tr><th>Facility / Originador</th><th>Monto</th><th>Aforo post</th><th>Estado</th><th>Fondeo</th><th>Acción</th></tr></thead>
+            <tbody>
+              <tr class="click" data-go="solicitar" data-role="cxc">
+                <td><div class="fac-name">MasLeasing · FID-2024-031</div><div class="fac-sub"><span class="badge b-muted">1:1</span> Covalto</div></td>
+                <td><strong>nueva</strong></td>
+                <td><span class="chip-aforo ca-ok">1.71x</span></td>
+                <td><span class="badge b-muted">Borrador</span></td>
+                <td><span style="color:var(--text-2)">—</span></td>
+                <td><span class="lnk">Solicitar →</span></td>
+              </tr>
+              <tr>
+                <td><div class="fac-name">MasLeasing · FID-2024-031</div><div class="fac-sub"><span class="badge b-brand">Sindicada</span> Covalto·PROMECAP·Saison</div></td>
+                <td><strong>$5.0M</strong></td>
+                <td><span class="chip-aforo ca-ok">1.38x</span></td>
+                <td><span class="badge b-info">En fondeo</span></td>
+                <td><div class="prog"><div class="prog-bg"><div class="prog-fl" style="width:77%;background:var(--warning)"></div></div><span style="font-size:0.8rem;color:var(--warning-700);font-weight:700">77%</span></div></td>
+                <td><span class="lnk">Ver tracker</span></td>
+              </tr>
+              <tr>
+                <td><div class="fac-name">PCH Leasing · FID-2024-009</div><div class="fac-sub"><span class="badge b-muted">1:1</span> PROMECAP</div></td>
+                <td><strong>$2.8M</strong></td>
+                <td><span class="chip-aforo ca-ok">1.55x</span></td>
+                <td><span class="badge b-success">Completada</span></td>
+                <td><div class="prog"><div class="prog-bg"><div class="prog-fl" style="width:100%;background:var(--success)"></div></div><span style="font-size:0.8rem;color:var(--success-700);font-weight:700">100%</span></div></td>
+                <td><span class="lnk">Ver</span></td>
+              </tr>
+              <tr style="opacity:.65">
+                <td><div class="fac-name">Maxicash · FID-2023-041</div><div class="fac-sub"><span class="badge b-muted">1:1</span> Covalto</div></td>
+                <td><strong>$4.0M</strong></td>
+                <td><span class="chip-aforo ca-bad">1.08x</span></td>
+                <td><span class="badge b-danger">Rechazada</span></td>
+                <td><span style="color:var(--text-2)">N/A</span></td>
+                <td><span class="lnk">Ver</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- =============== VIEW 2: FACILITY HEALTH (CXC) =============== -->
+      <section class="view" id="view-solicitar">
+        <div class="crumb"><span class="lnk" data-go="bandeja" data-role="cxc">Disposiciones</span> &nbsp;›&nbsp; <b>FID-2024-031 · MasLeasing</b></div>
+        <div class="page-head">
+          <div>
+            <h1>FID-2024-031 — MasLeasing</h1>
+            <div class="meta"><span class="badge b-muted">1:1</span> Covalto · Arrendamiento PyME <span class="badge b-success">Covenants OK</span> <span>Corte: May 2026</span></div>
+          </div>
+          <button class="btn btn-primary" id="openSolicitar"><i class="ph ph-arrow-line-down"></i> Solicitar disposición</button>
+        </div>
+        <div class="kpis">
+          <div class="kpi"><div class="t">Outstanding</div><div class="v">$21.0M</div><div class="s">de $30M límite</div></div>
+          <div class="kpi"><div class="t">Activos elegibles</div><div class="v">$35.9M</div><div class="s">$2.1M inelegible</div></div>
+          <div class="kpi is-success"><div class="t">Aforo (OC) actual</div><div class="v">1.71x</div><div class="s">sobre mín. 1.20x</div></div>
+          <div class="kpi is-warning"><div class="t">Borrowing base disp.</div><div class="v">$9.0M</div><div class="s">utilización 70%</div></div>
+        </div>
+        <div class="two-col">
+          <div class="panel">
+            <div class="panel-title">Sobrecolateralización (Aforo) <span class="badge b-success">En cumplimiento</span></div>
+            <div class="panel-hint">El aforo gobierna si una disposición es aprobable. Simúlalo en "Solicitar disposición".</div>
+            <div class="gauge-track">
+              <div class="gauge-fill" style="width:100%;background:var(--success)"></div>
+              <div class="gauge-min" style="left:33.3%"></div>
+              <div class="gauge-val">1.71x</div>
+            </div>
+            <div class="gauge-scale"><span>1.00x</span><span>1.20x</span><span>1.40x</span><span>1.60x+</span></div>
+            <div style="margin-top:16px">
+              <div class="kv"><span class="k">Outstanding actual</span><strong>$21.0M</strong></div>
+              <div class="kv"><span class="k">Activos elegibles (último corte)</span><strong>$35.9M</strong></div>
+              <div class="kv"><span class="k">Aforo mínimo contractual</span><strong>1.20x</strong></div>
+              <div class="kv"><span class="k">Cuentas fiduciarias</span><span class="badge b-success">5/5 cumplen</span></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-title">Borrowing Base</div>
+            <div class="panel-hint">Disponibilidad residual sin reponer colateral.</div>
+            <div class="kv"><span class="k">Disponible para disponer</span><strong style="color:var(--warning-700)">$9.0M</strong></div>
+            <div class="bb-bar-bg"><div class="bb-bar-fill" style="width:70%;background:var(--warning)"></div></div>
+            <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--text-2);margin-top:6px"><span>Utilizado 70%</span><span>$9.0M libre</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =============== VIEW 3: LENDER APPROVAL =============== -->
+      <section class="view" id="view-lender">
+        <div class="panel" id="guard-lender" style="display:none;border-color:var(--brand-100);background:var(--brand-50)">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:14px">
+            <div style="font-size:0.9rem;color:var(--brand)">Esta vista es de <b>Covalto (Lender)</b>. Estás actuando como <b>CXC Staff</b>.</div>
+            <button class="btn btn-primary" data-switch="lender">Cambiar a Covalto →</button>
+          </div>
+        </div>
+        <div id="lender-body">
+          <div class="crumb">Disposiciones &nbsp;›&nbsp; <b>Pendiente de tu aprobación</b></div>
+          <div class="timeline">
+            <div class="tl-step done"><div class="tl-dot done"><i class="ph ph-check"></i></div><div class="tl-label done">Solicitada<br/>por CXC</div></div>
+            <div class="tl-step done"><div class="tl-dot done"><i class="ph ph-check"></i></div><div class="tl-label done">Aforo<br/>validado</div></div>
+            <div class="tl-step active"><div class="tl-dot active"><i class="ph ph-hourglass-medium"></i></div><div class="tl-label active">Tu<br/>aprobación</div></div>
+            <div class="tl-step"><div class="tl-dot pending">4</div><div class="tl-label">Fondeo</div></div>
+            <div class="tl-step"><div class="tl-dot pending">5</div><div class="tl-label">Dispersión</div></div>
+          </div>
+          <div class="req-head">
+            <div class="req-top">
+              <div>
+                <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="badge b-muted">1:1</span><span class="badge b-warning">Pendiente de tu aprobación</span><span class="badge b-muted">DIS-2026-031-007</span></div>
+                <h1>MasLeasing solicita una disposición</h1>
+                <div style="font-size:0.85rem;color:var(--text-2)">FID-2024-031 · Solicitada por CXC el 29 may 2026 · 14:20</div>
+              </div>
+              <div class="req-amount"><div class="l">Monto solicitado</div><div class="v">$5,000,000</div><div class="countdown">⏳ 47h para responder</div></div>
+            </div>
+            <div class="req-meta">
+              <div class="meta-box"><div class="k">Originador</div><div class="v">MasLeasing</div></div>
+              <div class="meta-box"><div class="k">Fecha requerida</div><div class="v">05 jun 2026</div></div>
+              <div class="meta-box"><div class="k">Tu participación</div><div class="v">100%</div></div>
+              <div class="meta-box"><div class="k">Destino</div><div class="v">Cartera arrend. Q2</div></div>
+            </div>
+          </div>
+          <div class="two-col">
+            <div class="panel">
+              <div class="panel-title">Impacto en el aforo <span class="badge b-success">Cumple post-disp.</span></div>
+              <div class="panel-hint">El mismo análisis que CXC calculó al solicitar.</div>
+              <div class="gauge-track">
+                <div class="gauge-fill" style="width:63.3%;background:var(--success)"></div>
+                <div class="gauge-min" style="left:33.3%"></div>
+                <div class="gauge-val">1.38x</div>
+              </div>
+              <div class="gauge-scale"><span>1.00x</span><span>1.20x</span><span>1.40x</span><span>1.60x+</span></div>
+              <div style="margin-top:16px">
+                <div class="kv"><span class="k">Outstanding</span><span><strong>$21.0M</strong><span class="arrow">→</span><strong>$26.0M</strong></span></div>
+                <div class="kv"><span class="k">Aforo (OC)</span><span><strong style="color:var(--success-700)">1.71x</strong><span class="arrow">→</span><strong style="color:var(--success-700)">1.38x</strong></span></div>
+                <div class="kv"><span class="k">Aforo mínimo contractual</span><strong>1.20x</strong></div>
+              </div>
+              <div class="callout ok">✓ Tras esta disposición tu aforo queda en <strong>1.38x</strong> — colchón de <strong>+$4.7M</strong> sobre el mínimo. Las 5 cuentas fiduciarias cumplen.</div>
+            </div>
+            <div>
+              <div class="panel">
+                <div class="panel-title">Tu posición — Covalto</div>
+                <div class="pos-row"><span class="k">Outstanding</span><span style="text-align:right"><strong>$26.0M</strong><br/><span class="pos-delta">+$5.0M</span></span></div>
+                <div class="pos-row"><span class="k">Línea disponible</span><span style="text-align:right"><strong>$4.0M</strong><br/><span class="pos-delta" style="color:var(--warning-700)">−$5.0M</span></span></div>
+                <div class="pos-row"><span class="k">Aforo de tu posición</span><strong style="color:var(--success-700)">1.38x ✓</strong></div>
+              </div>
+              <div class="panel" style="margin-bottom:0">
+                <div class="panel-title">Tu decisión</div>
+                <div class="panel-hint">Se registra con tu nombre y hora — trazabilidad auditable.</div>
+                <button class="btn btn-primary btn-block" id="approveBtn"><i class="ph ph-check-circle"></i> Aprobar — $5,000,000</button>
+                <button class="btn btn-outlined btn-block" id="rejectBtn" style="margin-top:8px;color:var(--danger);border-color:var(--danger-100)"><i class="ph ph-x-circle"></i> Rechazar</button>
+                <textarea placeholder="Comentario opcional (ej. Aprobado sujeto a revisión de financials Q2)"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =============== VIEW 4: FONDEO (CXC) =============== -->
+      <section class="view" id="view-fondeo">
+        <div class="panel" id="guard-fondeo" style="display:none;border-color:var(--info-100);background:var(--info-50)">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:14px">
+            <div style="font-size:0.9rem;color:var(--info-700)">Esta vista es de <b>CXC Staff</b>. Estás actuando como <b>Covalto</b>.</div>
+            <button class="btn btn-primary" data-switch="cxc">Cambiar a CXC Staff →</button>
+          </div>
+        </div>
+        <div id="fondeo-body">
+          <div class="crumb"><span class="lnk" data-go="bandeja" data-role="cxc">Disposiciones</span> &nbsp;›&nbsp; <b>DIS-2026-031-007 · En fondeo</b></div>
+          <div class="timeline">
+            <div class="tl-step done"><div class="tl-dot done"><i class="ph ph-check"></i></div><div class="tl-label done">Solicitada</div></div>
+            <div class="tl-step done"><div class="tl-dot done"><i class="ph ph-check"></i></div><div class="tl-label done">Aforo OK</div></div>
+            <div class="tl-step done"><div class="tl-dot done"><i class="ph ph-check"></i></div><div class="tl-label done">Aprobada<br/>Covalto</div></div>
+            <div class="tl-step active"><div class="tl-dot active"><i class="ph ph-arrows-clockwise"></i></div><div class="tl-label active">En fondeo<br/>↑ ahora</div></div>
+            <div class="tl-step"><div class="tl-dot pending">5</div><div class="tl-label">Dispersión</div></div>
+          </div>
+          <div class="page-head"><div><h1>Disposición aprobada — en fondeo</h1><div class="meta">MasLeasing · $5,000,000 · aprobada por Covalto</div></div></div>
+          <div class="panel">
+            <div class="panel-title">Tracker de fondeo <span class="badge b-warning">Esperando transferencia del lender</span></div>
+            <div class="panel-hint">CXC confirma la transferencia recibida; al 100% se habilita la instrucción al fiduciario.</div>
+            <div class="ft-bar-bg"><div class="ft-bar-fill" style="width:0%"></div></div>
+            <div style="display:flex;justify-content:space-between;font-size:0.8rem;color:var(--text-2)"><span id="ft-recv">$0 recibido</span><span>$5,000,000 total</span></div>
+            <div style="margin-top:14px">
+              <div class="kv"><span class="k">Covalto · 100%</span><span class="badge b-warning" id="ft-status">Pendiente de transferencia</span></div>
+              <div class="kv"><span class="k">CLABE fideicomiso</span><strong style="font-size:0.8rem">012180001109877628 · Ref DIS-031-007</strong></div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;margin-top:16px">
+              <button class="btn btn-primary" id="confirmFund"><i class="ph ph-check"></i> Confirmar transferencia recibida ($5.0M)</button>
+              <button class="btn btn-secondary" id="emitBtn" disabled>Emitir instrucción al fiduciario</button>
+            </div>
+          </div>
+          <div class="panel" style="margin-bottom:0">
+            <div class="panel-title">Resumen</div>
+            <div class="kv"><span class="k">Tiempo de ciclo (solicitud → aprobación)</span><strong style="color:var(--success-700)">0.4d</strong></div>
+            <div class="kv"><span class="k">Gestionado 100% en LenderHub</span><span class="badge b-success">sin email</span></div>
+            <div class="kv"><span class="k">Aforo post-disposición</span><strong style="color:var(--success-700)">1.38x ✓</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =============== VIEW: DIST BANDEJA (CXC) =============== -->
+      <section class="view" id="view-dist-bandeja">
+        <div class="page-head">
+          <div>
+            <h1>Distribuciones</h1>
+            <div class="meta">Cascada de pagos a lenders · instrucciones de distribución al fiduciario</div>
+          </div>
+          <button class="btn btn-primary" data-go="dist-calcular" data-role="cxc"><i class="ph ph-calculator"></i> Nueva distribución</button>
+        </div>
+        <div class="kpis">
+          <div class="kpi"><div class="t">Distribuciones abril</div><div class="v">3</div><div class="s">corte mensual</div></div>
+          <div class="kpi is-success"><div class="t">Monto distribuido</div><div class="v">$25.4M</div><div class="s">interés + principal</div></div>
+          <div class="kpi is-warning"><div class="t">Pend. de instruir</div><div class="v">2</div><div class="s">1 sindicada · requiere CXC</div></div>
+          <div class="kpi"><div class="t">Próximo corte</div><div class="v">30 abr</div><div class="s">FID-2024-031</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Distribuciones del periodo</div>
+          <div class="panel-hint">Click en la fila pendiente para calcular la cascada y emitir la instrucción.</div>
+          <table class="tbl">
+            <thead><tr><th>Facility / Lender</th><th>Periodo</th><th>Intereses</th><th>Principal</th><th>Estado</th><th>Acción</th></tr></thead>
+            <tbody>
+              <tr class="click" data-go="dist-calcular" data-role="cxc">
+                <td><div class="fac-name">MasLeasing · FID-2024-031</div><div class="fac-sub"><span class="badge b-muted">1:1</span> Covalto</div></td>
+                <td>Abril 2026</td>
+                <td><strong>$3.28M</strong></td>
+                <td><strong>$5.26M</strong></td>
+                <td><span class="badge b-warning">Pend. de instruir</span></td>
+                <td><span class="lnk">Calcular →</span></td>
+              </tr>
+              <tr>
+                <td><div class="fac-name">PCH Leasing · FID-2024-009</div><div class="fac-sub"><span class="badge b-muted">1:1</span> PROMECAP</div></td>
+                <td>Abril 2026</td>
+                <td><strong>$1.95M</strong></td>
+                <td><strong>$4.10M</strong></td>
+                <td><span class="badge b-success">Liquidada</span></td>
+                <td><span class="lnk">Ver carta</span></td>
+              </tr>
+              <tr class="click" data-go="dist-calcular-syn" data-role="cxc">
+                <td><div class="fac-name">Solufi · FID-2023-018</div><div class="fac-sub"><span class="badge b-brand">Sindicada</span> Covalto·PROMECAP·Saison</div></td>
+                <td>Abril 2026</td>
+                <td><strong>$2.40M</strong></td>
+                <td><strong>$7.40M</strong></td>
+                <td><span class="badge b-warning">Pend. de instruir</span></td>
+                <td><span class="lnk">Calcular →</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- =============== VIEW: DIST CALCULAR (CXC) =============== -->
+      <section class="view" id="view-dist-calcular">
+        <div class="crumb"><span class="lnk" data-go="dist-bandeja" data-role="cxc">Distribuciones</span> &nbsp;›&nbsp; <b>FID-2024-031 · Abril 2026</b></div>
+        <div class="page-head">
+          <div>
+            <h1>Distribución — Abril 2026</h1>
+            <div class="meta"><span class="badge b-muted">1:1</span> MasLeasing · Covalto (Fideicomisario en 1er lugar) · Fiduciaria: Banco Actinver</div>
+          </div>
+          <button class="btn btn-primary" id="distEmit"><i class="ph ph-bank"></i> Emitir instrucción al fiduciario</button>
+        </div>
+        <div class="kpis">
+          <div class="kpi"><div class="t">Cobranza del periodo</div><div class="v">$9.5M</div><div class="s">depositada en fideicomiso</div></div>
+          <div class="kpi is-success"><div class="t">Intereses a lender</div><div class="v">$3.28M</div><div class="s">ordinarios abril</div></div>
+          <div class="kpi is-success"><div class="t">Principal a lender</div><div class="v">$5.26M</div><div class="s">amortización abril</div></div>
+          <div class="kpi"><div class="t">Remanente originador</div><div class="v">$0.66M</div><div class="s">al fideicomitente</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Cascada de pagos (waterfall) <span class="badge b-info">Cláusula Sexta · prelación</span></div>
+          <div class="panel-hint">Orden de prelación de los recursos cobrados en el periodo. CXC emite una sola instrucción al fiduciario.</div>
+          <div class="wf-row">
+            <div class="wf-ic wf-in"><i class="ph ph-arrow-down"></i></div>
+            <div class="wf-lbl">Cobranza del periodo <div class="s">recursos depositados en la Cuenta de Pago</div></div>
+            <div class="wf-amt">$9,500,000.00</div>
+          </div>
+          <div class="wf-row">
+            <div class="wf-ic wf-fee"><i class="ph ph-minus"></i></div>
+            <div class="wf-lbl">Comisiones (Admin Maestro + Fiduciario) <div class="s">gastos del fideicomiso</div></div>
+            <div class="wf-amt" style="color:var(--slate-600)">−$300,000.00</div>
+          </div>
+          <div class="wf-row">
+            <div class="wf-ic wf-pay"><i class="ph ph-arrow-up"></i></div>
+            <div class="wf-lbl">Intereses ordinarios → Covalto <div class="s">Fideicomisario en Primer Lugar</div></div>
+            <div class="wf-amt" style="color:var(--success-700)">$3,280,561.08</div>
+          </div>
+          <div class="wf-row">
+            <div class="wf-ic wf-pay"><i class="ph ph-arrow-up"></i></div>
+            <div class="wf-lbl">Principal → Covalto <div class="s">amortización del periodo</div></div>
+            <div class="wf-amt" style="color:var(--success-700)">$5,257,390.00</div>
+          </div>
+          <div class="wf-row">
+            <div class="wf-ic wf-res"><i class="ph ph-arrow-u-up-left"></i></div>
+            <div class="wf-lbl">Remanente → MasLeasing <div class="s">Fideicomitente (derecho de reversión)</div></div>
+            <div class="wf-amt" style="color:var(--brand)">$662,048.92</div>
+          </div>
+        </div>
+        <div class="panel" style="margin-bottom:0">
+          <div class="panel-title">Posición de Covalto post-distribución</div>
+          <div class="kv"><span class="k">Outstanding</span><span><strong>$26.0M</strong><span class="arrow">→</span><strong>$20.74M</strong></span></div>
+          <div class="kv"><span class="k">Principal recibido</span><strong style="color:var(--success-700)">$5,257,390.00</strong></div>
+          <div class="kv"><span class="k">Ingreso por intereses</span><strong style="color:var(--success-700)">$3,280,561.08</strong></div>
+        </div>
+      </section>
+
+      <!-- =============== VIEW: DIST LENDER (Covalto recibe) =============== -->
+      <section class="view" id="view-dist-lender">
+        <div class="panel" id="guard-dist-lender" style="display:none;border-color:var(--brand-100);background:var(--brand-50)">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:14px">
+            <div style="font-size:0.9rem;color:var(--brand)">Esta vista es de <b>Covalto (Lender)</b>. Estás actuando como <b>CXC Staff</b>.</div>
+            <button class="btn btn-primary" data-switch="lender">Cambiar a Covalto →</button>
+          </div>
+        </div>
+        <div id="dist-lender-body">
+          <div class="crumb">Distribuciones &nbsp;›&nbsp; <b>Recibida</b></div>
+          <div class="req-head" style="border-color:var(--success-100);background:var(--success-50)">
+            <div class="req-top">
+              <div>
+                <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="badge b-muted">1:1</span><span class="badge b-success">Distribución recibida</span><span class="badge b-muted">DIST-2026-031-04</span></div>
+                <h1>Recibiste una distribución de MasLeasing</h1>
+                <div style="font-size:0.85rem;color:var(--text-2)">FID-2024-031 · Periodo abril 2026 · pagado por Banco Actinver el 30 abr 2026</div>
+              </div>
+              <div class="req-amount"><div class="l">Total recibido</div><div class="v" style="color:var(--success-700)">$8,537,951</div><div class="countdown" style="color:var(--success-700)">✓ Liquidado</div></div>
+            </div>
+            <div class="req-meta">
+              <div class="meta-box" style="border-color:var(--success-100)"><div class="k">Intereses ordinarios</div><div class="v">$3,280,561.08</div></div>
+              <div class="meta-box" style="border-color:var(--success-100)"><div class="k">Principal</div><div class="v">$5,257,390.00</div></div>
+              <div class="meta-box" style="border-color:var(--success-100)"><div class="k">Tu participación</div><div class="v">100%</div></div>
+              <div class="meta-box" style="border-color:var(--success-100)"><div class="k">Cuenta origen</div><div class="v">Cta. Pago ·721</div></div>
+            </div>
+          </div>
+          <div class="two-col">
+            <div class="panel">
+              <div class="panel-title">Tu posición — Covalto <span class="badge b-success">actualizada</span></div>
+              <div class="panel-hint">El principal reduce tu outstanding; los intereses son tu ingreso del periodo.</div>
+              <div class="pos-row"><span class="k">Outstanding</span><span style="text-align:right"><strong>$20.74M</strong><br/><span class="pos-delta" style="color:var(--success-700)">−$5.26M principal</span></span></div>
+              <div class="pos-row"><span class="k">Ingreso por intereses (abril)</span><strong style="color:var(--success-700)">$3,280,561.08</strong></div>
+              <div class="pos-row"><span class="k">Aforo de tu posición</span><strong style="color:var(--success-700)">1.73x ✓</strong></div>
+            </div>
+            <div>
+              <div class="panel" style="margin-bottom:0">
+                <div class="panel-title">Soporte</div>
+                <div class="panel-hint">La instrucción al fiduciario que originó este pago.</div>
+                <button class="btn btn-outlined btn-block" id="distViewCarta"><i class="ph ph-file-text"></i> Ver carta de distribución</button>
+                <button class="btn btn-primary btn-block" id="distConfirm" style="margin-top:8px">Confirmar recepción → volver a CXC</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =============== VIEW: DIST PAGADO (CXC liquidada) =============== -->
+      <section class="view" id="view-dist-pagado">
+        <div class="panel" id="guard-dist-pagado" style="display:none;border-color:var(--info-100);background:var(--info-50)">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:14px">
+            <div style="font-size:0.9rem;color:var(--info-700)">Esta vista es de <b>CXC Staff</b>. Estás actuando como <b>Covalto</b>.</div>
+            <button class="btn btn-primary" data-switch="cxc">Cambiar a CXC Staff →</button>
+          </div>
+        </div>
+        <div id="dist-pagado-body">
+          <div class="crumb"><span class="lnk" data-go="dist-bandeja" data-role="cxc">Distribuciones</span> &nbsp;›&nbsp; <b>DIST-2026-031-04 · Liquidada</b></div>
+          <div class="page-head"><div><h1>Distribución liquidada</h1><div class="meta">MasLeasing · Abril 2026 · interés $3.28M + principal $5.26M a Covalto</div></div></div>
+          <div class="panel">
+            <div class="panel-title">Resumen de la liquidación <span class="badge b-success">Completada</span></div>
+            <div class="kv"><span class="k">Cobranza distribuida</span><strong>$9,500,000.00</strong></div>
+            <div class="kv"><span class="k">Pagado a Covalto (interés + principal)</span><strong style="color:var(--success-700)">$8,537,951.08</strong></div>
+            <div class="kv"><span class="k">Remanente al fideicomitente</span><strong>$662,048.92</strong></div>
+            <div class="kv"><span class="k">Instrucción al fiduciario</span><span><span class="lnk" id="distViewCarta2">Ver carta</span></span></div>
+            <div class="kv"><span class="k">Gestionado 100% en LenderHub</span><span class="badge b-success">sin carta manual</span></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ===================== MODAL: SOLICITAR (DS p-dialog) ===================== -->
+  <div class="overlay" id="ov-solicitar">
+    <div class="dialog">
+      <div class="dlg-head">
+        <div>
+          <h3>Solicitar disposición</h3>
+          <p>FID-2024-031 · MasLeasing · simula el impacto en aforo antes de enviar al lender</p>
+        </div>
+        <button class="dlg-close" id="closeSolicitar"><i class="ph ph-x"></i></button>
+      </div>
+      <div class="dlg-body">
+        <div class="two-col" style="grid-template-columns:1fr 1fr">
+          <div>
+            <div class="field"><label>Monto a disponer</label><input type="text" class="amount-input" id="amount" value="$0" inputmode="numeric"/></div>
+            <div class="chips">
+              <div class="chip" data-amt="5000000">$5M</div>
+              <div class="chip" data-amt="9000000">$9M ⚠</div>
+              <div class="chip" data-amt="12000000">$12M ✗</div>
+            </div>
+            <div class="field"><label>Fecha requerida</label><input type="text" value="05 jun 2026" readonly/></div>
+            <div class="field" style="margin-bottom:0"><label>Notas (opcional)</label><input type="text" placeholder="Cartera arrendamiento Q2"/></div>
+          </div>
+          <div class="sim" id="sim">
+            <div class="sim-title"><span>Impacto en aforo — en vivo</span><span id="sim-pill"></span></div>
+            <div class="gauge-track" style="margin-top:0;margin-bottom:10px">
+              <div class="gauge-fill" id="g-fill"></div>
+              <div class="gauge-min" id="g-min"></div>
+              <div class="gauge-val" id="g-val">1.71x</div>
+            </div>
+            <div class="sim-row"><span class="k" style="color:var(--text-2)">Outstanding</span><span><strong>$21.0M</strong><span class="arrow">→</span><strong id="s-out">$21.0M</strong></span></div>
+            <div class="sim-row"><span class="k" style="color:var(--text-2)">Aforo</span><span><strong>1.71x</strong><span class="arrow">→</span><strong id="s-af" style="color:var(--success-700)">1.71x</strong></span></div>
+            <div class="sim-row"><span class="k" style="color:var(--text-2)">Borrowing base libre</span><span><strong id="s-bb">$9.0M</strong></span></div>
+            <div class="sim-result ok" id="s-res"><span>Aforo resultante</span><span id="s-resv">1.71x ✓</span></div>
+            <div class="sim-msg ok" id="s-msg">Ingresa un monto para simular. La facility tiene colchón sobre el mínimo de 1.20x.</div>
+          </div>
+        </div>
+      </div>
+      <div class="dlg-foot">
+        <button class="btn btn-text-grey" id="cancelSolicitar">Cancelar</button>
+        <button class="btn btn-primary" id="submit" disabled>Enviar al lender</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HANDOFF: CXC → Lender -->
+  <div class="overlay" id="ov-handoff">
+    <div class="dialog sm">
+      <div class="dlg-center">
+        <div class="ic ic-info"><i class="ph ph-paper-plane-tilt"></i></div>
+        <h3>Disposición enviada al lender</h3>
+        <p>Covalto recibió la solicitud de <strong style="color:var(--text)">$5,000,000</strong> con el análisis de aforo. Para continuar el flujo, actúa ahora como el lender y apruébala.</p>
+        <div style="display:flex;gap:8px;justify-content:center">
+          <button class="btn btn-outlined" onclick="document.getElementById('ov-handoff').classList.remove('show')">Quedarme en CXC</button>
+          <button class="btn btn-primary" id="ho-go">Actuar como Covalto →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HANDOFF: Lender → CXC -->
+  <div class="overlay" id="ov-approved">
+    <div class="dialog sm">
+      <div class="dlg-center">
+        <div class="ic ic-success"><i class="ph ph-check-circle"></i></div>
+        <h3>Disposición aprobada</h3>
+        <p>Tu aprobación quedó registrada. El estado cambió a <strong style="color:var(--info-700)">En fondeo</strong>. Vuelve a actuar como CXC para confirmar el fondeo y cerrar la disposición.</p>
+        <div style="display:flex;gap:8px;justify-content:center">
+          <button class="btn btn-outlined" onclick="document.getElementById('ov-approved').classList.remove('show')">Quedarme como lender</button>
+          <button class="btn btn-primary" id="ap-go">Volver a CXC →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPLETION: instrucción emitida → dispersión -->
+  <div class="overlay" id="ov-completed">
+    <div class="dialog sm">
+      <div class="dlg-center">
+        <div class="ic ic-success"><i class="ph ph-confetti"></i></div>
+        <h3>Disposición completada</h3>
+        <p>El fiduciario dispersó <strong style="color:var(--text)">$5,000,000</strong> a MasLeasing. El outstanding de <span id="comp-lender">Covalto</span> se actualizó a <strong style="color:var(--text)">$26.0M</strong> y el aforo refleja <strong style="color:var(--text)">1.38x</strong>.</p>
+        <button class="btn btn-primary" id="comp-close">Volver a la bandeja</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARTA GENERADA (instrucción al fiduciario) -->
+  <div class="overlay" id="ov-carta">
+    <div class="dialog lg">
+      <div class="dlg-head">
+        <div><h3 id="carta-title">Instrucción al fiduciario</h3><p>Documento generado por LenderHub · listo para firma del representante legal</p></div>
+        <button class="dlg-close" id="closeCarta"><i class="ph ph-x"></i></button>
+      </div>
+      <div class="dlg-body"><div class="letter" id="carta-body"></div></div>
+      <div class="dlg-foot">
+        <button class="btn btn-text-grey" id="carta-pdf"><i class="ph ph-file-pdf"></i> Descargar PDF</button>
+        <button class="btn btn-primary" id="carta-continue">Confirmar y continuar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HANDOFF: Distribución CXC → Lender -->
+  <div class="overlay" id="ov-dist-handoff">
+    <div class="dialog sm">
+      <div class="dlg-center">
+        <div class="ic ic-info"><i class="ph ph-bank"></i></div>
+        <h3>Instrucción de distribución emitida</h3>
+        <p>Banco Actinver pagará a Covalto <strong style="color:var(--text)">$3,280,561.08</strong> de intereses y <strong style="color:var(--text)">$5,257,390.00</strong> de principal. Actúa como Covalto para ver la distribución recibida.</p>
+        <div style="display:flex;gap:8px;justify-content:center">
+          <button class="btn btn-outlined" onclick="document.getElementById('ov-dist-handoff').classList.remove('show')">Quedarme en CXC</button>
+          <button class="btn btn-primary" id="dho-go">Actuar como Covalto →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"><div class="t-title" id="toast-title"></div><div id="toast-body" style="color:var(--text-2);font-size:0.85rem"></div></div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const qa = s => [...document.querySelectorAll(s)];
+
+  const roleOfView = { bandeja:'cxc', solicitar:'cxc', lender:'lender', fondeo:'cxc',
+    'dist-bandeja':'cxc', 'dist-calcular':'cxc', 'dist-lender':'lender', 'dist-pagado':'cxc' };
+  let role='cxc', view='bandeja';
+
+  function setRole(r){
+    role=r;
+    $('seg-cxc').className = r==='cxc'?'on-cxc':'';
+    $('seg-lender').className = r==='lender'?'on-lender':'';
+    $('sb-org').innerHTML = r==='cxc' ? 'Sesión: <b>CXC Operations</b><br/>Master Servicer' : 'Sesión: <b>Covalto</b><br/>Lender · Mesa de Crédito';
+    qa('.nav-item[data-role]').forEach(n => n.style.display = (n.dataset.role===r?'flex':'none'));
+    applyGuards();
+  }
+  const ORDERS={ disp:['bandeja','solicitar','lender','fondeo'], dist:['dist-bandeja','dist-calcular','dist-lender','dist-pagado'] };
+  function go(v){
+    view=v;
+    const mod = v.indexOf('dist')===0 ? 'dist' : 'disp';
+    qa('.view').forEach(s=>s.classList.remove('active'));
+    $('view-'+v).classList.add('active');
+    $('flowmap-disp').style.display = mod==='disp'?'flex':'none';
+    $('flowmap-dist').style.display = mod==='dist'?'flex':'none';
+    qa('.nav-item').forEach(n=>n.classList.remove('active'));
+    let sel;
+    if(mod==='dist') sel = role==='lender'?'.nav-item[data-go="dist-lender"]':'.nav-item[data-go="dist-bandeja"]';
+    else sel = role==='lender'?'.nav-item[data-go="lender"]':'.nav-item[data-go="bandeja"]';
+    const nv=document.querySelector(sel); if(nv) nv.classList.add('active');
+    const order=ORDERS[mod];
+    qa('#flowmap-'+mod+' .fstep').forEach(f=>{f.classList.remove('cur','len','fdone');
+      if(f.dataset.f===v){f.classList.add('cur'); if(roleOfView[v]==='lender') f.classList.add('len');}
+      else if(order.indexOf(f.dataset.f)<order.indexOf(v)) f.classList.add('fdone');});
+    applyGuards(); window.scrollTo(0,0);
+  }
+  function guardView(v){
+    const g=$('guard-'+v), b=$(v+'-body'); if(!g||!b) return;
+    const wrong = role!==roleOfView[v];
+    g.style.display=wrong?'block':'none'; b.style.display=wrong?'none':'block';
+  }
+  function applyGuards(){ ['lender','fondeo','dist-lender','dist-pagado'].forEach(guardView); }
+
+  qa('[data-go]').forEach(el=>el.addEventListener('click',()=>{ if(el.dataset.role) setRole(el.dataset.role); go(el.dataset.go); }));
+  $('seg-cxc').addEventListener('click',()=>{ setRole('cxc'); if(roleOfView[view]!=='cxc') go('bandeja'); });
+  $('seg-lender').addEventListener('click',()=>{ setRole('lender'); go('lender'); });
+  qa('[data-switch]').forEach(b=>b.addEventListener('click',()=>setRole(b.dataset.switch)));
+
+  /* ---- SIMULATOR (verified logic) ---- */
+  const ELIGIBLE=35.9e6, OUT_NOW=21.0e6, MIN_OC=1.20, BB_FREE=9.0e6;
+  const aforoNow=ELIGIBLE/OUT_NOW;
+  const fmtM=n=>'$'+(n/1e6).toFixed(1)+'M', fmtX=n=>n.toFixed(2)+'x';
+  const gPct=x=>Math.max(0,Math.min(100,((x-1.00)/0.60)*100));
+  const gCol=x=>x>=MIN_OC?(x>=MIN_OC+0.15?'var(--success)':'var(--warning)'):'var(--danger)';
+  $('g-min').style.left=gPct(MIN_OC)+'%';
+  const setGauge=x=>{$('g-fill').style.width=gPct(x)+'%';$('g-fill').style.background=gCol(x);$('g-val').textContent=fmtX(x);};
+  setGauge(aforoNow);
+  const parseAmt=s=>{const n=parseFloat(String(s).replace(/[^0-9.]/g,''));return isNaN(n)?0:n;};
+
+  function update(){
+    const amt=parseAmt($('amount').value);
+    const outPost=OUT_NOW+amt, afPost=ELIGIBLE/outPost, bbPost=BB_FREE-amt, overBB=amt>BB_FREE;
+    const ok=afPost>=MIN_OC&&amt>0&&!overBB;
+    $('s-out').textContent=fmtM(outPost);
+    $('s-af').textContent=fmtX(afPost); $('s-af').style.color=gCol(afPost);
+    $('s-bb').textContent=(bbPost<0?'−':'')+fmtM(Math.abs(bbPost)); $('s-bb').style.color=bbPost<0?'var(--danger-700)':'var(--text)';
+    setGauge(amt>0?afPost:aforoNow);
+    const sim=$('sim'),res=$('s-res'),rv=$('s-resv'),msg=$('s-msg'),btn=$('submit'),pill=$('sim-pill');
+    if(amt===0){
+      sim.className='sim ok'; res.className='sim-result ok'; rv.textContent=fmtX(aforoNow)+' ✓';
+      msg.className='sim-msg ok'; msg.textContent='Ingresa un monto para simular. La facility tiene colchón sobre el mínimo de 1.20x.';
+      pill.innerHTML=''; btn.disabled=true; btn.textContent='Enviar al lender'; return;
+    }
+    if(ok){
+      sim.className='sim ok'; res.className='sim-result ok'; rv.textContent=fmtX(afPost)+' ✓';
+      msg.className='sim-msg ok'; msg.textContent='Aforo post '+fmtX(afPost)+' cumple el mínimo de 1.20x. Headroom: '+fmtM(ELIGIBLE-outPost*MIN_OC)+'.';
+      pill.innerHTML='<span class="badge b-success">Aprobable</span>';
+      btn.disabled=false; btn.textContent='Enviar al lender → '+fmtM(amt);
+    } else {
+      sim.className='sim bad'; res.className='sim-result bad'; rv.textContent=fmtX(afPost)+' ✗';
+      msg.className='sim-msg bad';
+      if(overBB&&afPost<MIN_OC) msg.textContent='El monto ('+fmtM(amt)+') excede la borrowing base ('+fmtM(BB_FREE)+') y el aforo '+fmtX(afPost)+' rompe el mínimo de '+fmtX(MIN_OC)+'.';
+      else if(overBB) msg.textContent='El monto ('+fmtM(amt)+') excede la borrowing base disponible ('+fmtM(BB_FREE)+').';
+      else msg.textContent='El aforo resultante ('+fmtX(afPost)+') está por debajo del mínimo contractual ('+fmtX(MIN_OC)+'). No puede aprobarse.';
+      pill.innerHTML='<span class="badge b-danger">Bloqueada</span>';
+      btn.disabled=true; btn.textContent='Aforo insuficiente';
+    }
+  }
+  $('amount').addEventListener('input',e=>{const n=parseAmt(e.target.value);e.target.value=n>0?'$'+n.toLocaleString('en-US'):'$0';update();});
+  qa('.chip').forEach(c=>c.addEventListener('click',()=>{qa('.chip').forEach(x=>x.classList.remove('active'));c.classList.add('active');$('amount').value='$'+parseInt(c.dataset.amt,10).toLocaleString('en-US');update();}));
+
+  /* ---- MODAL open/close ---- */
+  function openSolicitar(){ $('amount').value='$0'; qa('.chip').forEach(x=>x.classList.remove('active')); update(); $('ov-solicitar').classList.add('show'); }
+  function closeSolicitar(){ $('ov-solicitar').classList.remove('show'); }
+  $('openSolicitar').addEventListener('click',openSolicitar);
+  $('closeSolicitar').addEventListener('click',closeSolicitar);
+  $('cancelSolicitar').addEventListener('click',closeSolicitar);
+
+  /* ---- HANDOFFS ---- */
+  $('submit').addEventListener('click',()=>{ if($('submit').disabled) return; closeSolicitar(); $('ov-handoff').classList.add('show'); });
+  $('ho-go').addEventListener('click',()=>{ $('ov-handoff').classList.remove('show'); setRole('lender'); go('lender'); });
+  $('approveBtn').addEventListener('click',()=>$('ov-approved').classList.add('show'));
+  $('ap-go').addEventListener('click',()=>{ $('ov-approved').classList.remove('show'); setRole('cxc'); resetFondeo(); go('fondeo'); });
+
+  function toast(t,c,b){ $('toast').style.borderColor=c; $('toast-title').textContent=t; $('toast-title').style.color=c; $('toast-body').textContent=b; $('toast').classList.add('show'); setTimeout(()=>$('toast').classList.remove('show'),3200); }
+  $('rejectBtn').addEventListener('click',()=>toast('Disposición rechazada','var(--danger)','CXC y el originador fueron notificados con tu motivo. La solicitud queda cerrada.'));
+  $('confirmFund').addEventListener('click',()=>{
+    if($('confirmFund').disabled) return;
+    document.querySelector('#view-fondeo .ft-bar-fill').style.width='100%';
+    $('ft-recv').textContent='$5,000,000 recibido';
+    $('ft-status').textContent='Confirmado'; $('ft-status').className='badge b-success';
+    $('confirmFund').disabled=true;
+    $('emitBtn').disabled=false;
+    toast('Fondeo confirmado al 100%','var(--success)','Instrucción al fiduciario habilitada. La dispersión al originador puede emitirse.');
+  });
+
+  /* ---- Emit instruction to trustee → completes the disposition ---- */
+  function setStepDone(step,labelHtml){
+    step.className='tl-step done';
+    const dot=step.querySelector('.tl-dot'); dot.className='tl-dot done'; dot.innerHTML='<i class="ph ph-check"></i>';
+    const lb=step.querySelector('.tl-label'); lb.className='tl-label done'; if(labelHtml) lb.innerHTML=labelHtml;
+  }
+  $('emitBtn').addEventListener('click',()=>{
+    if($('emitBtn').disabled) return;
+    const steps=qa('#view-fondeo .tl-step');
+    setStepDone(steps[3],'En fondeo<br/>completado');
+    setStepDone(steps[4],'Dispersión<br/>completada');
+    $('ft-status').textContent='Dispersado'; $('ft-status').className='badge b-success';
+    $('emitBtn').disabled=true; $('emitBtn').textContent='✓ Instrucción emitida';
+    $('confirmFund').className='btn btn-secondary'; $('confirmFund').disabled=true;
+    document.querySelector('#view-fondeo .page-head h1').textContent='Disposición completada';
+    cartaOnContinue=()=>$('ov-completed').classList.add('show');
+    renderCarta('disp');
+  });
+  $('comp-close').addEventListener('click',()=>{ $('ov-completed').classList.remove('show'); setRole('cxc'); go('bandeja'); });
+
+  /* reset fondeo view to its initial state each time we enter it */
+  function resetFondeo(){
+    document.querySelector('#view-fondeo .ft-bar-fill').style.width='0%';
+    $('ft-recv').textContent='$0 recibido';
+    $('ft-status').textContent='Pendiente de transferencia'; $('ft-status').className='badge b-warning';
+    $('confirmFund').className='btn btn-primary'; $('confirmFund').disabled=false;
+    $('emitBtn').disabled=true; $('emitBtn').textContent='Emitir instrucción al fiduciario';
+    document.querySelector('#view-fondeo .page-head h1').textContent='Disposición aprobada — en fondeo';
+    const steps=qa('#view-fondeo .tl-step');
+    steps[3].className='tl-step active';
+    let d=steps[3].querySelector('.tl-dot'); d.className='tl-dot active'; d.innerHTML='<i class="ph ph-arrows-clockwise"></i>';
+    let l=steps[3].querySelector('.tl-label'); l.className='tl-label active'; l.innerHTML='En fondeo<br/>↑ ahora';
+    steps[4].className='tl-step';
+    d=steps[4].querySelector('.tl-dot'); d.className='tl-dot pending'; d.textContent='5';
+    l=steps[4].querySelector('.tl-label'); l.className='tl-label'; l.textContent='Dispersión';
+  }
+
+  /* ---- CARTA generada (instrucción al fiduciario) ---- */
+  let cartaOnContinue=null;
+  const LT_HEAD = t => `
+    <div class="lt-head">
+      <div><div class="lt-mark">cxc · Tecnología en Cuentas por Cobrar</div>
+      <div class="lt-title">F/2024-031 — Instrucción de ${t}</div></div>
+      <div style="text-align:right;font-size:0.66rem;color:var(--muted)">Generado por LenderHub<br/>Folio ${t==='Disposición'?'DIS':'DIST'}-2026-031</div>
+    </div>`;
+  const LT_PARTIES = `<p>Se hace referencia al Contrato de Fideicomiso Irrevocable de Garantía, Administración y Fuente de Pago FID-2024-031, celebrado por <b>MasLeasing</b> (Fideicomitente y Fideicomisario en segundo lugar), <b>Covalto</b> (Fideicomisario en Primer Lugar), <b>Banco Actinver, S.A.</b> (Fiduciaria) y <b>Tecnología en Cuentas por Cobrar, S.A.P.I. de C.V.</b> (Administrador Maestro).</p>`;
+  const LT_TO = `<div class="lt-to"><b>Banco Actinver, S.A., Institución de Banca Múltiple</b><br/>Grupo Financiero Actinver · Atención: División Fiduciaria</div>`;
+  const LT_SIGN = `<div class="lt-sign">Atentamente,<br/><b>Tecnología en Cuentas por Cobrar, S.A.P.I. de C.V.</b><div class="nm">Representante legal</div></div>
+    <div class="lt-foot"><span>Confidencial</span><span>www.cxc.com.mx</span></div>`;
+
+  function renderCarta(type){
+    const isDist = type==='dist';
+    $('carta-title').textContent = isDist ? 'Instrucción de Distribución — F/2024-031' : 'Instrucción de Disposición — F/2024-031';
+    $('carta-body').innerHTML = isDist ? (
+      LT_HEAD('Distribución') +
+      `<div class="lt-date">Ciudad de México, a 30 de abril de 2026.</div>` +
+      LT_TO + LT_PARTIES +
+      `<p>De conformidad con la Cláusula Sexta del Contrato (prelación de pagos), se solicita a la Fiduciaria realizar las siguientes transferencias con cargo a la Cuenta de Pago, correspondientes al periodo abril 2026, a favor del Fideicomisario en Primer Lugar:</p>
+      <ol>
+        <li>Pago de intereses ordinarios de abril 2026 por <b>$3,280,561.08</b> (tres millones doscientos ochenta mil quinientos sesenta y un pesos 08/100 M.N.), el día 30 de abril de 2026.</li>
+        <li>Pago de principal de abril 2026 por <b>$5,257,390.00</b> (cinco millones doscientos cincuenta y siete mil trescientos noventa pesos 00/100 M.N.), el día 30 de abril de 2026.</li>
+      </ol>
+      <table class="lt-tbl"><thead><tr><th>No. de cuenta</th><th>Concepto</th><th>Monto</th><th>Moneda</th></tr></thead><tbody>
+        <tr><td>0123766721</td><td>Pago de Intereses Ordinarios</td><td>$3,280,561.08</td><td>MXN</td></tr>
+        <tr><td>0123766721</td><td>Pago de Principal</td><td>$5,257,390.00</td><td>MXN</td></tr>
+      </tbody></table>` + LT_SIGN
+    ) : (
+      LT_HEAD('Disposición') +
+      `<div class="lt-date">Ciudad de México, a 29 de mayo de 2026.</div>` +
+      LT_TO + LT_PARTIES +
+      `<p>De conformidad con la cláusula de ministración del Contrato, y una vez confirmado el fondeo por el Fideicomisario en Primer Lugar (Covalto), se solicita a la Fiduciaria ministrar al Fideicomitente la siguiente disposición:</p>
+      <ol>
+        <li>Ministrar a <b>MasLeasing</b> la cantidad de <b>$5,000,000.00</b> (cinco millones de pesos 00/100 M.N.) el día 05 de junio de 2026, con cargo a la Cuenta de Disposición. Aforo resultante post-disposición: <b>1.38x</b> (mínimo contractual 1.20x).</li>
+      </ol>
+      <table class="lt-tbl"><thead><tr><th>No. de cuenta</th><th>Concepto</th><th>Monto</th><th>Moneda</th></tr></thead><tbody>
+        <tr><td>Cuenta de Disposición</td><td>Ministración / Disposición</td><td>$5,000,000.00</td><td>MXN</td></tr>
+      </tbody></table>` + LT_SIGN
+    );
+    $('ov-carta').classList.add('show');
+  }
+  $('closeCarta').addEventListener('click',()=>$('ov-carta').classList.remove('show'));
+  $('carta-pdf').addEventListener('click',()=>toast('PDF generado','var(--success)','La instrucción se descargó y quedó registrada en el expediente del fideicomiso.'));
+  $('carta-continue').addEventListener('click',()=>{ $('ov-carta').classList.remove('show'); if(cartaOnContinue){const f=cartaOnContinue;cartaOnContinue=null;f();} });
+
+  /* ---- FLUJO DISTRIBUCIÓN ---- */
+  $('distEmit').addEventListener('click',()=>{
+    cartaOnContinue=()=>$('ov-dist-handoff').classList.add('show');
+    renderCarta('dist');
+  });
+  $('dho-go').addEventListener('click',()=>{ $('ov-dist-handoff').classList.remove('show'); setRole('lender'); go('dist-lender'); });
+  $('distViewCarta').addEventListener('click',()=>{ cartaOnContinue=null; renderCarta('dist'); });
+  $('distViewCarta2').addEventListener('click',()=>{ cartaOnContinue=null; renderCarta('dist'); });
+  $('distConfirm').addEventListener('click',()=>{ setRole('cxc'); go('dist-pagado'); });
+
+  setRole('cxc'); go('bandeja');
+</script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Flujo de Fondos · LenderHub</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web" />
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:wght@400;500;700&family=Noto+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: '#1F2733', secondary: '#910057', 'secondary-active': '#840058', 'secondary-bg': '#FDF2F8',
+          bg: '#F8FAFC', surface: '#FFFFFF', border: '#E2E8F0', 'border-strong': '#CBD5E1',
+          text: '#334155', 'text-secondary': '#64748B', 'text-muted': '#94A3B8',
+          success: '#16A34A', 'success-bg': '#F0FDF4',
+          warning: '#B45309', 'warning-bg': '#FFFBEB',
+          danger: '#DC2626', 'danger-bg': '#FEF2F2',
+          info: '#0284C7', 'info-bg': '#F0F9FF',
+        },
+        fontFamily: {
+          primary: ['Sofia Sans', 'system-ui', 'sans-serif'],
+          ui: ['Noto Sans', 'system-ui', 'sans-serif'],
+          mono: ['Space Mono', 'monospace'],
+        },
+        boxShadow: { card: '0 1px 3px rgba(0,0,0,.10), 0 1px 2px rgba(0,0,0,.06)' },
+      },
+    },
+  };
+</script>
+
+<style>
+  .primary-sidebar { width: 232px; transition: width 250ms cubic-bezier(.4,0,.2,1); }
+  main.app-main { transition: margin-left 250ms cubic-bezier(.4,0,.2,1); margin-left: 256px; }
+  body.primary-collapsed .primary-sidebar { width: 64px; }
+  body.primary-collapsed .primary-sidebar .nav-label,
+  body.primary-collapsed .primary-sidebar .nav-caret { opacity: 0; pointer-events: none; }
+  body.primary-collapsed .primary-sidebar .nav-item { justify-content: center; }
+  body.primary-collapsed main.app-main { margin-left: 88px; }
+  .nav-label, .nav-caret { transition: opacity 150ms ease; }
+  body { font-family: 'Noto Sans', system-ui, sans-serif; color: #334155; }
+  h1, h2, h3, h4 { font-family: 'Sofia Sans', system-ui, sans-serif; }
+  .ff-frame { width: 100%; height: calc(100vh - 180px); min-height: 700px; border: 0; border-radius: 8px; background: #FFFFFF; }
+</style>
+</head>
+
+<body class="bg-bg text-text m-0 p-0">
+
+<header class="fixed top-0 left-0 right-0 h-[52px] bg-bg border-b border-border flex items-center justify-between px-6 z-50">
+  <img src="https://stg.suite.cxc.com.mx/logos/cxc_fullcolor.svg" alt="CXC" class="h-6 w-auto" />
+  <div class="flex items-center gap-4">
+    <button class="w-8 h-8 rounded-md grid place-items-center hover:bg-border"><i class="ph ph-question text-lg"></i></button>
+    <button class="w-8 h-8 rounded-md grid place-items-center hover:bg-border"><i class="ph ph-bell text-lg"></i></button>
+    <div class="w-8 h-8 rounded-full bg-secondary text-white grid place-items-center font-bold font-primary text-sm">CV</div>
+  </div>
+</header>
+
+<aside class="primary-sidebar fixed top-[52px] left-0 h-[calc(100vh-52px)] bg-bg border-r border-border p-3 z-40 overflow-y-auto flex flex-col gap-1">
+  <button onclick="document.body.classList.toggle('primary-collapsed')" class="self-end w-7 h-7 rounded-md grid place-items-center hover:bg-border-strong text-text-secondary mb-1" title="Toggle primary sidebar"><i class="ph ph-sidebar text-base"></i></button>
+  <a href="../LEN-521-facility-health-signals.html" class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer" title="Portfolio Monitoring"><i class="ph ph-chart-line-up flex-shrink-0"></i><span class="nav-label truncate">Portfolio Monitoring</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text font-semibold bg-border cursor-pointer" title="Flujo de Fondos"><i class="ph ph-flow-arrow text-secondary-active flex-shrink-0"></i><span class="nav-label text-sm truncate">Flujo de Fondos</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-coins flex-shrink-0"></i><span class="nav-label truncate">Financials</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-buildings flex-shrink-0"></i><span class="nav-label truncate">Companies</span></a>
+  <hr class="border-0 border-t border-border my-2" />
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-graph flex-shrink-0"></i><span class="nav-label truncate">Data Studio</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-seal-check flex-shrink-0"></i><span class="nav-label truncate">RUG Smart Search</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-robot flex-shrink-0"></i><span class="nav-label truncate">AI Verification Agent</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-gear flex-shrink-0"></i><span class="nav-label truncate">Admin</span></a>
+</aside>
+
+<main class="app-main bg-surface m-6 mt-[76px] rounded-lg p-6 min-h-[calc(100vh-100px)]">
+
+  <div class="flex items-center gap-3 mb-4">
+    <i class="ph ph-flow-arrow text-2xl text-secondary"></i>
+    <div>
+      <h1 class="font-primary text-2xl font-bold text-text m-0">Flujo de Fondos</h1>
+      <p class="text-sm text-text-secondary m-0 mt-0.5">Disposición end-to-end · request → validation → wire transfer → settlement.</p>
+    </div>
+    <a href="./engine.html" target="_blank" class="ml-auto inline-flex items-center gap-1 text-xs text-text-secondary hover:text-text" title="Open in new tab">
+      <i class="ph ph-arrow-square-out"></i> Open standalone
+    </a>
+  </div>
+
+  <hr class="border-0 border-t border-border mb-4"/>
+
+  <iframe class="ff-frame" src="./engine.html" title="Flujo de Fondos · Disposición"></iframe>
+
+</main>
+
+</body>
+</html>
