@@ -123,7 +123,8 @@ body{background:var(--bg);font-family:var(--font-ui);color:var(--text);line-heig
 .legend-swatch{display:inline-flex;align-items:center;gap:6px;}
 .legend-swatch .sw{width:14px;height:8px;border-radius:2px;background:var(--secondary);}
 .legend-swatch .sw-line{width:18px;height:0;border-top:2px dashed var(--red);}
-.chart-canvas-wrap{height:200px;position:relative;}
+.chart-canvas-wrap{height:260px;position:relative;width:100%;}
+.chart-canvas-wrap canvas{display:block;width:100%!important;height:100%!important;}
 
 /* Toolbar + table */
 .toolbar{padding:12px 20px;display:flex;justify-content:space-between;align-items:center;background:var(--bg);border-bottom:1px solid var(--border);font-size:12px;}
@@ -568,14 +569,16 @@ function renderFacility(facId) {
 
   root.innerHTML = html;
 
-  // Render charts after DOM is in place
-  setTimeout(() => {
-    f.rules.forEach(r => {
-      if (r.chart_data && r.aggregation === 'individual') {
-        renderTopChart(`chart-${facId}-${r.id}`, r);
-      }
+  // Render charts after DOM + layout are settled (iframe-safe)
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      f.rules.forEach(r => {
+        if (r.chart_data && r.aggregation === 'individual') {
+          renderTopChart(`chart-${facId}-${r.id}`, r);
+        }
+      });
     });
-  }, 0);
+  });
 }
 
 function renderCriterionSection(r, f) {
@@ -729,20 +732,60 @@ function renderCriterionSection(r, f) {
 const PINK_PALETTE = ['#6D1B4D','#831A5A','#9A1A66','#B11A72','#C81A7E','#D63E92','#DE60A4','#E682B6','#EEA4C8','#F6C6DA'];
 const BLUE_PALETTE = ['#0C4A6E','#0369A1','#0284C7','#0EA5E9','#38BDF8','#7DD3FC','#BAE6FD','#E0F2FE','#F0F9FF','#F8FAFC'];
 
+// Track chart instances per canvas to destroy on re-render (prevents Chart.js
+// "Canvas is already in use" errors when switching facilities)
+const _chartInstances = {};
+
+// Plugin: draw value labels above each bar
+const valueLabelPlugin = {
+  id: 'valueLabel',
+  afterDatasetsDraw(chart) {
+    const { ctx, data, scales: { x, y } } = chart;
+    const ds = data.datasets[0];
+    if (!ds) return;
+    ctx.save();
+    ctx.font = '700 10px "DM Sans","Noto Sans",sans-serif';
+    ctx.fillStyle = '#334155';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ds.data.forEach((v, i) => {
+      const xPos = x.getPixelForValue(i);
+      const yPos = y.getPixelForValue(v);
+      ctx.fillText(v.toFixed(2) + '%', xPos, yPos - 4);
+    });
+    ctx.restore();
+  }
+};
+
 function renderTopChart(canvasId, rule) {
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
+
+  // Destroy any previous instance bound to this canvas id
+  if (_chartInstances[canvasId]) {
+    try { _chartInstances[canvasId].destroy(); } catch(e) {}
+    delete _chartInstances[canvasId];
+  }
+
   const labels = rule.chart_data.map(d => d[0]);
   const values = rule.chart_data.map(d => d[1]);
   const limit = rule.threshold_pct;
   const isInfo = rule.operator === 'none';
   const palette = isInfo ? BLUE_PALETTE : PINK_PALETTE;
-  const yMax = limit ? Math.max(limit * 1.15, Math.max(...values) * 1.4) : Math.max(...values) * 1.25;
+  // yMax: comfortable headroom for value labels + limit visibility
+  const yMax = limit
+    ? Math.max(limit * 1.25, Math.max(...values) * 1.45)
+    : Math.max(...values) * 1.35;
+
+  // Bar colors: solid secondary; flag breach bars in red
+  const breachColor = '#DC2626';
+  const barColors = values.map(v => (limit && v > limit) ? breachColor : (isInfo ? '#0284C7' : '#910057'));
 
   const datasets = [{
     type:'bar', label:'Concentration %', data:values,
-    backgroundColor: palette.slice(0, values.length),
-    borderWidth:0, borderRadius:4, barPercentage:0.78, categoryPercentage:0.85, order:2
+    backgroundColor: barColors,
+    borderWidth:0, borderRadius:4,
+    barPercentage:0.72, categoryPercentage:0.88, order:2
   }];
   if (limit) {
     datasets.push({
@@ -753,10 +796,14 @@ function renderTopChart(canvasId, rule) {
     });
   }
 
-  new Chart(canvas.getContext('2d'), {
+  _chartInstances[canvasId] = new Chart(canvas.getContext('2d'), {
     data: { labels, datasets },
+    plugins: [valueLabelPlugin],
     options: {
       responsive:true, maintainAspectRatio:false,
+      devicePixelRatio: window.devicePixelRatio || 2,
+      animation: { duration: 400 },
+      layout: { padding: { top: 18, right: 8, bottom: 4, left: 4 } },
       interaction:{mode:'index',intersect:false},
       plugins:{
         legend:{display:false},
