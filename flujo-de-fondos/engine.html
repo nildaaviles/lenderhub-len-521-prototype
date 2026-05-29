@@ -75,6 +75,7 @@
   .nav-item .pill{margin-left:auto;font-size:0.625rem;padding:1px 7px;border-radius:10px;font-weight:700}
   .pill-amber{background:var(--warning-100);color:var(--warning-700)}
 
+  /* Prototype wrapper customizations: stripped chrome, edge-to-edge */
   .main{margin-left:0;padding-top:0;min-height:100vh}
   .shell{background:var(--card);margin:0;border-radius:0;padding:24px;min-height:100vh}
 
@@ -270,6 +271,13 @@
   .letter .lt-sign{text-align:center;margin-top:20px;font-size:0.8rem}
   .letter .lt-sign .nm{border-top:1px solid var(--slate-400);display:inline-block;padding-top:5px;margin-top:34px;font-weight:600;min-width:220px}
   .letter .lt-foot{margin-top:18px;padding-top:8px;border-top:1px solid var(--border);font-size:0.62rem;color:var(--muted);display:flex;justify-content:space-between}
+  /* e.firma sello */
+  .esign{margin-top:10px;text-align:center;border:1px dashed var(--success);background:var(--success-50);border-radius:8px;padding:12px 14px}
+  .esign-badge{font-size:0.7rem;font-weight:700;color:var(--success-700);margin-bottom:6px}
+  .esign-badge i{vertical-align:middle;margin-right:3px}
+  .esign-name{font-family:'Sofia Sans',sans-serif;font-weight:700;font-size:0.95rem;color:var(--slate-800)}
+  .esign-role{font-size:0.72rem;color:var(--text-2)}
+  .esign-meta{font-size:0.62rem;color:var(--muted);margin-top:6px;line-height:1.55;font-family:'Noto Sans',monospace}
 </style>
 </head>
 <body>
@@ -716,6 +724,133 @@
         </div>
       </section>
 
+      <!-- =============== VIEW: DIST CALCULAR SINDICADA (CXC) =============== -->
+      <section class="view" id="view-dist-calcular-syn">
+        <div class="crumb"><span class="lnk" data-go="dist-bandeja" data-role="cxc">Distribuciones</span> &nbsp;›&nbsp; <b>FID-2023-018 · Sindicada · Abril 2026</b></div>
+        <div class="page-head">
+          <div>
+            <h1>Distribución sindicada — Abril 2026</h1>
+            <div class="meta"><span class="badge b-brand">Sindicada</span> Solufi · Covalto (Agente)·PROMECAP·Saison · Fiduciaria: Banco Actinver</div>
+          </div>
+          <button class="btn btn-primary" id="distEmitSyn"><i class="ph ph-bank"></i> Emitir instrucción al fiduciario</button>
+        </div>
+        <div class="kpis">
+          <div class="kpi"><div class="t">Cobranza del periodo</div><div class="v">$12.0M</div><div class="s">depositada en fideicomiso</div></div>
+          <div class="kpi is-success"><div class="t">Total a lenders</div><div class="v">$9.8M</div><div class="s">int $2.4M + prin $7.4M</div></div>
+          <div class="kpi"><div class="t">Remanente originador</div><div class="v">$1.8M</div><div class="s">a Solufi</div></div>
+          <div class="kpi"><div class="t">Lenders</div><div class="v">3</div><div class="s">pago pro-rata</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Cascada de pagos (waterfall) <span class="badge b-info">Cláusula Sexta · prelación</span></div>
+          <div class="panel-hint">La porción a lenders se reparte pro-rata por participación. CXC emite una sola instrucción al fiduciario.</div>
+          <div class="wf-row"><div class="wf-ic wf-in"><i class="ph ph-arrow-down"></i></div><div class="wf-lbl">Cobranza del periodo</div><div class="wf-amt">$12,000,000.00</div></div>
+          <div class="wf-row"><div class="wf-ic wf-fee"><i class="ph ph-minus"></i></div><div class="wf-lbl">Comisiones (Admin Maestro + Fiduciario)</div><div class="wf-amt" style="color:var(--slate-600)">−$400,000.00</div></div>
+          <div class="wf-row"><div class="wf-ic wf-pay"><i class="ph ph-arrow-up"></i></div><div class="wf-lbl">A lenders pro-rata (interés + principal) <div class="s">repartido entre los 3 fideicomisarios</div></div><div class="wf-amt" style="color:var(--success-700)">$9,800,000.00</div></div>
+          <div class="wf-row"><div class="wf-ic wf-res"><i class="ph ph-arrow-u-up-left"></i></div><div class="wf-lbl">Remanente → Solufi <div class="s">Fideicomitente</div></div><div class="wf-amt" style="color:var(--brand)">$1,800,000.00</div></div>
+        </div>
+        <div class="panel" style="margin-bottom:0">
+          <div class="panel-title">Distribución pro-rata por lender</div>
+          <div class="panel-hint">Suma de participaciones = 100%. Una línea por fideicomisario en la instrucción al fiduciario.</div>
+          <table class="tbl">
+            <thead><tr><th>Fideicomisario</th><th>Participación</th><th>Intereses</th><th>Principal</th><th>Total</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><span class="fac-name">Covalto <span class="badge b-brand">Agente</span></span></td>
+                <td><div class="prog"><div class="prog-bg" style="width:90px"><div class="prog-fl" style="width:42%;background:var(--brand)"></div></div><strong>42%</strong></div></td>
+                <td>$1,008,000.00</td><td>$3,108,000.00</td><td><strong>$4,116,000.00</strong></td>
+              </tr>
+              <tr>
+                <td><span class="fac-name">PROMECAP</span></td>
+                <td><div class="prog"><div class="prog-bg" style="width:90px"><div class="prog-fl" style="width:35%;background:var(--info)"></div></div><strong>35%</strong></div></td>
+                <td>$840,000.00</td><td>$2,590,000.00</td><td><strong>$3,430,000.00</strong></td>
+              </tr>
+              <tr>
+                <td><span class="fac-name">Credit Saison</span></td>
+                <td><div class="prog"><div class="prog-bg" style="width:90px"><div class="prog-fl" style="width:23%;background:var(--success)"></div></div><strong>23%</strong></div></td>
+                <td>$552,000.00</td><td>$1,702,000.00</td><td><strong>$2,254,000.00</strong></td>
+              </tr>
+              <tr style="font-weight:700">
+                <td>Total</td><td>100%</td><td>$2,400,000.00</td><td>$7,400,000.00</td><td>$9,800,000.00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- =============== VIEW: DIST LENDER SINDICADA (Covalto Agente recibe su parte) =============== -->
+      <section class="view" id="view-dist-lender-syn">
+        <div class="panel" id="guard-dist-lender-syn" style="display:none;border-color:var(--brand-100);background:var(--brand-50)">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:14px">
+            <div style="font-size:0.9rem;color:var(--brand)">Esta vista es de <b>Covalto (Lender)</b>. Estás actuando como <b>CXC Staff</b>.</div>
+            <button class="btn btn-primary" data-switch="lender">Cambiar a Covalto →</button>
+          </div>
+        </div>
+        <div id="dist-lender-syn-body">
+          <div class="crumb">Distribuciones &nbsp;›&nbsp; <b>Sindicada · recibida</b></div>
+          <div class="req-head" style="border-color:var(--success-100);background:var(--success-50)">
+            <div class="req-top">
+              <div>
+                <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="badge b-brand">Sindicada</span><span class="badge b-success">Tu parte recibida</span><span class="badge b-muted">DIST-2026-018-04</span></div>
+                <h1>Recibiste tu parte de la distribución de Solufi</h1>
+                <div style="font-size:0.85rem;color:var(--text-2)">FID-2023-018 · Abril 2026 · Covalto como Agente (42%) · pagado por Banco Actinver</div>
+              </div>
+              <div class="req-amount"><div class="l">Tu parte (42%)</div><div class="v" style="color:var(--success-700)">$4,116,000</div><div class="countdown" style="color:var(--success-700)">✓ Liquidado</div></div>
+            </div>
+            <div class="req-meta">
+              <div class="meta-box" style="border-color:var(--success-100)"><div class="k">Tus intereses</div><div class="v">$1,008,000.00</div></div>
+              <div class="meta-box" style="border-color:var(--success-100)"><div class="k">Tu principal</div><div class="v">$3,108,000.00</div></div>
+              <div class="meta-box" style="border-color:var(--success-100)"><div class="k">Tu participación</div><div class="v">42% · Agente</div></div>
+              <div class="meta-box" style="border-color:var(--success-100)"><div class="k">Total del sindicato</div><div class="v">$9,800,000</div></div>
+            </div>
+          </div>
+          <div class="two-col">
+            <div class="panel">
+              <div class="panel-title">Reparto del sindicato <span class="badge b-info">visible para el Agente</span></div>
+              <div class="panel-hint">Como Agente, Covalto ve el reparto completo; cada participante solo ve su línea.</div>
+              <table class="tbl">
+                <thead><tr><th>Fideicomisario</th><th>Part.</th><th>Total recibido</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Covalto</strong> <span class="badge b-brand">Tú · Agente</span></td><td>42%</td><td><strong>$4,116,000.00</strong></td></tr>
+                  <tr><td>PROMECAP</td><td>35%</td><td>$3,430,000.00</td></tr>
+                  <tr><td>Credit Saison</td><td>23%</td><td>$2,254,000.00</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <div class="panel" style="margin-bottom:0">
+                <div class="panel-title">Soporte</div>
+                <div class="panel-hint">La instrucción al fiduciario que originó este pago.</div>
+                <button class="btn btn-outlined btn-block" id="distViewCartaSyn"><i class="ph ph-file-text"></i> Ver carta de distribución</button>
+                <button class="btn btn-primary btn-block" id="distConfirmSyn" style="margin-top:8px">Confirmar recepción → volver a CXC</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =============== VIEW: DIST PAGADO SINDICADA (CXC liquidada) =============== -->
+      <section class="view" id="view-dist-pagado-syn">
+        <div class="panel" id="guard-dist-pagado-syn" style="display:none;border-color:var(--info-100);background:var(--info-50)">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:14px">
+            <div style="font-size:0.9rem;color:var(--info-700)">Esta vista es de <b>CXC Staff</b>. Estás actuando como <b>Covalto</b>.</div>
+            <button class="btn btn-primary" data-switch="cxc">Cambiar a CXC Staff →</button>
+          </div>
+        </div>
+        <div id="dist-pagado-syn-body">
+          <div class="crumb"><span class="lnk" data-go="dist-bandeja" data-role="cxc">Distribuciones</span> &nbsp;›&nbsp; <b>DIST-2026-018-04 · Sindicada · Liquidada</b></div>
+          <div class="page-head"><div><h1>Distribución sindicada liquidada</h1><div class="meta">Solufi · Abril 2026 · $9.8M repartidos pro-rata entre 3 lenders</div></div></div>
+          <div class="panel">
+            <div class="panel-title">Resumen de la liquidación <span class="badge b-success">Completada</span></div>
+            <div class="kv"><span class="k">Cobranza distribuida</span><strong>$12,000,000.00</strong></div>
+            <div class="kv"><span class="k">Covalto (42%)</span><strong style="color:var(--success-700)">$4,116,000.00</strong></div>
+            <div class="kv"><span class="k">PROMECAP (35%)</span><strong style="color:var(--success-700)">$3,430,000.00</strong></div>
+            <div class="kv"><span class="k">Credit Saison (23%)</span><strong style="color:var(--success-700)">$2,254,000.00</strong></div>
+            <div class="kv"><span class="k">Remanente al fideicomitente</span><strong>$1,800,000.00</strong></div>
+            <div class="kv"><span class="k">Instrucción al fiduciario</span><span class="lnk" id="distViewCartaSyn2">Ver carta (N líneas)</span></div>
+          </div>
+        </div>
+      </section>
+
     </div>
   </main>
 
@@ -809,13 +944,14 @@
   <div class="overlay" id="ov-carta">
     <div class="dialog lg">
       <div class="dlg-head">
-        <div><h3 id="carta-title">Instrucción al fiduciario</h3><p>Documento generado por LenderHub · listo para firma del representante legal</p></div>
+        <div><div style="display:flex;align-items:center;gap:8px"><h3 id="carta-title">Instrucción al fiduciario</h3><span class="badge" id="carta-status"></span></div><p>Documento generado por LenderHub · firma del representante legal</p></div>
         <button class="dlg-close" id="closeCarta"><i class="ph ph-x"></i></button>
       </div>
       <div class="dlg-body"><div class="letter" id="carta-body"></div></div>
       <div class="dlg-foot">
         <button class="btn btn-text-grey" id="carta-pdf"><i class="ph ph-file-pdf"></i> Descargar PDF</button>
-        <button class="btn btn-primary" id="carta-continue">Confirmar y continuar</button>
+        <button class="btn btn-primary" id="carta-sign"><i class="ph ph-pen-nib"></i> Firmar electrónicamente</button>
+        <button class="btn btn-primary" id="carta-continue" style="display:none">Confirmar y continuar</button>
       </div>
     </div>
   </div>
@@ -835,6 +971,21 @@
     </div>
   </div>
 
+  <!-- HANDOFF: Distribución sindicada CXC → Lender (Agente) -->
+  <div class="overlay" id="ov-dist-syn-handoff">
+    <div class="dialog sm">
+      <div class="dlg-center">
+        <div class="ic ic-info"><i class="ph ph-bank"></i></div>
+        <h3>Instrucción de distribución sindicada emitida</h3>
+        <p>Banco Actinver pagará <strong style="color:var(--text)">$9,800,000.00</strong> pro-rata a los 3 fideicomisarios. Actúa como Covalto (Agente) para ver tu parte recibida.</p>
+        <div style="display:flex;gap:8px;justify-content:center">
+          <button class="btn btn-outlined" onclick="document.getElementById('ov-dist-syn-handoff').classList.remove('show')">Quedarme en CXC</button>
+          <button class="btn btn-primary" id="dho-syn-go">Actuar como Covalto →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST -->
   <div class="toast" id="toast"><div class="t-title" id="toast-title"></div><div id="toast-body" style="color:var(--text-2);font-size:0.85rem"></div></div>
 
@@ -843,7 +994,9 @@
   const qa = s => [...document.querySelectorAll(s)];
 
   const roleOfView = { bandeja:'cxc', solicitar:'cxc', lender:'lender', fondeo:'cxc',
-    'dist-bandeja':'cxc', 'dist-calcular':'cxc', 'dist-lender':'lender', 'dist-pagado':'cxc' };
+    'dist-bandeja':'cxc', 'dist-calcular':'cxc', 'dist-lender':'lender', 'dist-pagado':'cxc',
+    'dist-calcular-syn':'cxc', 'dist-lender-syn':'lender', 'dist-pagado-syn':'cxc' };
+  const STEP_OF = { 'dist-calcular-syn':'dist-calcular', 'dist-lender-syn':'dist-lender', 'dist-pagado-syn':'dist-pagado' };
   let role='cxc', view='bandeja';
 
   function setRole(r){
@@ -868,9 +1021,10 @@
     else sel = role==='lender'?'.nav-item[data-go="lender"]':'.nav-item[data-go="bandeja"]';
     const nv=document.querySelector(sel); if(nv) nv.classList.add('active');
     const order=ORDERS[mod];
+    const stepV = STEP_OF[v] || v;
     qa('#flowmap-'+mod+' .fstep').forEach(f=>{f.classList.remove('cur','len','fdone');
-      if(f.dataset.f===v){f.classList.add('cur'); if(roleOfView[v]==='lender') f.classList.add('len');}
-      else if(order.indexOf(f.dataset.f)<order.indexOf(v)) f.classList.add('fdone');});
+      if(f.dataset.f===stepV){f.classList.add('cur'); if(roleOfView[v]==='lender') f.classList.add('len');}
+      else if(order.indexOf(f.dataset.f)<order.indexOf(stepV)) f.classList.add('fdone');});
     applyGuards(); window.scrollTo(0,0);
   }
   function guardView(v){
@@ -878,18 +1032,9 @@
     const wrong = role!==roleOfView[v];
     g.style.display=wrong?'block':'none'; b.style.display=wrong?'none':'block';
   }
-  function applyGuards(){ ['lender','fondeo','dist-lender','dist-pagado'].forEach(guardView); }
+  function applyGuards(){ ['lender','fondeo','dist-lender','dist-pagado','dist-lender-syn','dist-pagado-syn'].forEach(guardView); }
 
   qa('[data-go]').forEach(el=>el.addEventListener('click',()=>{ if(el.dataset.role) setRole(el.dataset.role); go(el.dataset.go); }));
-
-  // Hash routing — wired below at end of script so it runs AFTER any
-  // boot-time setRole('cxc'); go('bandeja') override.
-  function navigateFromHash(){
-    const h = (location.hash || '').slice(1);
-    const valid = ['bandeja','solicitar','lender','fondeo','dist-bandeja','dist-calcular','dist-lender','dist-pagado'];
-    if (valid.includes(h)) go(h);
-  }
-  window.addEventListener('hashchange', navigateFromHash);
   $('seg-cxc').addEventListener('click',()=>{ setRole('cxc'); if(roleOfView[view]!=='cxc') go('bandeja'); });
   $('seg-lender').addEventListener('click',()=>{ setRole('lender'); go('lender'); });
   qa('[data-switch]').forEach(b=>b.addEventListener('click',()=>setRole(b.dataset.switch)));
@@ -999,37 +1144,61 @@
     l=steps[4].querySelector('.tl-label'); l.className='tl-label'; l.textContent='Dispersión';
   }
 
-  /* ---- CARTA generada (instrucción al fiduciario) ---- */
-  let cartaOnContinue=null;
-  const LT_HEAD = t => `
+  /* ---- CARTA generada + firma electrónica (e.firma SAT simulada) ---- */
+  let cartaOnContinue=null, currentCartaType=null, cartaSigned=false;
+  const LT_HEAD = (t,ref,folio,signed) => `
     <div class="lt-head">
       <div><div class="lt-mark">cxc · Tecnología en Cuentas por Cobrar</div>
-      <div class="lt-title">F/2024-031 — Instrucción de ${t}</div></div>
-      <div style="text-align:right;font-size:0.66rem;color:var(--muted)">Generado por LenderHub<br/>Folio ${t==='Disposición'?'DIS':'DIST'}-2026-031</div>
+      <div class="lt-title">${ref} — Instrucción de ${t}</div></div>
+      <div style="text-align:right;font-size:0.66rem;color:var(--muted)">Generado por LenderHub · Folio ${folio}<br/>${signed?'<span style="color:var(--success-700);font-weight:700">✓ Firmada electrónicamente</span>':'<span style="color:var(--warning-700);font-weight:700">Borrador · sin firmar</span>'}</div>
     </div>`;
   const LT_PARTIES = `<p>Se hace referencia al Contrato de Fideicomiso Irrevocable de Garantía, Administración y Fuente de Pago FID-2024-031, celebrado por <b>MasLeasing</b> (Fideicomitente y Fideicomisario en segundo lugar), <b>Covalto</b> (Fideicomisario en Primer Lugar), <b>Banco Actinver, S.A.</b> (Fiduciaria) y <b>Tecnología en Cuentas por Cobrar, S.A.P.I. de C.V.</b> (Administrador Maestro).</p>`;
   const LT_TO = `<div class="lt-to"><b>Banco Actinver, S.A., Institución de Banca Múltiple</b><br/>Grupo Financiero Actinver · Atención: División Fiduciaria</div>`;
-  const LT_SIGN = `<div class="lt-sign">Atentamente,<br/><b>Tecnología en Cuentas por Cobrar, S.A.P.I. de C.V.</b><div class="nm">Representante legal</div></div>
-    <div class="lt-foot"><span>Confidencial</span><span>www.cxc.com.mx</span></div>`;
+  const LT_SIGN = (signed,folio,dateStr) => {
+    const stamp = signed
+      ? `<div class="esign">
+           <div class="esign-badge"><i class="ph-fill ph-seal-check"></i> Firmado electrónicamente con e.firma (SAT)</div>
+           <div class="esign-name">Laura Elena Escobar Escobar</div>
+           <div class="esign-role">Representante legal · Tecnología en Cuentas por Cobrar, S.A.P.I. de C.V.</div>
+           <div class="esign-meta">${dateStr} · Folio ${folio}<br/>Sello digital: 7F3A8B12C4D5E6F7A1B2…9C2E · Constancia de conservación <b>NOM-151</b></div>
+         </div>`
+      : `<div class="nm">Representante legal</div>`;
+    return `<div class="lt-sign">Atentamente,<br/><b>Tecnología en Cuentas por Cobrar, S.A.P.I. de C.V.</b>${stamp}</div>
+      <div class="lt-foot"><span>Confidencial</span><span>www.cxc.com.mx</span></div>`;
+  };
 
-  function renderCarta(type){
-    const isDist = type==='dist';
-    $('carta-title').textContent = isDist ? 'Instrucción de Distribución — F/2024-031' : 'Instrucción de Disposición — F/2024-031';
-    $('carta-body').innerHTML = isDist ? (
-      LT_HEAD('Distribución') +
-      `<div class="lt-date">Ciudad de México, a 30 de abril de 2026.</div>` +
-      LT_TO + LT_PARTIES +
-      `<p>De conformidad con la Cláusula Sexta del Contrato (prelación de pagos), se solicita a la Fiduciaria realizar las siguientes transferencias con cargo a la Cuenta de Pago, correspondientes al periodo abril 2026, a favor del Fideicomisario en Primer Lugar:</p>
-      <ol>
-        <li>Pago de intereses ordinarios de abril 2026 por <b>$3,280,561.08</b> (tres millones doscientos ochenta mil quinientos sesenta y un pesos 08/100 M.N.), el día 30 de abril de 2026.</li>
-        <li>Pago de principal de abril 2026 por <b>$5,257,390.00</b> (cinco millones doscientos cincuenta y siete mil trescientos noventa pesos 00/100 M.N.), el día 30 de abril de 2026.</li>
-      </ol>
-      <table class="lt-tbl"><thead><tr><th>No. de cuenta</th><th>Concepto</th><th>Monto</th><th>Moneda</th></tr></thead><tbody>
-        <tr><td>0123766721</td><td>Pago de Intereses Ordinarios</td><td>$3,280,561.08</td><td>MXN</td></tr>
-        <tr><td>0123766721</td><td>Pago de Principal</td><td>$5,257,390.00</td><td>MXN</td></tr>
-      </tbody></table>` + LT_SIGN
-    ) : (
-      LT_HEAD('Disposición') +
+  function buildCartaBody(type, signed){
+    if(type==='dist-syn'){
+      return { title:'Instrucción de Distribución (Sindicada) — F/2023-018', html:
+        LT_HEAD('Distribución','F/2023-018','DIST-2026-018',signed) +
+        `<div class="lt-date">Ciudad de México, a 30 de abril de 2026.</div>` +
+        LT_TO +
+        `<p>Se hace referencia al Contrato de Fideicomiso Irrevocable de Garantía, Administración y Fuente de Pago FID-2023-018, celebrado por <b>Solufi</b> (Fideicomitente), <b>Covalto</b> (Agente y Fideicomisario en Primer Lugar), <b>PROMECAP</b> y <b>Credit Saison</b> (Fideicomisarios participantes), <b>Banco Actinver, S.A.</b> (Fiduciaria) y <b>Tecnología en Cuentas por Cobrar, S.A.P.I. de C.V.</b> (Administrador Maestro).</p>` +
+        `<p>De conformidad con la Cláusula Sexta del Contrato (prelación y distribución pro-rata), se solicita a la Fiduciaria pagar a cada Fideicomisario su parte proporcional de los intereses y principal del periodo abril 2026, con cargo a la Cuenta de Pago (0123766721):</p>
+        <table class="lt-tbl"><thead><tr><th>Fideicomisario</th><th>Part.</th><th>Intereses</th><th>Principal</th><th>Total (MXN)</th></tr></thead><tbody>
+          <tr><td>Covalto (Agente)</td><td>42%</td><td>$1,008,000.00</td><td>$3,108,000.00</td><td>$4,116,000.00</td></tr>
+          <tr><td>PROMECAP</td><td>35%</td><td>$840,000.00</td><td>$2,590,000.00</td><td>$3,430,000.00</td></tr>
+          <tr><td>Credit Saison</td><td>23%</td><td>$552,000.00</td><td>$1,702,000.00</td><td>$2,254,000.00</td></tr>
+          <tr style="font-weight:700;background:var(--slate-50)"><td>Total</td><td>100%</td><td>$2,400,000.00</td><td>$7,400,000.00</td><td>$9,800,000.00</td></tr>
+        </tbody></table>` + LT_SIGN(signed,'DIST-2026-018','30 abr 2026 · 11:05 CST') };
+    }
+    if(type==='dist'){
+      return { title:'Instrucción de Distribución — F/2024-031', html:
+        LT_HEAD('Distribución','F/2024-031','DIST-2026-031',signed) +
+        `<div class="lt-date">Ciudad de México, a 30 de abril de 2026.</div>` +
+        LT_TO + LT_PARTIES +
+        `<p>De conformidad con la Cláusula Sexta del Contrato (prelación de pagos), se solicita a la Fiduciaria realizar las siguientes transferencias con cargo a la Cuenta de Pago, correspondientes al periodo abril 2026, a favor del Fideicomisario en Primer Lugar:</p>
+        <ol>
+          <li>Pago de intereses ordinarios de abril 2026 por <b>$3,280,561.08</b> (tres millones doscientos ochenta mil quinientos sesenta y un pesos 08/100 M.N.), el día 30 de abril de 2026.</li>
+          <li>Pago de principal de abril 2026 por <b>$5,257,390.00</b> (cinco millones doscientos cincuenta y siete mil trescientos noventa pesos 00/100 M.N.), el día 30 de abril de 2026.</li>
+        </ol>
+        <table class="lt-tbl"><thead><tr><th>No. de cuenta</th><th>Concepto</th><th>Monto</th><th>Moneda</th></tr></thead><tbody>
+          <tr><td>0123766721</td><td>Pago de Intereses Ordinarios</td><td>$3,280,561.08</td><td>MXN</td></tr>
+          <tr><td>0123766721</td><td>Pago de Principal</td><td>$5,257,390.00</td><td>MXN</td></tr>
+        </tbody></table>` + LT_SIGN(signed,'DIST-2026-031','30 abr 2026 · 10:40 CST') };
+    }
+    return { title:'Instrucción de Disposición — F/2024-031', html:
+      LT_HEAD('Disposición','F/2024-031','DIS-2026-031',signed) +
       `<div class="lt-date">Ciudad de México, a 29 de mayo de 2026.</div>` +
       LT_TO + LT_PARTIES +
       `<p>De conformidad con la cláusula de ministración del Contrato, y una vez confirmado el fondeo por el Fideicomisario en Primer Lugar (Covalto), se solicita a la Fiduciaria ministrar al Fideicomitente la siguiente disposición:</p>
@@ -1038,11 +1207,29 @@
       </ol>
       <table class="lt-tbl"><thead><tr><th>No. de cuenta</th><th>Concepto</th><th>Monto</th><th>Moneda</th></tr></thead><tbody>
         <tr><td>Cuenta de Disposición</td><td>Ministración / Disposición</td><td>$5,000,000.00</td><td>MXN</td></tr>
-      </tbody></table>` + LT_SIGN
-    );
-    $('ov-carta').classList.add('show');
+      </tbody></table>` + LT_SIGN(signed,'DIS-2026-031','29 may 2026 · 14:32 CST') };
+  }
+
+  function setCartaFooter(){
+    $('carta-status').textContent = cartaSigned ? '✓ Firmada' : 'Borrador · sin firmar';
+    $('carta-status').className = 'badge ' + (cartaSigned?'b-success':'b-warning');
+    $('carta-sign').style.display = cartaSigned ? 'none' : 'inline-flex';
+    $('carta-continue').style.display = cartaSigned ? 'inline-flex' : 'none';
+    $('carta-continue').textContent = cartaOnContinue ? 'Confirmar y enviar al fiduciario' : 'Cerrar';
+  }
+  function renderCarta(type, presigned){
+    currentCartaType=type; cartaSigned=!!presigned;
+    const c=buildCartaBody(type, cartaSigned);
+    $('carta-title').textContent=c.title; $('carta-body').innerHTML=c.html;
+    setCartaFooter(); $('ov-carta').classList.add('show');
   }
   $('closeCarta').addEventListener('click',()=>$('ov-carta').classList.remove('show'));
+  $('carta-sign').addEventListener('click',()=>{
+    cartaSigned=true;
+    $('carta-body').innerHTML = buildCartaBody(currentCartaType, true).html;
+    setCartaFooter();
+    toast('Documento firmado','var(--success)','Firmado con e.firma (SAT). Sello digital y constancia NOM-151 generados.');
+  });
   $('carta-pdf').addEventListener('click',()=>toast('PDF generado','var(--success)','La instrucción se descargó y quedó registrada en el expediente del fideicomiso.'));
   $('carta-continue').addEventListener('click',()=>{ $('ov-carta').classList.remove('show'); if(cartaOnContinue){const f=cartaOnContinue;cartaOnContinue=null;f();} });
 
@@ -1052,13 +1239,30 @@
     renderCarta('dist');
   });
   $('dho-go').addEventListener('click',()=>{ $('ov-dist-handoff').classList.remove('show'); setRole('lender'); go('dist-lender'); });
-  $('distViewCarta').addEventListener('click',()=>{ cartaOnContinue=null; renderCarta('dist'); });
-  $('distViewCarta2').addEventListener('click',()=>{ cartaOnContinue=null; renderCarta('dist'); });
+  $('distViewCarta').addEventListener('click',()=>{ cartaOnContinue=null; renderCarta('dist', true); });
+  $('distViewCarta2').addEventListener('click',()=>{ cartaOnContinue=null; renderCarta('dist', true); });
   $('distConfirm').addEventListener('click',()=>{ setRole('cxc'); go('dist-pagado'); });
+
+  /* ---- FLUJO DISTRIBUCIÓN SINDICADA ---- */
+  $('distEmitSyn').addEventListener('click',()=>{ cartaOnContinue=()=>$('ov-dist-syn-handoff').classList.add('show'); renderCarta('dist-syn'); });
+  $('dho-syn-go').addEventListener('click',()=>{ $('ov-dist-syn-handoff').classList.remove('show'); setRole('lender'); go('dist-lender-syn'); });
+  $('distViewCartaSyn').addEventListener('click',()=>{ cartaOnContinue=null; renderCarta('dist-syn', true); });
+  $('distViewCartaSyn2').addEventListener('click',()=>{ cartaOnContinue=null; renderCarta('dist-syn', true); });
+  $('distConfirmSyn').addEventListener('click',()=>{ setRole('cxc'); go('dist-pagado-syn'); });
 
   setRole('cxc'); go('bandeja');
 
-  // Hash routing fires LAST so the wrapper's deep-link wins over the default boot view
+  // ════════ Prototype wrapper · hash routing ════════
+  // Wrapper deep-links via iframe src='./engine.html#<view>'. Runs AFTER the
+  // boot default above so the wrapper's intent wins.
+  function navigateFromHash(){
+    const h = (location.hash || '').slice(1);
+    if (!h) return;
+    // Permissive: anything the engine knows how to render via go(). Invalid
+    // hashes are no-ops since go() would set view-<h> active and find nothing.
+    try { go(h); } catch(e){}
+  }
+  window.addEventListener('hashchange', navigateFromHash);
   navigateFromHash();
 </script>
 </body>
