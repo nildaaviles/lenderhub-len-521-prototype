@@ -34,12 +34,20 @@
 
 <style>
   .primary-sidebar { width: 232px; transition: width 250ms cubic-bezier(.4,0,.2,1); }
-  main.app-main { transition: margin-left 250ms cubic-bezier(.4,0,.2,1); margin-left: 256px; }
+  .secondary-sidebar { transform: translateX(0); transition: transform 250ms cubic-bezier(.4,0,.2,1), left 250ms cubic-bezier(.4,0,.2,1); left: 232px; }
+  main.app-main { transition: margin-left 250ms cubic-bezier(.4,0,.2,1); margin-left: 516px; }
   body.primary-collapsed .primary-sidebar { width: 64px; }
   body.primary-collapsed .primary-sidebar .nav-label,
   body.primary-collapsed .primary-sidebar .nav-caret { opacity: 0; pointer-events: none; }
   body.primary-collapsed .primary-sidebar .nav-item { justify-content: center; }
-  body.primary-collapsed main.app-main { margin-left: 88px; }
+  body.primary-collapsed .secondary-sidebar { left: 64px; }
+  body.secondary-hidden .secondary-sidebar { transform: translateX(-105%); }
+  body.primary-collapsed main.app-main { margin-left: 348px; }
+  body.secondary-hidden main.app-main { margin-left: 256px; }
+  body.primary-collapsed.secondary-hidden main.app-main { margin-left: 88px; }
+  .reopen-secondary { display: none; left: 240px; transition: left 250ms cubic-bezier(.4,0,.2,1); }
+  body.secondary-hidden .reopen-secondary { display: flex; }
+  body.primary-collapsed .reopen-secondary { left: 72px; }
   .nav-label, .nav-caret { transition: opacity 150ms ease; }
   body { font-family: 'Noto Sans', system-ui, sans-serif; color: #334155; }
   h1, h2, h3, h4 { font-family: 'Sofia Sans', system-ui, sans-serif; }
@@ -58,6 +66,7 @@
   </div>
 </header>
 
+<!-- Primary sidebar -->
 <aside class="primary-sidebar fixed top-[52px] left-0 h-[calc(100vh-52px)] bg-bg border-r border-border p-3 z-40 overflow-y-auto flex flex-col gap-1">
   <button onclick="document.body.classList.toggle('primary-collapsed')" class="self-end w-7 h-7 rounded-md grid place-items-center hover:bg-border-strong text-text-secondary mb-1" title="Toggle primary sidebar"><i class="ph ph-sidebar text-base"></i></button>
   <a href="../LEN-521-facility-health-signals.html" class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer" title="Portfolio Monitoring"><i class="ph ph-chart-line-up flex-shrink-0"></i><span class="nav-label truncate">Portfolio Monitoring</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
@@ -71,12 +80,38 @@
   <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-gear flex-shrink-0"></i><span class="nav-label truncate">Admin</span></a>
 </aside>
 
+<!-- Secondary sidebar (Flujo de Fondos sub-nav) -->
+<aside class="secondary-sidebar fixed top-[52px] w-[260px] h-[calc(100vh-52px)] bg-bg border-r border-border p-4 z-30 overflow-y-auto">
+  <header class="flex items-center gap-2 mb-4 pb-3 border-b border-border">
+    <h2 class="font-primary text-base font-bold text-text m-0 truncate flex-1">Flujo de Fondos</h2>
+    <button onclick="document.body.classList.add('secondary-hidden')" class="w-7 h-7 rounded-md grid place-items-center hover:bg-border-strong text-text-secondary" title="Hide sidebar"><i class="ph ph-caret-double-left text-base"></i></button>
+  </header>
+
+  <div class="text-[10px] font-bold uppercase tracking-wider text-text-muted font-primary px-3 mb-2">Flujos de Fondos</div>
+
+  <div class="flex flex-col gap-1">
+    <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text font-semibold bg-border cursor-pointer">
+      <i class="ph ph-arrow-down text-secondary-active flex-shrink-0"></i>
+      <span class="text-sm">Disposiciones</span>
+      <span class="ml-auto inline-flex items-center justify-center min-w-[22px] h-[18px] px-1.5 rounded-full bg-warning-bg text-warning border border-warning text-[10px] font-bold font-primary">2</span>
+    </a>
+    <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer">
+      <i class="ph ph-arrow-up flex-shrink-0"></i>
+      <span>Distribuciones</span>
+      <span class="ml-auto inline-flex items-center justify-center min-w-[22px] h-[18px] px-1.5 rounded-full bg-warning-bg text-warning border border-warning text-[10px] font-bold font-primary">1</span>
+    </a>
+  </div>
+</aside>
+
+<button onclick="document.body.classList.remove('secondary-hidden')" class="reopen-secondary fixed top-[68px] z-30 w-8 h-8 rounded-md bg-surface border border-border shadow-card items-center justify-center hover:bg-bg text-text-secondary" title="Show sidebar"><i class="ph ph-caret-double-right text-base"></i></button>
+
 <main class="app-main bg-surface m-6 mt-[76px] rounded-lg p-6 min-h-[calc(100vh-100px)]">
 
   <div class="flex items-center gap-3 mb-4">
-    <i class="ph ph-flow-arrow text-2xl text-secondary"></i>
+    <button onclick="document.body.classList.toggle('secondary-hidden')" class="w-9 h-9 rounded-md border border-border grid place-items-center hover:bg-bg text-text-secondary"><i class="ph ph-sidebar text-lg"></i></button>
+    <i class="ph ph-arrow-down text-xl text-secondary"></i>
     <div>
-      <h1 class="font-primary text-2xl font-bold text-text m-0">Flujo de Fondos</h1>
+      <h1 class="font-primary text-2xl font-bold text-text m-0">Disposiciones</h1>
       <p class="text-sm text-text-secondary m-0 mt-0.5">Disposición end-to-end · request → validation → wire transfer → settlement.</p>
     </div>
     <a href="./engine.html" target="_blank" class="ml-auto inline-flex items-center gap-1 text-xs text-text-secondary hover:text-text" title="Open in new tab">
@@ -86,7 +121,7 @@
 
   <hr class="border-0 border-t border-border mb-4"/>
 
-  <iframe class="ff-frame" src="./engine.html" title="Flujo de Fondos · Disposición"></iframe>
+  <iframe class="ff-frame" src="./engine.html" title="Disposiciones · Flujo de Fondos"></iframe>
 
 </main>
 
