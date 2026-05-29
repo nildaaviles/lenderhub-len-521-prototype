@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Concentrations V2 · Generic Engine · LenderHub</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;700&family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+
+<style>
+:root {
+  --primary:#1F2733; --secondary:#910057; --secondary-active:#840058;
+  --secondary-soft:#FDF2F8;
+  --bg:#F8FAFC; --surface:#FFFFFF;
+  --border:#E2E8F0; --border-strong:#CBD5E1;
+  --text:#334155; --text-secondary:#64748B; --text-muted:#94A3B8;
+  --green:#16A34A; --green-bg:#F0FDF4; --green-b:#BBF7D0;
+  --amber:#D97706; --amber-bg:#FFFBEB; --amber-b:#FCD34D; --amber-dark:#B45309;
+  --red:#DC2626; --red-bg:#FEF2F2; --red-b:#FCA5A5;
+  --blue:#0284C7; --blue-bg:#F0F9FF;
+  --purple:#7C3AED; --purple-bg:#F5F3FF; --purple-b:#DDD6FE;
+  --gray-bg:#F1F5F9;
+  --radius:8px; --radius-sm:6px; --radius-lg:12px;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
+  --font-primary:'Nunito',-apple-system,sans-serif;
+  --font-ui:'DM Sans',-apple-system,sans-serif;
+  --font-mono:'Space Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:14px;}
+body{background:var(--bg);font-family:var(--font-ui);color:var(--text);line-height:1.5;padding:28px 32px 48px;}
+.container{max-width:1280px;margin:0 auto;}
+
+/* Page header */
+.page-hdr{margin-bottom:16px;}
+.page-title{font-family:var(--font-primary);font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.page-subtitle{font-size:13px;color:var(--text-secondary);}
+.engine-tag{display:inline-flex;align-items:center;gap:5px;background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-b);padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;letter-spacing:.05em;margin-left:8px;}
+
+/* Facility selector */
+.facility-selector{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.selector-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);}
+.fac-pill{padding:8px 14px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;font-size:12px;font-weight:600;color:var(--text-secondary);transition:all .15s;display:flex;align-items:center;gap:8px;}
+.fac-pill:hover{border-color:var(--secondary);color:var(--text);}
+.fac-pill.active{background:var(--secondary);border-color:var(--secondary);color:#fff;}
+.fac-pill .fac-id{font-family:var(--font-mono);font-size:10px;opacity:.7;}
+.fac-pill.active .fac-id{opacity:.9;}
+
+/* Facility card */
+.facility-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 24px;margin-bottom:24px;}
+.facility-row{display:flex;align-items:center;gap:14px;}
+.facility-icon{width:40px;height:40px;background:var(--border);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;color:var(--secondary);font-size:20px;}
+.facility-name{font-family:var(--font-primary);font-size:16px;font-weight:700;color:var(--text);}
+.facility-meta{font-size:12px;color:var(--text-secondary);}
+.cutoff-block{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.cutoff-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);}
+.cutoff-select{border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:6px 12px;font-family:var(--font-ui);font-size:13px;color:var(--text);background:var(--surface);cursor:pointer;outline:none;}
+
+/* Section card */
+.section-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:24px;}
+.section-hdr{display:flex;align-items:center;gap:12px;padding:18px 24px;border-bottom:1px solid var(--border);}
+.section-icon{width:32px;height:32px;background:var(--border);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;color:var(--secondary);font-size:16px;}
+.section-title{font-family:var(--font-primary);font-size:15px;font-weight:700;color:var(--text);letter-spacing:.02em;}
+.section-subtitle{font-size:12px;color:var(--text-secondary);margin-left:4px;}
+.section-body{padding:24px;}
+.crit-hdr-extra{margin-left:auto;display:flex;align-items:center;gap:10px;}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:.04em;}
+.badge-ok{background:var(--green-bg);color:var(--green);border:1px solid var(--green-b);}
+.badge-warn{background:var(--amber-bg);color:var(--amber-dark);border:1px solid var(--amber-b);}
+.badge-breach{background:var(--red-bg);color:var(--red);border:1px solid var(--red-b);}
+.badge-na{background:var(--gray-bg);color:var(--text-muted);border:1px solid var(--border);}
+.badge-info{background:var(--blue-bg);color:var(--blue);border:1px solid #BAE6FD;}
+.badge-max{background:var(--red-bg);color:var(--red);border:1px solid var(--red-b);}
+.badge-min{background:var(--green-bg);color:var(--green);border:1px solid var(--green-b);}
+.badge-binding{background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-b);}
+.badge-informative{background:var(--gray-bg);color:var(--text-secondary);border:1px solid var(--border);}
+
+/* Criteria list (legal text) */
+.criteria-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.criterion-row{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:12px;padding:14px 16px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);}
+.criterion-num{width:26px;height:26px;border-radius:50%;background:var(--secondary-soft);color:var(--secondary);font-family:var(--font-primary);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:12px;}
+.criterion-text{font-size:12.5px;color:var(--text);line-height:1.45;}
+.criterion-text b{color:var(--primary);font-weight:700;}
+
+/* KPI overview */
+.kpi-overview{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.kpi-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;}
+.kpi-card.kpi-ok{background:var(--green-bg);border-color:var(--green-b);}
+.kpi-card.kpi-warn{background:var(--amber-bg);border-color:var(--amber-b);}
+.kpi-card.kpi-alert{background:var(--red-bg);border-color:var(--red-b);}
+.kpi-card.kpi-info{background:var(--blue-bg);border-color:#BAE6FD;}
+.kpi-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary);display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.kpi-value{font-family:var(--font-ui);font-size:24px;font-weight:700;color:var(--text);line-height:1.1;margin-bottom:6px;}
+.kpi-card.kpi-ok .kpi-value{color:var(--green);}
+.kpi-card.kpi-warn .kpi-value{color:var(--amber-dark);}
+.kpi-card.kpi-alert .kpi-value{color:var(--red);}
+.kpi-card.kpi-info .kpi-value{color:var(--blue);}
+.kpi-sub{font-size:11.5px;color:var(--text-secondary);}
+
+/* Criterion section */
+.crit-limit-pill{background:var(--surface);border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:3px 10px;font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--text);}
+.crit-summary-row{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--border);}
+.crit-summary-cell{padding:14px 20px;border-right:1px solid var(--border);}
+.crit-summary-cell:last-child{border-right:0;}
+.crit-summary-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:4px;}
+.crit-summary-val{font-family:var(--font-ui);font-size:15px;font-weight:700;color:var(--text);}
+.crit-summary-val.green{color:var(--green);}
+.crit-summary-val.amber{color:var(--amber-dark);}
+.crit-summary-val.red{color:var(--red);}
+
+/* Chart block */
+.chart-block{padding:16px 24px 20px;background:var(--surface);border-bottom:1px solid var(--border);}
+.chart-block-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.chart-block-label{font-family:var(--font-primary);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);}
+.chart-block-legend{display:flex;align-items:center;gap:14px;font-size:11px;color:var(--text-secondary);}
+.legend-swatch{display:inline-flex;align-items:center;gap:6px;}
+.legend-swatch .sw{width:14px;height:8px;border-radius:2px;background:var(--secondary);}
+.legend-swatch .sw-line{width:18px;height:0;border-top:2px dashed var(--red);}
+.chart-canvas-wrap{height:200px;position:relative;}
+
+/* Toolbar + table */
+.toolbar{padding:12px 20px;display:flex;justify-content:space-between;align-items:center;background:var(--bg);border-bottom:1px solid var(--border);font-size:12px;}
+.search-wrap{position:relative;display:flex;align-items:center;}
+.search-wrap i{position:absolute;left:10px;color:var(--text-muted);font-size:14px;}
+.toolbar input{padding:7px 10px 7px 32px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);font-family:var(--font-ui);font-size:12px;width:260px;background:var(--surface);}
+.btn-link{color:var(--secondary);text-decoration:none;font-weight:600;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+
+.table-wrap{overflow-x:auto;max-height:320px;overflow-y:auto;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;font-family:var(--font-ui);}
+th{text-align:left;padding:10px 20px;font-weight:700;color:var(--text-muted);background:var(--bg);border-bottom:1px solid var(--border);position:sticky;top:0;font-size:10px;text-transform:uppercase;letter-spacing:.07em;z-index:1;}
+td{padding:10px 20px;border-bottom:1px solid var(--border);color:var(--text);}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;}
+td.mono{font-family:var(--font-mono);font-size:11px;}
+tbody tr:hover{background:var(--bg);}
+.pct-bar{display:inline-flex;align-items:center;gap:8px;min-width:130px;justify-content:flex-end;}
+.pct-track{width:70px;height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.pct-fill{height:100%;background:var(--secondary);border-radius:3px;}
+.pct-fill.warn{background:var(--amber);}
+.pct-fill.breach{background:var(--red);}
+.pct-fill.info{background:var(--blue);}
+.row-personality{display:inline-block;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;}
+.row-personality.moral{background:var(--blue-bg);color:var(--blue);}
+.row-personality.fisica{background:var(--secondary-soft);color:var(--secondary);}
+.table-footer{padding:10px 20px;text-align:center;color:var(--text-muted);font-size:11px;background:var(--bg);}
+
+/* Aggregate bar */
+.agg-bar-block{padding:18px 24px 24px;}
+.agg-bar-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;}
+.agg-bar-track{height:16px;background:var(--gray-bg);border-radius:8px;position:relative;}
+.agg-bar-fill{height:100%;background:linear-gradient(90deg,var(--secondary),#B5347A);border-radius:8px;}
+.agg-bar-limit{position:absolute;top:-6px;bottom:-6px;width:2px;background:var(--red);}
+.agg-bar-limit::after{content:'Limit';position:absolute;top:-22px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;color:var(--red);white-space:nowrap;}
+.agg-bar-scale{display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-top:8px;}
+
+/* Empty state */
+.empty-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:48px 32px;text-align:center;color:var(--text-secondary);margin-bottom:24px;}
+.empty-card i{font-size:48px;color:var(--text-muted);margin-bottom:16px;display:block;}
+.empty-card h3{font-family:var(--font-primary);font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.empty-card p{font-size:13px;}
+
+/* Engine info box */
+.engine-info{background:var(--purple-bg);border:1px solid var(--purple-b);border-radius:var(--radius-lg);padding:14px 18px;margin-bottom:24px;display:flex;align-items:flex-start;gap:12px;}
+.engine-info i{font-size:20px;color:var(--purple);flex-shrink:0;margin-top:1px;}
+.engine-info-text{font-size:12.5px;color:var(--text);line-height:1.5;}
+.engine-info-text b{color:var(--purple);}
+
+/* Multi-threshold note */
+.multi-threshold-tag{display:inline-flex;align-items:center;gap:4px;background:var(--amber-bg);color:var(--amber-dark);border:1px solid var(--amber-b);padding:2px 7px;border-radius:99px;font-size:9px;font-weight:700;margin-left:6px;text-transform:uppercase;letter-spacing:.04em;}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="page-hdr">
+    <h1 class="page-title">Concentrations · V2 <span class="engine-tag"><i class="ph-bold ph-cpu"></i> RULES ENGINE</span></h1>
+    <p class="page-subtitle">
+      Mismo submódulo, distintos facilities. El engine renderiza dinámicamente las reglas declaradas en el contrato — sin código hardcoded por originador.
+    </p>
+  </header>
+
+  <!-- Facility selector -->
+  <div class="facility-selector">
+    <span class="selector-label">Try a facility</span>
+    <div class="fac-pill active" data-facility="F-5602"><span class="fac-id">F-5602</span> Solufi · Arrendamiento</div>
+    <div class="fac-pill" data-facility="F-1143"><span class="fac-id">F-1143</span> Kontempo · Factoring</div>
+    <div class="fac-pill" data-facility="F-5759"><span class="fac-id">F-5759</span> Kueski · Microcrédito</div>
+    <div class="fac-pill" data-facility="F-6426"><span class="fac-id">F-6426</span> JM Metepec · Crédito Simple</div>
+    <div class="fac-pill" data-facility="F-5572"><span class="fac-id">F-5572</span> Exitus · Sin reglas</div>
+  </div>
+
+  <div class="engine-info">
+    <i class="ph-bold ph-cpu"></i>
+    <div class="engine-info-text">
+      <b>Engine V2</b> — Las reglas de concentración se declaran como datos (<code>concentration_rule</code> table) y la UI se renderiza solo. Cada facility puede tener N reglas con dimensiones, operadores, thresholds y base metrics distintos. La complejidad vive en la data, no en el código.
+    </div>
+  </div>
+
+  <!-- Dynamic content goes here -->
+  <div id="dynamic-content"></div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// FACILITY RULES — declarative data (would come from DWH in prod)
+// ═══════════════════════════════════════════════════════════════
+const FACILITIES = {
+
+'F-5602': {
+  name: 'Solufi — Fideicomiso Maestro',
+  originator: 'Grupo Solufi, S.A.P.I. de C.V.',
+  product: 'Arrendamiento puro',
+  total_amount: 329346186.79,
+  base_metric_label: 'Valor Presente Elegible',
+  currency: 'MXN',
+  cutoff: 'Apr 2026',
+  rules: [
+    { id:'C1', ordinal:1, subject_type:'contract', label:'Per Individual Lease Contract', icon:'ph-file-text',
+      legal_text:'El total de los flujos derivados de ningún <b>Contrato de Arrendamiento individual</b> en el colateral representará más del <b>2% (dos por ciento)</b> del total de los flujos de la Cartera Aportada.',
+      aggregation:'individual', operator:'max', threshold_pct:2.00, is_binding:true,
+      total_count:248, max_pct:1.75, total_excess:0, status:'ok',
+      chart_data:[['8559',1.75],['8458',1.54],['9116',1.35],['8369',1.26],['8477',1.13],['8693',1.07],['8301',1.07],['8302',1.07],['9173',1.05],['8358',1.05]],
+      table_cols:['Contract','Debtor','Personality','Brand','Amount','%','Excess'],
+      table_data:[
+        ['8559','9544','Moral','SITRAK',5771168.39,1.75,0],
+        ['8458','7767','Moral','KENWORTH',5072559.10,1.54,0],
+        ['9116','9721','Moral','GMC',4449940.07,1.35,0],
+        ['8369','9761','Moral','SITRAK',4151201.92,1.26,0],
+        ['8477','9796','Fisica','FREIGHTLINER',3714990.84,1.13,0],
+      ]
+    },
+    { id:'C2', ordinal:2, subject_type:'legal_entity', label:'Per Legal Entity', icon:'ph-buildings',
+      legal_text:'El total los flujos derivados de los Contratos de Arrendamiento de <b>ninguna persona moral</b> deberá ser mayor al <b>3.6% (tres punto seis por ciento)</b> del total de los flujos de la Cartera Aportada.',
+      aggregation:'individual', operator:'max', threshold_pct:3.60, is_binding:true,
+      total_count:156, max_pct:2.14, total_excess:0, status:'ok',
+      chart_data:[['9741',2.14],['4713',1.77],['9544',1.75],['7767',1.66],['9721',1.35],['9761',1.26],['6479',1.20],['9477',1.07],['9259',1.05],['9180',1.01]],
+      table_cols:['Debtor','Brand','Personality','Amount','%','Excess'],
+      table_data:[
+        ['9741','SITRAK','Moral',7034088.85,2.14,0],
+        ['4713','HINO','Moral',5830320.25,1.77,0],
+        ['9544','SITRAK','Moral',5771168.39,1.75,0],
+      ]
+    },
+    { id:'C3', ordinal:3, subject_type:'individual_person', label:'Per Individual Person', icon:'ph-user',
+      legal_text:'El total los flujos derivados de los Contratos de Arrendamiento de <b>ninguna persona física</b> deberá ser mayor al <b>2% (dos por ciento)</b> del total de los flujos de la Cartera Aportada.',
+      aggregation:'individual', operator:'max', threshold_pct:2.00, is_binding:true,
+      total_count:67, max_pct:1.13, total_excess:0, status:'ok',
+      chart_data:[['9796',1.13],['10067',1.05],['10085',0.68],['10027',0.54],['9807',0.47],['5131',0.43],['10032',0.32],['9237',0.30],['9814',0.29],['7686',0.28]],
+      table_cols:['Debtor','Brand','Personality','Amount','%','Excess'],
+      table_data:[
+        ['9796','FREIGHTLINER','Fisica',3714990.84,1.13,0],
+        ['10067','FREIGHTLINER','Fisica',3470886.81,1.05,0],
+      ]
+    },
+    { id:'C4', ordinal:4, subject_type:'aggregate_personality', label:'Aggregate Individual Persons', icon:'ph-users-three',
+      legal_text:'El total los flujos derivados de los Contratos de Arrendamiento de <b>personas físicas</b> deberá ser menor al <b>35% (treinta y cinco por ciento)</b> del total de los flujos de la Cartera Aportada.',
+      aggregation:'aggregate', operator:'max', threshold_pct:35.00, is_binding:true,
+      aggregate_pct:14.09, aggregate_amount:46419243.05, status:'ok'
+    },
+    { id:'C5', ordinal:5, subject_type:'brand', label:'Per Brand', icon:'ph-tag',
+      legal_text:'El total los flujos derivados de los Contratos Arrendamiento de <b>ninguna marca</b> deberá ser mayor al <b>35% (treinta y cinco por ciento)</b> del total de los flujos de la Cartera Aportada.',
+      aggregation:'individual', operator:'max', threshold_pct:35.00, is_binding:true,
+      total_count:34, max_pct:11.99, total_excess:0, status:'ok',
+      chart_data:[['JAC',11.99],['VW',7.66],['FRGHT',6.08],['SITRAK',5.66],['FORD',5.30],['NISSAN',4.95],['CHEV',3.52],['ISUZU',3.21],['BYD',2.74],['KIA',2.74]],
+      table_cols:['Brand','Amount','%','Excess'],
+      table_data:[
+        ['JAC',39490335.47,11.99,0],
+        ['VOLKSWAGEN',25232717.14,7.66,0],
+        ['FREIGHTLINER',20009243.45,6.08,0],
+      ]
+    },
+    { id:'C6', ordinal:6, subject_type:'delinquency', label:'Delinquency 1–15 days', icon:'ph-clock-countdown',
+      legal_text:'Al momento de la cesión y transmisión de los Derechos de Crédito Cedidos, la suma del componente de rentas (saldo principal insoluto) de los Derechos de Crédito Cedidos relacionados con los Contratos de Arrendamiento <b>con morosidad de entre 1 (uno) y 15 (quince) días</b> representará menos del <b>5% (cinco por ciento)</b> del total del saldo insoluto de capital de la Cartera Aportada.',
+      aggregation:'aggregate', operator:'max', threshold_pct:5.00, is_binding:true,
+      status:'pending', pending_reason:'DWH integration with aging data', pending_owner:'JC Soto', pending_ticket:'LEN-665'
+    }
+  ]
+},
+
+'F-1143': {
+  name: 'Kontempo México — Fideicomiso',
+  originator: 'Kontempo México Ops, S.A.P.I. de C.V.',
+  product: 'Factoring B2B',
+  total_amount: 130032582.35,
+  base_metric_label: 'Valor Nominal',
+  currency: 'MXN',
+  cutoff: 'Apr 2026',
+  rules: [
+    { id:'C1', ordinal:1, subject_type:'merchant', label:'Per Merchant', icon:'ph-storefront',
+      legal_text:'Ningún <b>Merchant</b> podrá representar más del <b>20% (veinte por ciento)</b> del Valor Nominal del colateral.',
+      aggregation:'individual', operator:'max', threshold_pct:20.00, is_binding:true,
+      total_count:18, max_pct:4.54, total_excess:0, status:'ok',
+      chart_data:[['mer_1737',4.54],['mer_1733',4.48],['mer_1713',4.02],['mer_1749',3.85],['mer_1759',3.42],['mer_8821',3.11],['mer_7541',2.88],['mer_6332',2.54],['mer_5219',2.21],['mer_4108',1.98]],
+      table_cols:['Merchant','Amount','%','Excess'],
+      table_data:[
+        ['mer_1737048279',5909846.02,4.54,0],
+        ['mer_1733171351',5828457.56,4.48,0],
+        ['mer_1713584505',5227759.33,4.02,0],
+      ]
+    },
+    { id:'C2', ordinal:2, subject_type:'debtor', label:'Per Obligado — Tier 1', icon:'ph-user-circle',
+      legal_text:'Ningún <b>Obligado individual</b> podrá representar más del <b>3.4% (tres punto cuatro por ciento)</b> del Valor Nominal del colateral.',
+      aggregation:'individual', operator:'max', threshold_pct:3.40, is_binding:true,
+      total_count:312, max_pct:4.54, total_excess:1488738.22, status:'breach',
+      multi_threshold:true, threshold_partner:'C3',
+      chart_data:[['buy_6517',4.54],['buy_8987',3.81],['buy_9953',2.49],['buy_2832',2.39],['buy_1695',1.94],['buy_4521',1.78],['buy_7891',1.65],['buy_3322',1.43],['buy_5544',1.21],['buy_6677',1.08]],
+      table_cols:['Debtor','Name','Amount','%','Excess'],
+      table_data:[
+        ['buy_6517948771','EDUARDO SUÁREZ RIVERA',5909846.02,4.54,1488738.22],
+        ['buy_8987439504','MANUEL CESAR CESAR',4957221.80,3.81,549743.05],
+        ['buy_9953236431','JORGE ALBERTO AGUILAR',3243252.00,2.49,0],
+      ]
+    },
+    { id:'C3', ordinal:3, subject_type:'debtor', label:'Per Obligado — Cap', icon:'ph-user-circle-gear',
+      legal_text:'Ningún <b>Obligado individual</b> podrá representar más del <b>10% (diez por ciento)</b> del Valor Nominal del colateral (cap absoluto).',
+      aggregation:'individual', operator:'max', threshold_pct:10.00, is_binding:true,
+      total_count:312, max_pct:4.54, total_excess:0, status:'ok',
+      multi_threshold:true, threshold_partner:'C2',
+      aggregate_pct:4.54, aggregate_amount:5909846.02
+    }
+  ]
+},
+
+'F-5759': {
+  name: 'Kueski — Fideicomiso BBVA',
+  originator: 'Kueski, S.A.P.I. de C.V., SOFOM, E.N.R.',
+  product: 'Microcrédito al consumo',
+  total_amount: 346892809.64,
+  base_metric_label: 'Saldo de Principal',
+  currency: 'MXN',
+  cutoff: 'Apr 2026',
+  rules: [
+    { id:'C1', ordinal:1, subject_type:'customer', label:'Per Customer', icon:'ph-user',
+      legal_text:'Concentración por cliente — métrica informativa, sin límite contractual.',
+      aggregation:'individual', operator:'none', is_binding:false,
+      total_count:35672, max_pct:0.003, status:'info',
+      chart_data:[['624dd1',0.003],['663e44',0.003],['64d2ac',0.003],['5e6c38',0.003],['68d57e',0.003],['682e1c',0.003],['57a3b4',0.003],['8f229a',0.003],['12bbcc',0.003],['77eedd',0.003]],
+      table_cols:['Customer ID','Amount','%'],
+      table_data:[
+        ['624dd188f369ad24',11500,0.003],
+        ['663e44e7d1831638',11500,0.003],
+        ['64d2ac917a0dfb21',11500,0.003],
+      ]
+    },
+    { id:'C2', ordinal:2, subject_type:'state', label:'Per State — Variable Limits', icon:'ph-map-pin',
+      legal_text:'Concentración por <b>Estado</b> con límites variables por grupo geográfico: top metropolitano <b>27.5%</b>, top regional <b>15%</b>, resto <b>10%</b>.',
+      aggregation:'individual', operator:'max', is_binding:true,
+      threshold_by_attribute:true,
+      total_count:32, total_excess:0, status:'ok',
+      table_cols:['State','Amount','Limit','%','Excess'],
+      table_data:[
+        ['Estado de México',57598882.81,27.50,16.60,0],
+        ['Ciudad de México',44004979.99,27.50,12.69,0],
+        ['Nuevo León',23058691.66,15.00,6.65,0],
+        ['Jalisco',22085643.69,15.00,6.37,0],
+        ['Veracruz',18172399.45,10.00,5.24,0],
+        ['Baja California',14030182.71,10.00,4.04,0],
+        ['Puebla',13669372.39,10.00,3.94,0],
+      ]
+    }
+  ]
+},
+
+'F-6426': {
+  name: 'JM Metepec — Crédito Simple',
+  originator: 'JM Metepec, S.A. de C.V., SOFOM, E.N.R.',
+  product: 'Crédito simple corporativo',
+  total_amount: 280265988.30,
+  base_metric_label: 'Saldo Insoluto / Valor Financiable',
+  currency: 'MXN',
+  cutoff: 'May 2026',
+  rules: [
+    { id:'C1', ordinal:1, subject_type:'customer', label:'Per Customer', icon:'ph-user',
+      legal_text:'Concentración por cliente — métrica informativa, sin límite contractual.',
+      aggregation:'individual', operator:'none', is_binding:false,
+      total_count:124, max_pct:5.75, status:'info',
+      chart_data:[['01328',5.75],['01472',5.52],['01489',5.35],['01480',4.90],['01433',4.01],['01230',3.83],['01507',3.57],['01612',3.21],['01710',2.88],['01821',2.54]],
+      table_cols:['Customer','Name','Amount','%'],
+      table_data:[
+        ['01328','GRUPO ANDVAN SA DE CV',16126930.29,5.75],
+        ['01472','RISK SOFTWARE SA DE CV',15480000.00,5.52],
+        ['01489','LUIS FERNANDO MARTINEZ',15000000.00,5.35],
+      ]
+    },
+    { id:'C2', ordinal:2, subject_type:'state', label:'Per State', icon:'ph-map-pin',
+      legal_text:'Concentración por <b>Estado</b> — métrica informativa.',
+      aggregation:'individual', operator:'none', is_binding:false,
+      total_count:18, max_pct:49.03, status:'info',
+      chart_data:[['MÉXICO',49.03],['CDMX',22.06],['YUC',5.75],['MICH',5.15],['QRO',4.14],['TAMS',3.83],['VER',3.57],['JAL',2.21],['NL',1.88],['PUE',1.54]],
+      table_cols:['State','Amount','%'],
+      table_data:[
+        ['MÉXICO',137405042.88,49.03],
+        ['CIUDAD DE MÉXICO',61813132.54,22.06],
+        ['YUCATAN',16126930.29,5.75],
+      ]
+    },
+    { id:'C3', ordinal:3, subject_type:'reca', label:'RECA — Revolvente vs Simple', icon:'ph-arrow-clockwise',
+      legal_text:'Distribución por tipo de contrato (Revolvente vs Simple) — métrica informativa.',
+      aggregation:'individual', operator:'none', is_binding:false,
+      total_count:2, status:'info',
+      table_cols:['Type','Amount','%'],
+      table_data:[
+        ['Revolvente',210379004.07,76.07],
+        ['Simple',66194470.65,23.94],
+      ]
+    },
+    { id:'C4', ordinal:4, subject_type:'industry', label:'Per Industry Code', icon:'ph-factory',
+      legal_text:'Concentración por <b>Industria</b> — métrica informativa.',
+      aggregation:'individual', operator:'none', is_binding:false,
+      total_count:9, max_pct:41.40, status:'info',
+      chart_data:[['PROF',41.40],['COMM',29.92],['ENG',8.50],['MFG',6.61],['REAL',6.25],['EDU',2.60],['HEAL',2.10],['ARTS',1.30],['OTHER',1.32]],
+      table_cols:['Industry','Amount','%'],
+      table_data:[
+        ['SERVICIOS PROFESIONALES',116029648.23,41.40],
+        ['COMERCIO',83865140.01,29.92],
+        ['EXPLOTACION Y ENERGÍA',23834691.61,8.50],
+      ]
+    },
+    { id:'C5', ordinal:5, subject_type:'asset_type', label:'Asset Type', icon:'ph-stack',
+      legal_text:'Concentración por tipo de activo — métrica informativa.',
+      aggregation:'individual', operator:'none', is_binding:false,
+      total_count:1, status:'info',
+      table_cols:['Asset Type','Amount','%'],
+      table_data:[
+        ['Crédito Simple',280265988.30,100.00],
+      ]
+    }
+  ]
+},
+
+'F-5572': {
+  name: 'Exitus Credit — Sin reglas',
+  originator: 'Exitus Credit, S.A.P.I. de C.V. SOFOM, E.N.R.',
+  product: 'Sin definir',
+  total_amount: 0,
+  base_metric_label: '—',
+  currency: 'MXN',
+  cutoff: 'Apr 2026',
+  rules: []
+}
+
+};
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER ENGINE
+// ═══════════════════════════════════════════════════════════════
+
+function fmt$(n) {
+  return '$' + n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function fmtPct(n) { return n.toFixed(2) + '%'; }
+
+function renderFacility(facId) {
+  const f = FACILITIES[facId];
+  const root = document.getElementById('dynamic-content');
+
+  if (!f) { root.innerHTML = ''; return; }
+
+  // Facility card
+  let html = `
+    <div class="facility-card">
+      <div class="facility-row">
+        <div class="facility-icon"><i class="ph ph-bank"></i></div>
+        <div>
+          <div class="facility-name">${facId} · ${f.name}</div>
+          <div class="facility-meta">${f.originator} · ${f.product} · ${f.total_amount > 0 ? fmt$(f.total_amount) : '—'} ${f.base_metric_label}</div>
+        </div>
+        <div class="cutoff-block">
+          <span class="cutoff-label">Cut-off</span>
+          <select class="cutoff-select"><option>${f.cutoff}</option></select>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Empty state
+  if (f.rules.length === 0) {
+    html += `
+      <div class="empty-card">
+        <i class="ph ph-shield-slash"></i>
+        <h3>No concentration rules defined for this facility</h3>
+        <p>This facility's agreement does not include concentration covenants.<br/>
+        Engine renders nothing — there is no list of 5 "default" criteria forced onto every facility.</p>
+      </div>
+    `;
+    root.innerHTML = html;
+    return;
+  }
+
+  // ── 1. CONCENTRATION CRITERIA (legal text)
+  html += `
+    <div class="section-card">
+      <div class="section-hdr">
+        <div class="section-icon"><i class="ph ph-scroll"></i></div>
+        <span class="section-title">CONCENTRATION CRITERIA</span>
+        <span class="section-subtitle">— ${f.rules.length} rule${f.rules.length>1?'s':''} declared in facility agreement</span>
+      </div>
+      <div class="section-body">
+        <div class="criteria-grid">
+          ${f.rules.map(r => `
+            <div class="criterion-row">
+              <div class="criterion-num">${r.ordinal}</div>
+              <div class="criterion-text">${r.legal_text}</div>
+              ${r.operator === 'none' ? '<span class="badge badge-informative">INFO</span>' : `<span class="badge badge-max">${r.operator.toUpperCase()} ${r.threshold_pct}%</span>`}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+
+  // ── 2. COMPLIANCE OVERVIEW
+  const binding = f.rules.filter(r => r.is_binding);
+  const breached = binding.filter(r => r.status === 'breach').length;
+  const ok = binding.filter(r => r.status === 'ok').length;
+  const pending = binding.filter(r => r.status === 'pending').length;
+  const info = f.rules.filter(r => !r.is_binding).length;
+
+  let overviewBadge = '';
+  if (breached > 0) overviewBadge = `<span class="badge badge-breach"><i class="ph-bold ph-warning-circle"></i> ${breached} Breach · ${ok} OK${pending ? ' · '+pending+' Pending' : ''}</span>`;
+  else if (pending > 0) overviewBadge = `<span class="badge badge-warn"><i class="ph-bold ph-clock"></i> ${ok}/${binding.length} OK · ${pending} Pending</span>`;
+  else overviewBadge = `<span class="badge badge-ok"><i class="ph-bold ph-check-circle"></i> ${ok}/${binding.length} Compliant${info ? ' · '+info+' Info' : ''}</span>`;
+
+  html += `
+    <div class="section-card">
+      <div class="section-hdr">
+        <div class="section-icon"><i class="ph ph-shield-check"></i></div>
+        <span class="section-title">COMPLIANCE OVERVIEW</span>
+        <div class="crit-hdr-extra">${overviewBadge}</div>
+      </div>
+      <div class="section-body">
+        <div class="kpi-overview">
+          ${f.rules.map(r => {
+            const cls = r.status === 'breach' ? 'kpi-alert' :
+                        r.status === 'warn' ? 'kpi-warn' :
+                        r.status === 'pending' ? '' :
+                        r.status === 'info' ? 'kpi-info' :
+                        'kpi-ok';
+            const val = r.status === 'pending' ? '—' :
+                        r.aggregation === 'aggregate' ? fmtPct(r.aggregate_pct) :
+                        r.max_pct != null ? fmtPct(r.max_pct) : '—';
+            const sub = r.status === 'pending' ? `Pending · ${r.pending_owner}` :
+                        r.operator === 'none' ? `Informative · ${r.total_count} items` :
+                        `Limit ${r.threshold_pct}% · ${r.total_excess > 0 ? '⚠ Excess ' + fmt$(r.total_excess) : 'Excess $0'}`;
+            return `
+              <div class="kpi-card ${cls}">
+                <div class="kpi-label">${r.ordinal} · ${r.label}${r.multi_threshold ? '<span class="multi-threshold-tag">MULTI</span>' : ''}</div>
+                <div class="kpi-value">${val}</div>
+                <div class="kpi-sub">${sub}</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+
+  // ── 3. CRITERION SECTIONS
+  f.rules.forEach(r => {
+    html += renderCriterionSection(r, f);
+  });
+
+  root.innerHTML = html;
+
+  // Render charts after DOM is in place
+  setTimeout(() => {
+    f.rules.forEach(r => {
+      if (r.chart_data && r.aggregation === 'individual') {
+        renderTopChart(`chart-${facId}-${r.id}`, r);
+      }
+    });
+  }, 0);
+}
+
+function renderCriterionSection(r, f) {
+  const statusBadge =
+    r.status === 'breach' ? '<span class="badge badge-breach"><i class="ph-bold ph-warning-circle"></i> Breach</span>' :
+    r.status === 'pending' ? '<span class="badge badge-na"><i class="ph ph-clock"></i> Pending data source</span>' :
+    r.status === 'info' ? '<span class="badge badge-info"><i class="ph ph-info"></i> Informative</span>' :
+    '<span class="badge badge-ok"><i class="ph-bold ph-check-circle"></i> Compliant</span>';
+
+  const bindingBadge = r.is_binding
+    ? '<span class="badge badge-binding"><i class="ph ph-anchor"></i> Binding</span>'
+    : '<span class="badge badge-informative"><i class="ph ph-eye"></i> Informative</span>';
+
+  const limitPill = r.threshold_pct != null && !r.threshold_by_attribute
+    ? `<span class="crit-limit-pill">LIMIT ${r.threshold_pct.toFixed(2)}%</span>`
+    : r.threshold_by_attribute
+      ? `<span class="crit-limit-pill">VARIABLE LIMITS</span>`
+      : '';
+
+  let body = '';
+
+  // Aggregate type — bar progress, no table
+  if (r.aggregation === 'aggregate' && r.status !== 'pending') {
+    body = `
+      <div class="crit-summary-row">
+        <div class="crit-summary-cell"><div class="crit-summary-label">Aggregate Amount</div><div class="crit-summary-val">${fmt$(r.aggregate_amount)}</div></div>
+        <div class="crit-summary-cell"><div class="crit-summary-label">%</div><div class="crit-summary-val green">${fmtPct(r.aggregate_pct)}</div></div>
+        <div class="crit-summary-cell"><div class="crit-summary-label">Limit</div><div class="crit-summary-val">${fmtPct(r.threshold_pct)}</div></div>
+        <div class="crit-summary-cell"><div class="crit-summary-label">Headroom</div><div class="crit-summary-val green">${(r.threshold_pct - r.aggregate_pct).toFixed(2)} pp</div></div>
+      </div>
+      <div class="agg-bar-block">
+        <div class="agg-bar-label">Aggregate vs limit</div>
+        <div class="agg-bar-track">
+          <div class="agg-bar-fill" style="width:${(r.aggregate_pct / 100 * 100).toFixed(1)}%"></div>
+          <div class="agg-bar-limit" style="left:${r.threshold_pct}%"></div>
+        </div>
+        <div class="agg-bar-scale">
+          <span>0%</span>
+          <span style="color:var(--secondary);font-weight:700;">Current ${fmtPct(r.aggregate_pct)}</span>
+          <span>100%</span>
+        </div>
+      </div>
+    `;
+  }
+  // Pending
+  else if (r.status === 'pending') {
+    body = `
+      <div style="padding:32px 24px;display:flex;align-items:center;gap:16px;background:var(--bg);color:var(--text-secondary);font-size:12.5px;">
+        <i class="ph ph-database" style="font-size:28px;color:var(--text-muted);"></i>
+        <div>
+          <strong style="color:var(--text);">${r.pending_reason}</strong><br/>
+          <span style="font-size:11px;color:var(--text-muted);">Owner: <strong style="color:var(--text);">${r.pending_owner}</strong> · Tracking: <strong style="color:var(--text);">${r.pending_ticket}</strong></span>
+        </div>
+      </div>
+    `;
+  }
+  // Individual (with or without threshold_by_attribute)
+  else {
+    const excessClass = r.total_excess > 0 ? 'red' : 'green';
+    const summaryCells = r.aggregation === 'individual' ? `
+      <div class="crit-summary-cell"><div class="crit-summary-label">Total ${f.base_metric_label}</div><div class="crit-summary-val">${fmt$(f.total_amount)}</div></div>
+      <div class="crit-summary-cell"><div class="crit-summary-label">${r.subject_type === 'merchant' ? 'Merchants' : r.subject_type === 'state' ? 'States' : r.subject_type === 'industry' ? 'Industries' : r.subject_type === 'brand' ? 'Brands' : 'Items'}</div><div class="crit-summary-val">${r.total_count}</div></div>
+      <div class="crit-summary-cell"><div class="crit-summary-label">Max %</div><div class="crit-summary-val ${r.max_pct >= (r.threshold_pct || 100) ? 'red' : ''}">${fmtPct(r.max_pct)}</div></div>
+      <div class="crit-summary-cell"><div class="crit-summary-label">Total Excess</div><div class="crit-summary-val ${excessClass}">${fmt$(r.total_excess || 0)}</div></div>
+    ` : '';
+
+    let chart = '';
+    if (r.chart_data && r.threshold_pct) {
+      chart = `
+        <div class="chart-block">
+          <div class="chart-block-header">
+            <span class="chart-block-label">Top 10 by concentration</span>
+            <div class="chart-block-legend">
+              <span class="legend-swatch"><span class="sw"></span>Concentration %</span>
+              <span class="legend-swatch"><span class="sw-line"></span>Limit ${r.threshold_pct.toFixed(2)}%</span>
+            </div>
+          </div>
+          <div class="chart-canvas-wrap"><canvas id="chart-${currentFacility()}-${r.id}"></canvas></div>
+        </div>
+      `;
+    } else if (r.chart_data) {
+      chart = `
+        <div class="chart-block">
+          <div class="chart-block-header">
+            <span class="chart-block-label">Top 10 by concentration (informative)</span>
+            <div class="chart-block-legend">
+              <span class="legend-swatch"><span class="sw" style="background:var(--blue);"></span>Concentration %</span>
+            </div>
+          </div>
+          <div class="chart-canvas-wrap"><canvas id="chart-${currentFacility()}-${r.id}"></canvas></div>
+        </div>
+      `;
+    }
+
+    const tableHeaders = r.table_cols.map(c =>
+      ['Amount','%','Excess','Limit'].includes(c) ? `<th class="num">${c}</th>` : `<th>${c}</th>`
+    ).join('');
+
+    const tableBody = r.table_data.map(row => {
+      return '<tr>' + row.map((cell, i) => {
+        const col = r.table_cols[i];
+        if (col === 'Amount') return `<td class="num">${fmt$(cell)}</td>`;
+        if (col === '%') {
+          const limit = r.threshold_by_attribute ? row[r.table_cols.indexOf('Limit')] : (r.threshold_pct || 100);
+          const ratio = Math.min(cell / limit, 1);
+          const cls = cell > limit ? 'breach' : (ratio > 0.8 ? 'warn' : (r.operator === 'none' ? 'info' : ''));
+          return `<td class="num"><span class="pct-bar"><span class="pct-track"><span class="pct-fill ${cls}" style="width:${(ratio*100).toFixed(0)}%"></span></span>${fmtPct(cell)}</span></td>`;
+        }
+        if (col === 'Limit') return `<td class="num">${fmtPct(cell)}</td>`;
+        if (col === 'Excess') return `<td class="num">${cell > 0 ? '<span style="color:var(--red);font-weight:700;">'+fmt$(cell)+'</span>' : '—'}</td>`;
+        if (col === 'Personality') {
+          const c = String(cell).toLowerCase() === 'fisica' ? 'fisica' : 'moral';
+          return `<td><span class="row-personality ${c}">${cell}</span></td>`;
+        }
+        if (['Contract','Debtor','Customer ID','Merchant','Customer'].includes(col)) return `<td class="mono">${cell}</td>`;
+        return `<td>${cell}</td>`;
+      }).join('') + '</tr>';
+    }).join('');
+
+    body = `
+      ${r.aggregation === 'individual' ? '<div class="crit-summary-row">' + summaryCells + '</div>' : ''}
+      ${chart}
+      <div class="toolbar">
+        <div class="search-wrap"><i class="ph ph-magnifying-glass"></i><input type="text" placeholder="Search ${r.subject_type.replace('_', ' ')}..." /></div>
+        <a class="btn-link"><i class="ph ph-download-simple"></i> Download CSV</a>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>${tableHeaders}</tr></thead>
+          <tbody>${tableBody}</tbody>
+        </table>
+      </div>
+      <div class="table-footer">Showing top ${r.table_data.length} of ${r.total_count || r.table_data.length} ${r.subject_type.replace('_', ' ')}s · sorted by amount desc</div>
+    `;
+  }
+
+  return `
+    <div class="section-card">
+      <div class="section-hdr">
+        <div class="section-icon"><i class="ph ${r.icon}"></i></div>
+        <span class="section-title">CRITERION ${r.ordinal} · ${r.label.toUpperCase()}</span>
+        <div class="crit-hdr-extra">
+          ${bindingBadge}
+          ${limitPill}
+          ${statusBadge}
+        </div>
+      </div>
+      ${body}
+    </div>
+  `;
+}
+
+const PINK_PALETTE = ['#6D1B4D','#831A5A','#9A1A66','#B11A72','#C81A7E','#D63E92','#DE60A4','#E682B6','#EEA4C8','#F6C6DA'];
+const BLUE_PALETTE = ['#0C4A6E','#0369A1','#0284C7','#0EA5E9','#38BDF8','#7DD3FC','#BAE6FD','#E0F2FE','#F0F9FF','#F8FAFC'];
+
+function renderTopChart(canvasId, rule) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const labels = rule.chart_data.map(d => d[0]);
+  const values = rule.chart_data.map(d => d[1]);
+  const limit = rule.threshold_pct;
+  const isInfo = rule.operator === 'none';
+  const palette = isInfo ? BLUE_PALETTE : PINK_PALETTE;
+  const yMax = limit ? Math.max(limit * 1.15, Math.max(...values) * 1.4) : Math.max(...values) * 1.25;
+
+  const datasets = [{
+    type:'bar', label:'Concentration %', data:values,
+    backgroundColor: palette.slice(0, values.length),
+    borderWidth:0, borderRadius:4, barPercentage:0.78, categoryPercentage:0.85, order:2
+  }];
+  if (limit) {
+    datasets.push({
+      type:'line', label:`Limit ${limit.toFixed(2)}%`,
+      data: labels.map(()=>limit),
+      borderColor:'#DC2626', borderWidth:2, borderDash:[6,4],
+      pointRadius:0, fill:false, tension:0, order:1
+    });
+  }
+
+  new Chart(canvas.getContext('2d'), {
+    data: { labels, datasets },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:'#1E293B', titleColor:'#94A3B8', bodyColor:'#F8FAFC',
+          padding:10, cornerRadius:6,
+          titleFont:{family:'DM Sans',size:12,weight:'700'},
+          bodyFont:{family:'DM Sans',size:12},
+          callbacks:{ label: c => ` ${c.dataset.label}: ${c.parsed.y.toFixed(2)}%` }
+        }
+      },
+      scales:{
+        x:{ grid:{display:false}, border:{color:'#E2E8F0'},
+            ticks:{font:{family:'DM Sans',size:10},color:'#64748B',maxRotation:0,autoSkip:false} },
+        y:{ beginAtZero:true, max:yMax,
+            border:{color:'#E2E8F0'}, grid:{color:'#F1F5F9'},
+            ticks:{font:{family:'DM Sans',size:11},color:'#64748B', callback:v=>`${v}%`} }
+      }
+    }
+  });
+}
+
+// ─── Selector wiring ────────────────────────────────────
+let _currentFacility = 'F-5602';
+function currentFacility() { return _currentFacility; }
+
+document.querySelectorAll('.fac-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.fac-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    _currentFacility = pill.dataset.facility;
+    renderFacility(_currentFacility);
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+});
+
+renderFacility(_currentFacility);
+</script>
+
+</body>
+</html>
