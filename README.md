@@ -1,5 +1,11 @@
 # LEN-521 · Facility Health Signals · Prototype
 
+> 🚀 **Demo en vivo:** https://nildaaviles.github.io/lenderhub-len-521-prototype/LEN-521-facility-health-signals.html
+>
+> 📊 **Vista comparación:** https://nildaaviles.github.io/lenderhub-len-521-prototype/LEN-521-portfolio-comparison.html
+>
+> 📝 **Storytelling del caso:** https://github.com/nildaaviles/lenderhub-len-521-prototype/blob/main/LEN-521-storytelling.md
+
 Prototipo interactivo de la iniciativa **LEN-521 — Incorporar en Facilities señales de salud** para LenderHub.
 
 Cubre 11 HUs distribuidas en 3 épicas:
