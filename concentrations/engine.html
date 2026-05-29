@@ -178,29 +178,47 @@ tbody tr:hover{background:var(--bg);}
 <body>
 <div class="container">
 
-  <header class="page-hdr">
-    <h1 class="page-title">Concentrations · V2 <span class="engine-tag"><i class="ph-bold ph-cpu"></i> RULES ENGINE</span></h1>
-    <p class="page-subtitle">
-      Mismo submódulo, distintos facilities. El engine renderiza dinámicamente las reglas declaradas en el contrato — sin código hardcoded por originador.
-    </p>
-  </header>
-
-  <!-- Facility selector -->
-  <div class="facility-selector">
-    <span class="selector-label">Try a facility</span>
-    <div class="fac-pill active" data-facility="F-5602"><span class="fac-id">F-5602</span> Solufi · Arrendamiento</div>
-    <div class="fac-pill" data-facility="F-1143"><span class="fac-id">F-1143</span> Kontempo · Factoring</div>
-    <div class="fac-pill" data-facility="F-5759"><span class="fac-id">F-5759</span> Kueski · Microcrédito</div>
-    <div class="fac-pill" data-facility="F-6426"><span class="fac-id">F-6426</span> JM Metepec · Crédito Simple</div>
-    <div class="fac-pill" data-facility="F-5572"><span class="fac-id">F-5572</span> Exitus · Sin reglas</div>
-  </div>
-
-  <div class="engine-info">
-    <i class="ph-bold ph-cpu"></i>
-    <div class="engine-info-text">
-      <b>Engine V2</b> — Las reglas de concentración se declaran como datos (<code>concentration_rule</code> table) y la UI se renderiza solo. Cada facility puede tener N reglas con dimensiones, operadores, thresholds y base metrics distintos. La complejidad vive en la data, no en el código.
+  <!-- Cut-off date selector (same pattern as Insights) -->
+  <div class="cutoff-strip" id="cutoffStrip" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 14px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;margin-bottom:20px;font-family:'Noto Sans',sans-serif">
+    <span style="font-family:'Sofia Sans',sans-serif;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748B">Cut-off date</span>
+    <div style="position:relative">
+      <button id="cutoffBtn" type="button"
+              onclick="document.getElementById('cutoffPanel').classList.toggle('open')"
+              style="display:flex;align-items:center;gap:10px;padding:8px 14px;border:1px solid #CBD5E1;border-radius:6px;background:#FFFFFF;cursor:pointer;text-align:left;color:#334155;font-family:'Noto Sans',sans-serif">
+        <i class="ph ph-calendar-blank" style="color:#64748B"></i>
+        <span style="display:flex;flex-direction:column;line-height:1.1">
+          <span style="font-size:14px;font-weight:600">March 31, 2026</span>
+          <span style="font-size:11px;color:#64748B;margin-top:2px">Tuesday · Latest available</span>
+        </span>
+        <i class="ph ph-caret-down" style="font-size:12px;color:#94A3B8;margin-left:6px"></i>
+      </button>
+      <div id="cutoffPanel" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.10),0 1px 2px rgba(0,0,0,.06);min-width:300px;padding:8px;z-index:50;font-family:'Noto Sans',sans-serif">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748B;font-family:'Sofia Sans',sans-serif;padding:6px 8px;border-top:1px solid #E2E8F0;display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:#B45309"></span>MARCH 2026</div>
+        <div style="padding:8px;border-radius:6px;background:#E2E8F0;font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:space-between"><span>March 31, 2026</span><span style="display:inline-block;padding:2px 6px;border-radius:4px;background:#CBD5E1;color:#1F2733;font-size:10px;font-weight:700;letter-spacing:.04em">LATEST</span></div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748B;font-family:'Sofia Sans',sans-serif;padding:6px 8px;border-top:1px solid #E2E8F0;margin-top:4px">FEBRUARY 2026</div>
+        <div style="padding:8px;border-radius:6px;cursor:pointer;font-size:13px" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background=''">February 28, 2026</div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748B;font-family:'Sofia Sans',sans-serif;padding:6px 8px;border-top:1px solid #E2E8F0;margin-top:4px">JANUARY 2026</div>
+        <div style="padding:8px;border-radius:6px;cursor:pointer;font-size:13px" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background=''">January 31, 2026</div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748B;font-family:'Sofia Sans',sans-serif;padding:6px 8px;border-top:1px solid #E2E8F0;margin-top:4px">DECEMBER 2025</div>
+        <div style="padding:8px;border-radius:6px;cursor:pointer;font-size:13px" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background=''">December 31, 2025</div>
+      </div>
     </div>
+    <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:#F0F9FF;color:#0284C7;font-size:12px;font-weight:700;font-family:'Sofia Sans',sans-serif">
+      <i class="ph ph-clock-counter-clockwise" style="font-size:12px"></i> Monthly
+    </span>
   </div>
+  <style>
+    #cutoffPanel.open { display: block !important; }
+  </style>
+  <script>
+    document.addEventListener('click', (e) => {
+      const panel = document.getElementById('cutoffPanel');
+      const btn = document.getElementById('cutoffBtn');
+      if (panel && btn && !btn.contains(e.target) && !panel.contains(e.target)) {
+        panel.classList.remove('open');
+      }
+    });
+  </script>
 
   <!-- Dynamic content goes here -->
   <div id="dynamic-content"></div>
@@ -214,7 +232,7 @@ tbody tr:hover{background:var(--bg);}
 const FACILITIES = {
 
 'F-5602': {
-  name: 'Solufi — Fideicomiso Maestro',
+  name: 'Solufi',
   originator: 'Grupo Solufi, S.A.P.I. de C.V.',
   product: 'Arrendamiento puro',
   total_amount: 329346186.79,
@@ -285,7 +303,7 @@ const FACILITIES = {
 },
 
 'F-1143': {
-  name: 'Kontempo México — Fideicomiso',
+  name: 'Kontempo México',
   originator: 'Kontempo México Ops, S.A.P.I. de C.V.',
   product: 'Factoring B2B',
   total_amount: 130032582.35,
@@ -329,7 +347,7 @@ const FACILITIES = {
 },
 
 'F-5759': {
-  name: 'Kueski — Fideicomiso BBVA',
+  name: 'Kueski',
   originator: 'Kueski, S.A.P.I. de C.V., SOFOM, E.N.R.',
   product: 'Microcrédito al consumo',
   total_amount: 346892809.64,
@@ -369,7 +387,7 @@ const FACILITIES = {
 },
 
 'F-6426': {
-  name: 'JM Metepec — Crédito Simple',
+  name: 'JM Metepec',
   originator: 'JM Metepec, S.A. de C.V., SOFOM, E.N.R.',
   product: 'Crédito simple corporativo',
   total_amount: 280265988.30,
@@ -586,9 +604,7 @@ function renderCriterionSection(r, f) {
     r.status === 'info' ? '<span class="badge badge-info"><i class="ph ph-info"></i> Informative</span>' :
     '<span class="badge badge-ok"><i class="ph-bold ph-check-circle"></i> Compliant</span>';
 
-  const bindingBadge = r.is_binding
-    ? '<span class="badge badge-binding"><i class="ph ph-anchor"></i> Binding</span>'
-    : '<span class="badge badge-informative"><i class="ph ph-eye"></i> Informative</span>';
+  const bindingBadge = '';
 
   const limitPill = r.threshold_pct != null && !r.threshold_by_attribute
     ? `<span class="crit-limit-pill">LIMIT ${r.threshold_pct.toFixed(2)}%</span>`
