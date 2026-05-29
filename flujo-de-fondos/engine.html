@@ -75,8 +75,8 @@
   .nav-item .pill{margin-left:auto;font-size:0.625rem;padding:1px 7px;border-radius:10px;font-weight:700}
   .pill-amber{background:var(--warning-100);color:var(--warning-700)}
 
-  .main{margin-left:0;padding-top:var(--topbar-h);min-height:100vh}
-  .shell{background:var(--card);margin:24px;border-radius:8px;padding:24px;min-height:calc(100vh - var(--topbar-h) - 48px)}
+  .main{margin-left:0;padding-top:0;min-height:100vh}
+  .shell{background:var(--card);margin:0;border-radius:0;padding:24px;min-height:100vh}
 
   /* ===================== ATOMS ===================== */
   .badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:6px;font-size:0.75rem;font-weight:600}
@@ -274,8 +274,8 @@
 </head>
 <body>
 
-  <!-- ===================== TOPBAR ===================== -->
-  <header class="topbar">
+  <!-- ===================== TOPBAR ===================== (hidden — wrapper provides chrome) -->
+  <header class="topbar" style="display:none">
     <div class="tb-left">
       <div class="tb-logo"><span class="mk">C</span>Lender<b>Hub</b></div>
     </div>
