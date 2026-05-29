@@ -225,6 +225,23 @@
 <!-- COMPANY SELECTOR -->
 <div class="company-bar" id="companyBar"></div>
 
+<!-- ROLE SELECTOR (LEN-284 · HU-1.6 PII matrix demo) — moved here right under company tabs -->
+<div style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:#F8FAFC;border-bottom:1px solid #E2E8F0;flex-wrap:wrap">
+  <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;font-family:'Sofia Sans',sans-serif">
+    <i class="ph ph-user-circle" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>
+    Acting as
+  </span>
+  <select id="roleSelect" onchange="onRoleChange(this.value)"
+          style="padding:6px 12px;border:1px solid #CBD5E1;border-radius:6px;background:#fff;font-size:13px;font-family:'Noto Sans',sans-serif;color:#334155;cursor:pointer">
+    <option value="analyst">Lender Analyst</option>
+    <option value="admin">Lender Admin (no PII permission)</option>
+    <option value="admin_pii">Lender Admin (with PII permission)</option>
+    <option value="super_admin" selected>Lender Super Admin</option>
+    <option value="cxc">CXC / Superadmin</option>
+  </select>
+  <span id="roleMatrix" style="display:flex;gap:6px;flex-wrap:wrap;margin-left:auto"></span>
+</div>
+
 <!-- MAIN -->
 <div class="main">
 
@@ -250,23 +267,6 @@
       <div class="dist-bar-bg"><div class="dist-bar-fill" id="barVencido" style="background:#DC2626"></div></div>
       <div class="dist-pct" id="pctVencido">—</div>
     </div>
-  </div>
-
-  <!-- ROLE SELECTOR (LEN-284 · HU-1.6 PII matrix demo) -->
-  <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;margin-bottom:12px;flex-wrap:wrap">
-    <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;font-family:'Sofia Sans',sans-serif">
-      <i class="ph ph-user-circle" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>
-      Acting as
-    </span>
-    <select id="roleSelect" onchange="onRoleChange(this.value)"
-            style="padding:6px 12px;border:1px solid #CBD5E1;border-radius:6px;background:#fff;font-size:13px;font-family:'Noto Sans',sans-serif;color:#334155;cursor:pointer">
-      <option value="analyst">Lender Analyst</option>
-      <option value="admin">Lender Admin (no PII permission)</option>
-      <option value="admin_pii">Lender Admin (with PII permission)</option>
-      <option value="super_admin" selected>Lender Super Admin</option>
-      <option value="cxc">CXC / Superadmin</option>
-    </select>
-    <span id="roleMatrix" style="display:flex;gap:6px;flex-wrap:wrap;margin-left:auto"></span>
   </div>
 
   <!-- TOOLBAR -->
@@ -787,10 +787,11 @@ function switchCompany(id){
   const co = COMPANIES[id];
   document.documentElement.style.setProperty('--co-color', co.color);
   document.documentElement.style.setProperty('--co-tint', co.tint);
-  document.getElementById('navFacility').textContent = co.name;
-  document.getElementById('facName').textContent = co.facility;
-  document.getElementById('facMeta').textContent = co.meta;
-  document.getElementById('facChip').textContent = co.chip;
+  // Optional refs — these were removed in the cleanup but kept null-safe
+  const navFac = document.getElementById('navFacility');  if (navFac) navFac.textContent = co.name;
+  const facName = document.getElementById('facName');     if (facName) facName.textContent = co.facility;
+  const facMeta = document.getElementById('facMeta');     if (facMeta) facMeta.textContent = co.meta;
+  const facChip = document.getElementById('facChip');     if (facChip) facChip.textContent = co.chip;
   showSkeleton();
   setTimeout(()=>renderAll(), 350);
 }
