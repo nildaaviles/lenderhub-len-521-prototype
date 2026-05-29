@@ -776,25 +776,98 @@
                 <button type="button" class="px-3 py-1 text-xs rounded font-primary font-semibold text-text-secondary">$</button>
               </div>
             </div>
-            <svg viewBox="0 0 400 200" class="w-full h-[200px]">
-              <g stroke="#E2E8F0">
-                <line x1="40" y1="30" x2="390" y2="30"/><line x1="40" y1="75" x2="390" y2="75"/>
-                <line x1="40" y1="120" x2="390" y2="120"/><line x1="40" y1="165" x2="390" y2="165"/>
+            <!-- Stacked-100% chart · chart area y=30 (top, 100%) → y=200 (bottom, 0%) · 170px = 100% · each bar sums exactly 170px -->
+            <svg viewBox="0 0 400 220" class="w-full h-[220px]" preserveAspectRatio="xMidYMid meet">
+              <!-- Gridlines -->
+              <g stroke="#E2E8F0" stroke-width="1">
+                <line x1="40" y1="30" x2="390" y2="30"/>
+                <line x1="40" y1="72.5" x2="390" y2="72.5"/>
+                <line x1="40" y1="115" x2="390" y2="115"/>
+                <line x1="40" y1="157.5" x2="390" y2="157.5"/>
                 <line x1="40" y1="200" x2="390" y2="200" stroke="#CBD5E1"/>
               </g>
+              <!-- Y-axis labels -->
               <g font-family="Space Mono" font-size="9" fill="#64748B">
-                <text x="34" y="33" text-anchor="end">100%</text><text x="34" y="78" text-anchor="end">75%</text>
-                <text x="34" y="123" text-anchor="end">50%</text><text x="34" y="168" text-anchor="end">25%</text>
-                <text x="34" y="203" text-anchor="end">0%</text>
+                <text x="36" y="33" text-anchor="end">100%</text>
+                <text x="36" y="75.5" text-anchor="end">75%</text>
+                <text x="36" y="118" text-anchor="end">50%</text>
+                <text x="36" y="160.5" text-anchor="end">25%</text>
+                <text x="36" y="203" text-anchor="end">0%</text>
               </g>
-              <g transform="translate(60,0)"><rect x="0" y="60" width="44" height="140" fill="#1E3A8A"/><rect x="0" y="46" width="44" height="14" fill="#0E7490"/><rect x="0" y="38" width="44" height="8" fill="#A16207"/><rect x="0" y="32" width="44" height="6" fill="#C2410C"/><rect x="0" y="26" width="44" height="6" fill="#DC2626"/><rect x="0" y="22" width="44" height="4" fill="#B91C1C"/><rect x="0" y="18" width="44" height="4" fill="#991B1B"/><rect x="0" y="14" width="44" height="4" fill="#7F1D1D"/><text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" fill="#64748B">Nov 25</text></g>
-              <g transform="translate(126,0)"><rect x="0" y="62" width="44" height="138" fill="#1E3A8A"/><rect x="0" y="48" width="44" height="14" fill="#0E7490"/><rect x="0" y="40" width="44" height="8" fill="#A16207"/><rect x="0" y="34" width="44" height="6" fill="#C2410C"/><rect x="0" y="28" width="44" height="6" fill="#DC2626"/><rect x="0" y="23" width="44" height="5" fill="#B91C1C"/><rect x="0" y="18" width="44" height="5" fill="#991B1B"/><rect x="0" y="12" width="44" height="6" fill="#7F1D1D"/><text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" fill="#64748B">Dec 25</text></g>
-              <g transform="translate(192,0)"><rect x="0" y="65" width="44" height="135" fill="#1E3A8A"/><rect x="0" y="50" width="44" height="15" fill="#0E7490"/><rect x="0" y="42" width="44" height="8" fill="#A16207"/><rect x="0" y="36" width="44" height="6" fill="#C2410C"/><rect x="0" y="30" width="44" height="6" fill="#DC2626"/><rect x="0" y="24" width="44" height="6" fill="#B91C1C"/><rect x="0" y="18" width="44" height="6" fill="#991B1B"/><rect x="0" y="10" width="44" height="8" fill="#7F1D1D"/><text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" fill="#64748B">Jan 26</text></g>
-              <g transform="translate(258,0)"><rect x="0" y="68" width="44" height="132" fill="#1E3A8A"/><rect x="0" y="52" width="44" height="16" fill="#0E7490"/><rect x="0" y="44" width="44" height="8" fill="#A16207"/><rect x="0" y="38" width="44" height="6" fill="#C2410C"/><rect x="0" y="32" width="44" height="6" fill="#DC2626"/><rect x="0" y="25" width="44" height="7" fill="#B91C1C"/><rect x="0" y="18" width="44" height="7" fill="#991B1B"/><rect x="0" y="8" width="44" height="10" fill="#7F1D1D"/><text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" fill="#64748B">Feb 26</text></g>
-              <g transform="translate(324,0)"><rect x="0" y="71" width="44" height="129" fill="#1E3A8A"/><rect x="0" y="54" width="44" height="17" fill="#0E7490"/><rect x="0" y="46" width="44" height="8" fill="#A16207"/><rect x="0" y="40" width="44" height="6" fill="#C2410C"/><rect x="0" y="34" width="44" height="6" fill="#DC2626"/><rect x="0" y="26" width="44" height="8" fill="#B91C1C"/><rect x="0" y="18" width="44" height="8" fill="#991B1B"/><rect x="0" y="6" width="44" height="12" fill="#7F1D1D"/><text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" fill="#64748B">Mar 26</text></g>
-              <polyline points="82,46 148,48 214,50 280,52 346,54" fill="none" stroke="#B45309" stroke-width="2.5"/>
-              <polyline points="82,26 148,28 214,30 280,32 346,34" fill="none" stroke="#DC2626" stroke-width="2" stroke-dasharray="5 3"/>
-              <line x1="40" y1="36" x2="390" y2="36" stroke="#DC2626" stroke-dasharray="2 4" stroke-width="1" opacity=".5"/>
+
+              <!-- Nov 25 · 30+=10.5% · 90+=5.5% -->
+              <g transform="translate(60,0)">
+                <rect x="0" y="60"  width="44" height="140" fill="#1E3A8A"/>
+                <rect x="0" y="47"  width="44" height="13"  fill="#0E7490"/>
+                <rect x="0" y="43"  width="44" height="4"   fill="#A16207"/>
+                <rect x="0" y="39"  width="44" height="4"   fill="#C2410C"/>
+                <rect x="0" y="36"  width="44" height="3"   fill="#DC2626"/>
+                <rect x="0" y="34"  width="44" height="2"   fill="#B91C1C"/>
+                <rect x="0" y="32"  width="44" height="2"   fill="#991B1B"/>
+                <rect x="0" y="30"  width="44" height="2"   fill="#7F1D1D"/>
+                <text x="22" y="24" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#B45309">10.5%</text>
+                <text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" fill="#64748B">Nov 25</text>
+              </g>
+
+              <!-- Dec 25 · 30+=11.4% · 90+=6.8% -->
+              <g transform="translate(126,0)">
+                <rect x="0" y="64"  width="44" height="136" fill="#1E3A8A"/>
+                <rect x="0" y="49"  width="44" height="15"  fill="#0E7490"/>
+                <rect x="0" y="45"  width="44" height="4"   fill="#A16207"/>
+                <rect x="0" y="41"  width="44" height="4"   fill="#C2410C"/>
+                <rect x="0" y="37"  width="44" height="4"   fill="#DC2626"/>
+                <rect x="0" y="34"  width="44" height="3"   fill="#B91C1C"/>
+                <rect x="0" y="32"  width="44" height="2"   fill="#991B1B"/>
+                <rect x="0" y="30"  width="44" height="2"   fill="#7F1D1D"/>
+                <text x="22" y="24" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#B45309">11.4%</text>
+                <text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" fill="#64748B">Dec 25</text>
+              </g>
+
+              <!-- Jan 26 · 30+=12.1% · 90+=7.7% -->
+              <g transform="translate(192,0)">
+                <rect x="0" y="66"  width="44" height="134" fill="#1E3A8A"/>
+                <rect x="0" y="51"  width="44" height="15"  fill="#0E7490"/>
+                <rect x="0" y="47"  width="44" height="4"   fill="#A16207"/>
+                <rect x="0" y="43"  width="44" height="4"   fill="#C2410C"/>
+                <rect x="0" y="39"  width="44" height="4"   fill="#DC2626"/>
+                <rect x="0" y="36"  width="44" height="3"   fill="#B91C1C"/>
+                <rect x="0" y="33"  width="44" height="3"   fill="#991B1B"/>
+                <rect x="0" y="30"  width="44" height="3"   fill="#7F1D1D"/>
+                <text x="22" y="24" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#B45309">12.1%</text>
+                <text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" fill="#64748B">Jan 26</text>
+              </g>
+
+              <!-- Feb 26 · 30+=12.74% · 90+=7.96% -->
+              <g transform="translate(258,0)">
+                <rect x="0" y="68"  width="44" height="132" fill="#1E3A8A"/>
+                <rect x="0" y="52"  width="44" height="16"  fill="#0E7490"/>
+                <rect x="0" y="48"  width="44" height="4"   fill="#A16207"/>
+                <rect x="0" y="44"  width="44" height="4"   fill="#C2410C"/>
+                <rect x="0" y="39"  width="44" height="5"   fill="#DC2626"/>
+                <rect x="0" y="36"  width="44" height="3"   fill="#B91C1C"/>
+                <rect x="0" y="33"  width="44" height="3"   fill="#991B1B"/>
+                <rect x="0" y="30"  width="44" height="3"   fill="#7F1D1D"/>
+                <text x="22" y="24" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#B45309">12.7%</text>
+                <text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" fill="#64748B">Feb 26</text>
+              </g>
+
+              <!-- Mar 26 · 30+=13.96% · 90+=9.18% — latest -->
+              <g transform="translate(324,0)">
+                <rect x="0" y="70"  width="44" height="130" fill="#1E3A8A"/>
+                <rect x="0" y="55"  width="44" height="15"  fill="#0E7490"/>
+                <rect x="0" y="51"  width="44" height="4"   fill="#A16207"/>
+                <rect x="0" y="47"  width="44" height="4"   fill="#C2410C"/>
+                <rect x="0" y="42"  width="44" height="5"   fill="#DC2626"/>
+                <rect x="0" y="38"  width="44" height="4"   fill="#B91C1C"/>
+                <rect x="0" y="34"  width="44" height="4"   fill="#991B1B"/>
+                <rect x="0" y="30"  width="44" height="4"   fill="#7F1D1D"/>
+                <text x="22" y="24" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#DC2626">14.0%</text>
+                <text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#334155">Mar 26</text>
+              </g>
+
+              <!-- Covenant line · 8% (90+ threshold) — chart top y=30, 8% = 13.6px below → y=43.6 -->
+              <line x1="40" y1="43.6" x2="390" y2="43.6" stroke="#DC2626" stroke-dasharray="4 3" stroke-width="1.2" opacity=".75"/>
+              <text x="386" y="41" text-anchor="end" font-family="Sofia Sans" font-size="9" font-weight="700" fill="#DC2626">Covenant 8% (90+)</text>
             </svg>
             <div class="flex flex-wrap gap-3 text-xs text-text-secondary mt-1.5">
               <span><span class="inline-block w-2.5 h-2.5 rounded-sm bg-[#1E3A8A] mr-1 align-middle"></span>Current</span>
