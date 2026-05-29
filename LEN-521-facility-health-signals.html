@@ -770,10 +770,10 @@
           <!-- <chart [data]="chartData()" [options]="..." type="bar" /> -->
           <div class="bg-bg border border-border rounded-lg p-3.5">
             <div class="flex justify-between items-center mb-1.5">
-              <span class="text-xs text-text-secondary font-primary font-semibold">Distribution by bucket — last 5 cuts</span>
+              <span id="agingSubtitle" class="text-xs text-text-secondary font-primary font-semibold">Distribution by bucket — last 5 cuts (% of portfolio)</span>
               <div class="inline-flex bg-bg border border-border rounded p-0.5">
-                <button type="button" class="px-3 py-1 text-xs rounded font-primary font-semibold bg-surface text-secondary shadow-sm">%</button>
-                <button type="button" class="px-3 py-1 text-xs rounded font-primary font-semibold text-text-secondary">$</button>
+                <button id="agingBtnPct" type="button" onclick="setAgingMode('pct')" class="px-3 py-1 text-xs rounded font-primary font-semibold bg-surface text-secondary shadow-sm">%</button>
+                <button id="agingBtnAmt" type="button" onclick="setAgingMode('amt')" class="px-3 py-1 text-xs rounded font-primary font-semibold text-text-secondary">$</button>
               </div>
             </div>
             <!-- Stacked-100% chart · chart area y=30 (top, 100%) → y=200 (bottom, 0%) · 170px = 100% · each bar sums exactly 170px -->
@@ -805,7 +805,7 @@
                 <rect x="0" y="34"  width="44" height="2"   fill="#B91C1C"/>
                 <rect x="0" y="32"  width="44" height="2"   fill="#991B1B"/>
                 <rect x="0" y="30"  width="44" height="2"   fill="#7F1D1D"/>
-                <text x="22" y="24" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#B45309">10.5%</text>
+                <text id="agingLabel-nov" x="22" y="24" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#B45309">10.5%</text>
                 <text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" fill="#64748B">Nov 25</text>
               </g>
 
@@ -819,7 +819,7 @@
                 <rect x="0" y="34"  width="44" height="3"   fill="#B91C1C"/>
                 <rect x="0" y="32"  width="44" height="2"   fill="#991B1B"/>
                 <rect x="0" y="30"  width="44" height="2"   fill="#7F1D1D"/>
-                <text x="22" y="24" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#B45309">11.4%</text>
+                <text id="agingLabel-dec" x="22" y="24" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#B45309">11.4%</text>
                 <text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" fill="#64748B">Dec 25</text>
               </g>
 
@@ -833,7 +833,7 @@
                 <rect x="0" y="36"  width="44" height="3"   fill="#B91C1C"/>
                 <rect x="0" y="33"  width="44" height="3"   fill="#991B1B"/>
                 <rect x="0" y="30"  width="44" height="3"   fill="#7F1D1D"/>
-                <text x="22" y="24" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#B45309">12.1%</text>
+                <text id="agingLabel-jan" x="22" y="24" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#B45309">12.1%</text>
                 <text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" fill="#64748B">Jan 26</text>
               </g>
 
@@ -847,7 +847,7 @@
                 <rect x="0" y="36"  width="44" height="3"   fill="#B91C1C"/>
                 <rect x="0" y="33"  width="44" height="3"   fill="#991B1B"/>
                 <rect x="0" y="30"  width="44" height="3"   fill="#7F1D1D"/>
-                <text x="22" y="24" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#B45309">12.7%</text>
+                <text id="agingLabel-feb" x="22" y="24" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#B45309">12.7%</text>
                 <text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" fill="#64748B">Feb 26</text>
               </g>
 
@@ -861,13 +861,13 @@
                 <rect x="0" y="38"  width="44" height="4"   fill="#B91C1C"/>
                 <rect x="0" y="34"  width="44" height="4"   fill="#991B1B"/>
                 <rect x="0" y="30"  width="44" height="4"   fill="#7F1D1D"/>
-                <text x="22" y="24" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#DC2626">14.0%</text>
+                <text id="agingLabel-mar" x="22" y="24" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#DC2626">14.0%</text>
                 <text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#334155">Mar 26</text>
               </g>
 
               <!-- Covenant line · 8% (90+ threshold) — chart top y=30, 8% = 13.6px below → y=43.6 -->
               <line x1="40" y1="43.6" x2="390" y2="43.6" stroke="#DC2626" stroke-dasharray="4 3" stroke-width="1.2" opacity=".75"/>
-              <text x="386" y="41" text-anchor="end" font-family="Sofia Sans" font-size="9" font-weight="700" fill="#DC2626">Covenant 8% (90+)</text>
+              <text id="agingCovenantLabel" x="386" y="41" text-anchor="end" font-family="Sofia Sans" font-size="9" font-weight="700" fill="#DC2626">Covenant 8% (90+)</text>
             </svg>
             <div class="flex flex-wrap gap-3 text-xs text-text-secondary mt-1.5">
               <span><span class="inline-block w-2.5 h-2.5 rounded-sm bg-[#1E3A8A] mr-1 align-middle"></span>Current</span>
@@ -879,7 +879,7 @@
               <span><span class="inline-block w-2.5 h-2.5 rounded-sm bg-[#991B1B] mr-1 align-middle"></span>151-180</span>
               <span><span class="inline-block w-2.5 h-2.5 rounded-sm bg-[#7F1D1D] mr-1 align-middle"></span>180+</span>
             </div>
-            <div class="text-xs text-text-secondary mt-1.5">Monthly cuts · % of total portfolio balance</div>
+            <div id="agingFooter" class="text-xs text-text-secondary mt-1.5">Monthly cuts · % of total portfolio balance · label shows 30+ %</div>
           </div>
         </div>
 
@@ -1968,6 +1968,52 @@
     const modal = document.getElementById('export-modal');
     if (modal && e.target === modal) modal.classList.add('hidden');
   });
+
+  // ════════ Aging chart · %/$ toggle ════════
+  const AGING_DATA = {
+    nov: { pct: '10.5%', amt: '$26.7M', isAlert: false },
+    dec: { pct: '11.4%', amt: '$30.1M', isAlert: false },
+    jan: { pct: '12.1%', amt: '$33.1M', isAlert: false },
+    feb: { pct: '12.7%', amt: '$35.9M', isAlert: false },
+    mar: { pct: '14.0%', amt: '$41.8M', isAlert: true  },
+  };
+  function setAgingMode(mode){
+    const btnPct = document.getElementById('agingBtnPct');
+    const btnAmt = document.getElementById('agingBtnAmt');
+    const subtitle = document.getElementById('agingSubtitle');
+    const footer = document.getElementById('agingFooter');
+    const covenant = document.getElementById('agingCovenantLabel');
+
+    // Toggle button states
+    if (mode === 'pct'){
+      btnPct.classList.add('bg-surface','text-secondary','shadow-sm');
+      btnPct.classList.remove('text-text-secondary');
+      btnAmt.classList.remove('bg-surface','text-secondary','shadow-sm');
+      btnAmt.classList.add('text-text-secondary');
+    } else {
+      btnAmt.classList.add('bg-surface','text-secondary','shadow-sm');
+      btnAmt.classList.remove('text-text-secondary');
+      btnPct.classList.remove('bg-surface','text-secondary','shadow-sm');
+      btnPct.classList.add('text-text-secondary');
+    }
+
+    // Swap bar labels
+    Object.entries(AGING_DATA).forEach(([k, v]) => {
+      const el = document.getElementById('agingLabel-' + k);
+      if (el) el.textContent = mode === 'pct' ? v.pct : v.amt;
+    });
+
+    // Update subtitle, footer, covenant label
+    if (mode === 'pct'){
+      subtitle.textContent = 'Distribution by bucket — last 5 cuts (% of portfolio)';
+      footer.textContent  = 'Monthly cuts · % of total portfolio balance · label shows 30+ %';
+      covenant.textContent = 'Covenant 8% (90+)';
+    } else {
+      subtitle.textContent = 'Distribution by bucket — last 5 cuts ($ USD amounts)';
+      footer.textContent  = 'Monthly cuts · stack proportional to portfolio composition · label shows 30+ $ USD';
+      covenant.textContent = 'Covenant 8% threshold';
+    }
+  }
 </script>
 </body>
 </html>
