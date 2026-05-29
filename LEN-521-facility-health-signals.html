@@ -98,6 +98,46 @@
   /* Nav label transition smoothing */
   .nav-label, .nav-caret { transition: opacity 150ms ease; }
 
+  /* ════════ Selection Mode for Export ════════ */
+  body.selection-mode .selectable {
+    position: relative;
+    cursor: pointer;
+    transition: outline 150ms ease, background-color 150ms ease, opacity 150ms ease;
+    opacity: 0.55;
+  }
+  body.selection-mode .selectable:hover { opacity: 0.85; }
+  body.selection-mode .selectable.selected {
+    opacity: 1;
+    outline: 2px solid #910057;
+    outline-offset: -2px;
+    background-color: #FDF2F8 !important;
+  }
+  body.selection-mode .selectable::before {
+    content: '';
+    position: absolute;
+    top: 8px; left: 8px;
+    width: 18px; height: 18px;
+    border: 2px solid #CBD5E1;
+    border-radius: 4px;
+    background: #FFFFFF;
+    z-index: 10;
+    transition: all 150ms ease;
+  }
+  body.selection-mode .selectable.selected::before {
+    background: #910057;
+    border-color: #910057;
+  }
+  body.selection-mode .selectable.selected::after {
+    content: '';
+    position: absolute;
+    top: 11px; left: 13px;
+    width: 4px; height: 8px;
+    border: solid #FFFFFF;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    z-index: 11;
+  }
+
   /* Custom elements ignored by browser get display:block via reset */
   facility-insights-page, cut-off-header, cut-off-dropdown, reporting-frequency-badge,
   pool-overview, portfolio-balance-card, outstanding-debt-card, total-contracts-card,
@@ -255,9 +295,29 @@
       </div>
     </div>
     <div class="flex gap-2">
-      <button class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md border border-border text-text text-sm font-semibold hover:bg-bg"><i class="ph ph-download-simple"></i> Export</button>
+      <button id="exportBtn" onclick="enterSelectionMode()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md border border-border text-text text-sm font-semibold hover:bg-bg"><i class="ph ph-download-simple"></i> Export</button>
+      <button id="cancelExportBtn" onclick="exitSelectionMode()" class="hidden inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md border border-border text-text text-sm font-semibold hover:bg-bg"><i class="ph ph-x"></i> Cancel</button>
       <button class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md border border-border text-text-secondary text-sm font-semibold hover:bg-bg"><i class="ph ph-download-simple"></i> Latest Report</button>
       <button onclick="document.getElementById('flag-modal').classList.remove('hidden')" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md bg-primary text-white text-sm font-semibold hover:opacity-90"><i class="ph ph-flag"></i> Flag for review</button>
+    </div>
+  </div>
+
+  <!-- ════════ EXPORT · Selection Mode Banner ════════ -->
+  <div id="selectionBanner" class="hidden mt-5 flex items-center justify-between gap-4 flex-wrap p-3.5 rounded-lg" style="background:#FDF2F8;border:1px solid #FBCFE8">
+    <div class="flex items-center gap-3">
+      <span class="w-8 h-8 rounded-md bg-white grid place-items-center text-secondary"><i class="ph ph-cursor-click"></i></span>
+      <div>
+        <div class="font-primary text-sm font-bold text-secondary">Selection Mode</div>
+        <div class="text-xs text-text-secondary mt-0.5">Click on the widgets you want to include in your report. Choose the format (PDF or PNG) when ready.</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <span id="selectionCount" class="text-xs font-primary font-bold px-2.5 py-1 rounded-full bg-white text-text-secondary border border-border">0 selected</span>
+      <button onclick="selectAllWidgets()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-white text-text text-xs font-semibold hover:bg-bg">Select all</button>
+      <button onclick="clearSelection()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-white text-text text-xs font-semibold hover:bg-bg">Clear</button>
+      <button id="continueBtn" onclick="openExportModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-white text-xs font-semibold hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+        Continue <i class="ph ph-arrow-right"></i>
+      </button>
     </div>
   </div>
 
@@ -1614,6 +1674,227 @@
     // Initial render
     renderPills();
   })();
+</script>
+
+<!-- ════════ EXPORT REPORT MODAL ════════ -->
+<div id="export-modal" class="hidden fixed inset-0 z-[1200] bg-primary/40 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-surface rounded-lg shadow-card max-w-[720px] w-full max-h-[92vh] overflow-y-auto" onclick="event.stopPropagation()">
+    <header class="flex items-start justify-between px-6 py-4 border-b border-border">
+      <div>
+        <h2 class="font-primary text-xl font-bold text-text m-0">Export report</h2>
+        <p class="text-xs text-text-secondary m-0 mt-0.5"><span id="exportCountText">0</span> widgets selected for export</p>
+      </div>
+      <button onclick="closeExportModal()" class="w-8 h-8 rounded-md hover:bg-bg grid place-items-center"><i class="ph ph-x text-text-secondary"></i></button>
+    </header>
+
+    <div class="px-6 py-5 space-y-5">
+      <!-- Format selection -->
+      <div class="grid grid-cols-2 gap-3">
+        <label id="fmtPdf" class="border-2 border-secondary bg-secondary-bg rounded-lg p-5 cursor-pointer flex flex-col items-center gap-2 transition-all">
+          <input type="radio" name="exportFormat" value="pdf" checked class="sr-only" onchange="selectFormat('pdf')" />
+          <span class="w-12 h-12 rounded-md bg-white border border-border grid place-items-center">
+            <i class="ph ph-file-pdf text-2xl text-secondary"></i>
+          </span>
+          <span class="font-primary font-bold text-text">PDF</span>
+          <span class="text-xs text-text-secondary text-center">Single executive document</span>
+        </label>
+        <label id="fmtPng" class="border-2 border-border bg-surface rounded-lg p-5 cursor-pointer flex flex-col items-center gap-2 transition-all hover:border-border-strong">
+          <input type="radio" name="exportFormat" value="png" class="sr-only" onchange="selectFormat('png')" />
+          <span class="w-12 h-12 rounded-md bg-bg border border-border grid place-items-center">
+            <i class="ph ph-image text-2xl text-text-secondary"></i>
+          </span>
+          <span class="font-primary font-bold text-text">PNG</span>
+          <span class="text-xs text-text-secondary text-center">High-resolution image (300 DPI)</span>
+        </label>
+      </div>
+
+      <!-- File name -->
+      <div>
+        <label class="block font-primary text-xs font-bold tracking-wider uppercase text-text-secondary mb-2">File Name</label>
+        <input id="exportFileName" type="text"
+               class="w-full px-3 py-2.5 text-sm border border-border-strong rounded-md focus:border-secondary focus:outline-none font-mono"
+               value="LEASE MD F/1600 · Insights · 30 Apr 2026" />
+      </div>
+
+      <!-- Document Preview -->
+      <div>
+        <label class="block font-primary text-xs font-bold tracking-wider uppercase text-text-secondary mb-2">Document Preview</label>
+        <div class="bg-bg border border-border rounded-lg p-3">
+          <div class="bg-surface border border-border rounded-md p-3 min-h-[200px]">
+            <div id="exportPreview" class="grid grid-cols-3 gap-1.5 text-[8px] text-text-secondary"></div>
+            <div class="text-[9px] text-text-muted font-mono mt-3 pt-2 border-t border-border text-center">
+              Confidential — Generated by LenderHub
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="flex items-center justify-between px-6 py-4 border-t border-border bg-bg/40">
+      <button onclick="closeExportModal()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-md border border-border text-text text-sm font-semibold hover:bg-bg">
+        <i class="ph ph-arrow-left"></i> Back to selection
+      </button>
+      <button onclick="generateExport()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-md bg-primary text-white text-sm font-semibold hover:opacity-90">
+        <i class="ph ph-download-simple"></i> Generate
+      </button>
+    </footer>
+  </div>
+</div>
+
+<!-- Toast for export confirmation -->
+<div id="export-toast" class="hidden fixed bottom-6 right-6 z-[1300] bg-primary text-white rounded-lg shadow-card px-4 py-3 flex items-start gap-3 max-w-[420px]">
+  <div class="w-8 h-8 rounded-full bg-success text-white grid place-items-center flex-shrink-0"><i class="ph ph-check"></i></div>
+  <div class="flex-1">
+    <div class="font-primary font-bold text-sm" id="exportToastTitle">Report generated</div>
+    <div class="text-xs text-white/80 mt-0.5" id="exportToastDetail"></div>
+  </div>
+  <button onclick="document.getElementById('export-toast').classList.add('hidden')" class="text-white/60 hover:text-white"><i class="ph ph-x"></i></button>
+</div>
+
+<script>
+  // ════════ EXPORT SELECTION LOGIC ════════
+  // Selectable widget classes — these visual containers become checkable in selection mode
+  const SELECTABLE_QUERIES = [
+    'kpi-card',                       // Pool context cards + various
+    'undrawn-commitment-card > article',
+    'account-balance-status > article',
+    'aging-section > article',
+    'overcollateralization-section > article',
+    'borrowing-base-section > article',
+    'assets-evolution > article',
+  ];
+
+  function getSelectableElements() {
+    const els = new Set();
+    document.querySelectorAll('kpi-card').forEach(el => els.add(el));
+    document.querySelectorAll('undrawn-commitment-card > article, account-balance-status > article, aging-section > article, overcollateralization-section > article, borrowing-base-section > article, assets-evolution > article').forEach(el => els.add(el));
+    return Array.from(els);
+  }
+
+  function enterSelectionMode() {
+    document.body.classList.add('selection-mode');
+    document.getElementById('selectionBanner').classList.remove('hidden');
+    document.getElementById('exportBtn').classList.add('hidden');
+    document.getElementById('cancelExportBtn').classList.remove('hidden');
+
+    // Tag elements as selectable + bind click
+    getSelectableElements().forEach(el => {
+      el.classList.add('selectable');
+      el.addEventListener('click', toggleSelection);
+    });
+    updateSelectionCount();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function exitSelectionMode() {
+    document.body.classList.remove('selection-mode');
+    document.getElementById('selectionBanner').classList.add('hidden');
+    document.getElementById('exportBtn').classList.remove('hidden');
+    document.getElementById('cancelExportBtn').classList.add('hidden');
+
+    getSelectableElements().forEach(el => {
+      el.classList.remove('selectable','selected');
+      el.removeEventListener('click', toggleSelection);
+    });
+  }
+
+  function toggleSelection(e) {
+    // Don't trigger when clicking on interactive elements inside widgets
+    if (e.target.closest('button, a, input, select, summary, details')) return;
+    const widget = e.currentTarget;
+    widget.classList.toggle('selected');
+    updateSelectionCount();
+  }
+
+  function selectAllWidgets() {
+    getSelectableElements().forEach(el => el.classList.add('selected'));
+    updateSelectionCount();
+  }
+
+  function clearSelection() {
+    getSelectableElements().forEach(el => el.classList.remove('selected'));
+    updateSelectionCount();
+  }
+
+  function updateSelectionCount() {
+    const count = document.querySelectorAll('.selectable.selected').length;
+    document.getElementById('selectionCount').textContent = `${count} selected`;
+    const continueBtn = document.getElementById('continueBtn');
+    continueBtn.disabled = count === 0;
+    if (count > 0) {
+      document.getElementById('selectionCount').classList.remove('text-text-secondary');
+      document.getElementById('selectionCount').classList.add('text-secondary');
+    } else {
+      document.getElementById('selectionCount').classList.add('text-text-secondary');
+      document.getElementById('selectionCount').classList.remove('text-secondary');
+    }
+  }
+
+  // ════════ EXPORT MODAL ════════
+  function openExportModal() {
+    const selected = document.querySelectorAll('.selectable.selected');
+    if (selected.length === 0) return;
+    document.getElementById('exportCountText').textContent = selected.length;
+    renderPreview(selected);
+    document.getElementById('export-modal').classList.remove('hidden');
+  }
+
+  function closeExportModal() {
+    document.getElementById('export-modal').classList.add('hidden');
+  }
+
+  function renderPreview(selectedEls) {
+    const preview = document.getElementById('exportPreview');
+    // Generate mini-tiles representing each selected widget
+    preview.innerHTML = Array.from(selectedEls).slice(0, 9).map(el => {
+      // Try to extract title from the widget
+      const titleEl = el.querySelector('h3, h4, .kpi-title');
+      const title = titleEl ? titleEl.textContent.trim().slice(0, 30) : 'Widget';
+      const valueEl = el.querySelector('.kpi-value, .num.text-3xl, .num.text-2xl');
+      const value = valueEl ? valueEl.textContent.trim() : '';
+      return `<div class="bg-bg border border-border rounded p-1.5">
+        <div class="text-[7px] uppercase tracking-wider text-text-muted truncate">${title}</div>
+        ${value ? `<div class="text-[10px] font-bold text-text mt-0.5 truncate">${value}</div>` : ''}
+      </div>`;
+    }).join('') + (selectedEls.length > 9 ? `<div class="col-span-3 text-[8px] text-text-muted text-center mt-1">+ ${selectedEls.length - 9} more widgets</div>` : '');
+  }
+
+  function selectFormat(fmt) {
+    const pdfCard = document.getElementById('fmtPdf');
+    const pngCard = document.getElementById('fmtPng');
+    if (fmt === 'pdf') {
+      pdfCard.className = 'border-2 border-secondary bg-secondary-bg rounded-lg p-5 cursor-pointer flex flex-col items-center gap-2 transition-all';
+      pngCard.className = 'border-2 border-border bg-surface rounded-lg p-5 cursor-pointer flex flex-col items-center gap-2 transition-all hover:border-border-strong';
+    } else {
+      pngCard.className = 'border-2 border-secondary bg-secondary-bg rounded-lg p-5 cursor-pointer flex flex-col items-center gap-2 transition-all';
+      pdfCard.className = 'border-2 border-border bg-surface rounded-lg p-5 cursor-pointer flex flex-col items-center gap-2 transition-all hover:border-border-strong';
+    }
+  }
+
+  function generateExport() {
+    const format = document.querySelector('input[name="exportFormat"]:checked').value;
+    const filename = document.getElementById('exportFileName').value;
+    const count = document.querySelectorAll('.selectable.selected').length;
+
+    // In Angular real: PendoService.trackEvent('insights_export_generated', {format, widget_count, filename})
+    //                 + HttpClient.post('/api/v1/exports', {...}) + trigger download
+    console.log('[EXPORT]', { format, filename, widget_count: count, timestamp: new Date().toISOString() });
+
+    closeExportModal();
+    exitSelectionMode();
+
+    document.getElementById('exportToastTitle').textContent = `${format.toUpperCase()} report generated`;
+    document.getElementById('exportToastDetail').textContent = `${filename}.${format} · ${count} widgets included`;
+    const toast = document.getElementById('export-toast');
+    toast.classList.remove('hidden');
+    setTimeout(() => toast.classList.add('hidden'), 4500);
+  }
+
+  // Close modal on backdrop click
+  document.addEventListener('click', (e) => {
+    const modal = document.getElementById('export-modal');
+    if (modal && e.target === modal) modal.classList.add('hidden');
+  });
 </script>
 </body>
 </html>
