@@ -772,10 +772,19 @@ function renderTopChart(canvasId, rule) {
   const limit = rule.threshold_pct;
   const isInfo = rule.operator === 'none';
   const palette = isInfo ? BLUE_PALETTE : PINK_PALETTE;
-  // yMax: comfortable headroom for value labels + limit visibility
-  const yMax = limit
+  // Round yMax UP to a clean tick boundary so axis labels don't get
+  // floating-point artifacts like "1.99999999999997%"
+  function niceCeil(v){
+    if (v <= 1)  return Math.ceil(v * 10) / 10;  // 0.1 step
+    if (v <= 5)  return Math.ceil(v * 2)  / 2;   // 0.5 step
+    if (v <= 20) return Math.ceil(v);            // 1   step
+    if (v <= 100) return Math.ceil(v / 5) * 5;   // 5   step
+    return Math.ceil(v / 10) * 10;               // 10  step
+  }
+  const raw = limit
     ? Math.max(limit * 1.25, Math.max(...values) * 1.45)
     : Math.max(...values) * 1.35;
+  const yMax = niceCeil(raw);
 
   // Bar colors: solid secondary; flag breach bars in red
   const breachColor = '#DC2626';
@@ -812,7 +821,17 @@ function renderTopChart(canvasId, rule) {
           padding:10, cornerRadius:6,
           titleFont:{family:'DM Sans',size:12,weight:'700'},
           bodyFont:{family:'DM Sans',size:12},
-          callbacks:{ label: c => ` ${c.dataset.label}: ${c.parsed.y.toFixed(2)}%` }
+          // Hide the limit-line dataset from tooltip (it's the dashed reference,
+          // not a per-bar value). Only show the bar's actual concentration.
+          filter: (item) => item.dataset.type !== 'line',
+          callbacks: {
+            label: (c) => {
+              const v = c.parsed.y.toFixed(2);
+              const head = limit ? `  vs limit ${limit.toFixed(2)}%` : '';
+              const flag = (limit && c.parsed.y > limit) ? '  · BREACH' : '';
+              return ` ${v}%${head}${flag}`;
+            }
+          }
         }
       },
       scales:{
