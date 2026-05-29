@@ -879,7 +879,6 @@
               <span><span class="inline-block w-2.5 h-2.5 rounded-sm bg-[#991B1B] mr-1 align-middle"></span>151-180</span>
               <span><span class="inline-block w-2.5 h-2.5 rounded-sm bg-[#7F1D1D] mr-1 align-middle"></span>180+</span>
             </div>
-            <div id="agingFooter" class="text-xs text-text-secondary mt-1.5">Monthly cuts · % of total portfolio balance · label shows 30+ %</div>
           </div>
         </div>
 
@@ -1981,7 +1980,6 @@
     const btnPct = document.getElementById('agingBtnPct');
     const btnAmt = document.getElementById('agingBtnAmt');
     const subtitle = document.getElementById('agingSubtitle');
-    const footer = document.getElementById('agingFooter');
     const covenant = document.getElementById('agingCovenantLabel');
 
     // Toggle button states
@@ -2006,11 +2004,9 @@
     // Update subtitle, footer, covenant label
     if (mode === 'pct'){
       subtitle.textContent = 'Distribution by bucket — last 5 cuts (% of portfolio)';
-      footer.textContent  = 'Monthly cuts · % of total portfolio balance · label shows 30+ %';
       covenant.textContent = 'Covenant 8% (90+)';
     } else {
       subtitle.textContent = 'Distribution by bucket — last 5 cuts ($ USD amounts)';
-      footer.textContent  = 'Monthly cuts · stack proportional to portfolio composition · label shows 30+ $ USD';
       covenant.textContent = 'Covenant 8% threshold';
     }
   }
