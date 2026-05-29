@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Covenants · LEASE MD F/1600 · LenderHub</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web" />
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:wght@400;500;700&family=Noto+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: '#1F2733', secondary: '#910057', 'secondary-active': '#840058', 'secondary-bg': '#FDF2F8',
+          bg: '#F8FAFC', surface: '#FFFFFF', border: '#E2E8F0', 'border-strong': '#CBD5E1',
+          text: '#334155', 'text-secondary': '#64748B', 'text-muted': '#94A3B8',
+          success: '#16A34A', 'success-bg': '#F0FDF4',
+          warning: '#B45309', 'warning-bg': '#FFFBEB', 'warning-border': '#FCD34D',
+          danger: '#DC2626', 'danger-bg': '#FEF2F2', 'danger-border': '#FCA5A5',
+          info: '#0284C7', 'info-bg': '#F0F9FF', cyan: '#06B6D4',
+        },
+        fontFamily: {
+          primary: ['Sofia Sans', 'system-ui', 'sans-serif'],
+          ui: ['Noto Sans', 'system-ui', 'sans-serif'],
+          mono: ['Space Mono', 'monospace'],
+        },
+        boxShadow: { card: '0 1px 3px rgba(0,0,0,.10), 0 1px 2px rgba(0,0,0,.06)' },
+      },
+    },
+  };
+</script>
+
+<style>
+  .primary-sidebar { width: 208px; transition: width 250ms cubic-bezier(.4,0,.2,1); }
+  .secondary-sidebar { transform: translateX(0); transition: transform 250ms cubic-bezier(.4,0,.2,1), left 250ms cubic-bezier(.4,0,.2,1); left: 208px; }
+  main.app-main { transition: margin-left 250ms cubic-bezier(.4,0,.2,1); margin-left: 492px; }
+  body.primary-collapsed .primary-sidebar { width: 64px; }
+  body.primary-collapsed .primary-sidebar .nav-label,
+  body.primary-collapsed .primary-sidebar .nav-caret { opacity: 0; pointer-events: none; }
+  body.primary-collapsed .primary-sidebar .nav-item { justify-content: center; }
+  body.primary-collapsed .secondary-sidebar { left: 64px; }
+  body.secondary-hidden .secondary-sidebar { transform: translateX(-105%); }
+  body.primary-collapsed main.app-main { margin-left: 348px; }
+  body.secondary-hidden main.app-main { margin-left: 232px; }
+  body.primary-collapsed.secondary-hidden main.app-main { margin-left: 88px; }
+  .reopen-secondary { display: none; left: 216px; transition: left 250ms cubic-bezier(.4,0,.2,1); }
+  body.secondary-hidden .reopen-secondary { display: flex; }
+  body.primary-collapsed .reopen-secondary { left: 72px; }
+  .nav-label, .nav-caret { transition: opacity 150ms ease; }
+  body { font-family: 'Noto Sans', system-ui, sans-serif; color: #334155; }
+  h1, h2, h3, h4 { font-family: 'Sofia Sans', system-ui, sans-serif; }
+</style>
+</head>
+
+<body class="bg-bg text-text m-0 p-0">
+
+<header class="fixed top-0 left-0 right-0 h-[52px] bg-bg border-b border-border flex items-center justify-between px-6 z-50">
+  <img src="https://stg.suite.cxc.com.mx/logos/cxc_fullcolor.svg" alt="CXC" class="h-6 w-auto" />
+  <div class="flex items-center gap-4">
+    <button class="w-8 h-8 rounded-md grid place-items-center hover:bg-border"><i class="ph ph-question text-lg"></i></button>
+    <button class="w-8 h-8 rounded-md grid place-items-center hover:bg-border"><i class="ph ph-bell text-lg"></i></button>
+    <div class="w-8 h-8 rounded-full bg-secondary text-white grid place-items-center font-bold font-primary text-sm">CV</div>
+  </div>
+</header>
+
+<aside class="primary-sidebar fixed top-[52px] left-0 h-[calc(100vh-52px)] bg-bg border-r border-border p-3 z-40 overflow-y-auto flex flex-col gap-1">
+  <button onclick="document.body.classList.toggle('primary-collapsed')" class="self-end w-7 h-7 rounded-md grid place-items-center hover:bg-border-strong text-text-secondary mb-1" title="Toggle primary sidebar"><i class="ph ph-sidebar text-base"></i></button>
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text font-semibold bg-border cursor-pointer" title="Portfolio Monitoring"><i class="ph ph-chart-line-up text-secondary-active flex-shrink-0"></i><span class="nav-label text-sm whitespace-nowrap overflow-hidden">Portfolio Monitoring</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-coins flex-shrink-0"></i><span class="nav-label whitespace-nowrap overflow-hidden">Financials</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-buildings flex-shrink-0"></i><span class="nav-label whitespace-nowrap overflow-hidden">Companies</span></a>
+  <hr class="border-0 border-t border-border my-2" />
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-graph flex-shrink-0"></i><span class="nav-label whitespace-nowrap overflow-hidden">Data Studio</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-seal-check flex-shrink-0"></i><span class="nav-label whitespace-nowrap overflow-hidden">RUG Smart Search</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
+</aside>
+
+<aside class="secondary-sidebar fixed top-[52px] w-[260px] h-[calc(100vh-52px)] bg-bg border-r border-border p-4 z-30 overflow-y-auto">
+  <nav class="text-xs text-text-secondary mb-3 flex items-center gap-1.5">
+    <a href="../LEN-521-facility-health-signals.html" class="hover:text-text">Facilities</a>
+    <i class="ph ph-caret-right text-[10px]"></i>
+    <span class="text-text font-semibold">LEASE MD F/1600</span>
+  </nav>
+  <header class="flex items-center gap-2 mb-4 pb-3 border-b border-border">
+    <a href="../LEN-521-facility-health-signals.html" class="w-7 h-7 rounded-md grid place-items-center hover:bg-border-strong text-text-secondary" title="Back to Facilities"><i class="ph ph-arrow-left text-base"></i></a>
+    <h2 class="font-primary text-base font-bold text-text m-0 truncate flex-1">LEASE MD F/1600</h2>
+    <button onclick="document.body.classList.add('secondary-hidden')" class="w-7 h-7 rounded-md grid place-items-center hover:bg-border-strong text-text-secondary" title="Hide sidebar"><i class="ph ph-caret-double-left text-base"></i></button>
+  </header>
+  <div class="flex flex-col gap-1">
+    <a href="../LEN-521-facility-health-signals.html" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-chart-line"></i><span>Insights</span></a>
+    <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-squares-four"></i><span>Concentrations</span></a>
+    <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-arrows-left-right"></i><span>Cash flow</span></a>
+    <a href="../asset-view/index.html" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-cube"></i><span>Asset view</span></a>
+    <a href="../general-information/index.html" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-file-text"></i><span>General information</span></a>
+    <a href="../report-repository/index.html" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-archive"></i><span>Report repository</span></a>
+    <a href="../directory/index.html" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-envelope"></i><span>Directory</span></a>
+    <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text font-semibold bg-border cursor-pointer"><i class="ph ph-shield-check text-secondary-active"></i><span class="text-sm">Covenants</span></a>
+    <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-coins"></i><span>Financials</span></a>
+  </div>
+</aside>
+
+<button onclick="document.body.classList.remove('secondary-hidden')" class="reopen-secondary fixed top-[68px] z-30 w-8 h-8 rounded-md bg-surface border border-border shadow-card items-center justify-center hover:bg-bg text-text-secondary" title="Show facility sidebar"><i class="ph ph-caret-double-right text-base"></i></button>
+
+<main class="app-main bg-surface m-6 mt-[76px] rounded-lg p-6 min-h-[calc(100vh-100px)]">
+
+  <nav class="text-xs text-text-secondary mb-2 flex items-center gap-1.5">
+    <a href="../LEN-521-facility-health-signals.html" class="hover:text-text">Facilities</a>
+    <i class="ph ph-caret-right text-[10px]"></i>
+    <span class="text-text font-semibold">LEASE MD F/1600</span>
+  </nav>
+
+  <div class="flex items-center gap-3 mb-5">
+    <button onclick="document.body.classList.toggle('secondary-hidden')" class="w-9 h-9 rounded-md border border-border grid place-items-center hover:bg-bg text-text-secondary"><i class="ph ph-sidebar text-lg"></i></button>
+    <h1 class="font-primary text-2xl font-bold text-text m-0 uppercase tracking-tight">LEASE MD F/1600</h1>
+  </div>
+
+  <hr class="border-0 border-t border-border mb-5"/>
+
+  <div class="mb-5 flex items-end justify-between gap-4 flex-wrap">
+    <div>
+      <h2 class="font-primary text-base font-bold text-text m-0">Covenants</h2>
+      <p class="text-sm text-text-secondary m-0 mt-0.5">Financial covenants defined in the credit agreement. Reported quarterly by the originator.</p>
+    </div>
+    <!-- Summary chips -->
+    <div class="flex items-center gap-2 text-xs font-primary">
+      <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-success-bg text-success font-bold"><i class="ph ph-check-circle"></i> <span id="cntCompliant">0</span> Compliant</span>
+      <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-warning-bg text-warning font-bold"><i class="ph ph-warning"></i> <span id="cntWatch">0</span> Watch</span>
+      <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-danger-bg text-danger font-bold"><i class="ph ph-x-circle"></i> <span id="cntBreach">0</span> Non-compliant</span>
+    </div>
+  </div>
+
+  <!-- ════════ COVENANT CARDS GRID ════════ -->
+  <div id="covenantsGrid" class="grid grid-cols-2 gap-4 max-[1100px]:grid-cols-1"></div>
+
+</main>
+
+<script>
+// ════════ Covenant data ════════
+// Each covenant: title, unit, currentValue, threshold (min OR max), series (last 4 quarters)
+const COVENANTS = [
+  // ─── From screenshot 1 ───
+  {
+    title: 'ÍNDICE DE MOROSIDAD CON CASTIGOS',
+    desc: 'Delinquency + write-offs ratio',
+    unit: '%',
+    type: 'max',                // threshold is a ceiling
+    threshold: 6.25,
+    current: 4.36,
+    series: [
+      { label:'Mar-2025', value: 5.20 },
+      { label:'Jun-2025', value: 5.80 },
+      { label:'Sep-2025', value: 3.00 },
+      { label:'Dec-2025', value: 4.36 },
+    ],
+  },
+  {
+    title: 'CAPITAL CONTABLE TANGIBLE',
+    desc: 'Tangible book value (ex-goodwill)',
+    unit: 'currency',
+    type: 'min',
+    threshold: 400_000_000,
+    current: 678_790_000,
+    series: [
+      { label:'Mar-2025', value: 530_000_000 },
+      { label:'Jun-2025', value: 540_000_000 },
+      { label:'Sep-2025', value: 565_000_000 },
+      { label:'Dec-2025', value: 678_790_000 },
+    ],
+  },
+  // ─── From screenshot 2 ───
+  {
+    title: 'EFECTIVO MÍNIMO LIBRE',
+    desc: 'Unrestricted cash + cash equivalents',
+    unit: 'currency',
+    type: 'min',
+    threshold: 100_000,
+    current: 194_950_000,
+    series: [
+      { label:'Mar-2025', value: 191_360_000 },
+      { label:'Jun-2025', value: 208_000_000 },
+      { label:'Sep-2025', value: 204_500_000 },
+      { label:'Dec-2025', value: 194_950_000 },
+    ],
+  },
+  {
+    title: 'RAZÓN DE APALANCAMIENTO',
+    desc: 'Total debt / Tangible book value',
+    unit: 'x',
+    type: 'max',
+    threshold: 7,
+    current: 4.12,
+    series: [
+      { label:'Mar-2025', value: 2.00 },
+      { label:'Jun-2025', value: 2.10 },
+      { label:'Sep-2025', value: 1.90 },
+      { label:'Dec-2025', value: 4.12 },
+    ],
+  },
+  // ─── Additional realistic covenants ───
+  {
+    title: 'DSCR · DEBT SERVICE COVERAGE',
+    desc: 'EBITDA / (interest + principal payments)',
+    unit: 'x',
+    type: 'min',
+    threshold: 1.25,
+    current: 1.58,
+    series: [
+      { label:'Mar-2025', value: 1.42 },
+      { label:'Jun-2025', value: 1.48 },
+      { label:'Sep-2025', value: 1.51 },
+      { label:'Dec-2025', value: 1.58 },
+    ],
+  },
+  {
+    title: 'AFORO · OVERCOLLATERALIZATION',
+    desc: 'Eligible collateral / Outstanding debt',
+    unit: 'x',
+    type: 'min',
+    threshold: 1.20,
+    current: 1.22,
+    series: [
+      { label:'Mar-2025', value: 1.34 },
+      { label:'Jun-2025', value: 1.30 },
+      { label:'Sep-2025', value: 1.26 },
+      { label:'Dec-2025', value: 1.22 },
+    ],
+  },
+  {
+    title: 'MORA 90+ DÍAS',
+    desc: 'Receivables 90+ days past due / Outstanding total',
+    unit: '%',
+    type: 'max',
+    threshold: 8.00,
+    current: 9.18,
+    series: [
+      { label:'Mar-2025', value: 5.50 },
+      { label:'Jun-2025', value: 6.80 },
+      { label:'Sep-2025', value: 7.96 },
+      { label:'Dec-2025', value: 9.18 },
+    ],
+  },
+  {
+    title: 'CONCENTRACIÓN TOP 10 ACREDITADOS',
+    desc: 'Top 10 lessees / Total portfolio',
+    unit: '%',
+    type: 'max',
+    threshold: 30.00,
+    current: 18.50,
+    series: [
+      { label:'Mar-2025', value: 16.20 },
+      { label:'Jun-2025', value: 17.40 },
+      { label:'Sep-2025', value: 18.80 },
+      { label:'Dec-2025', value: 18.50 },
+    ],
+  },
+];
+
+// ════════ Helpers ════════
+function fmtValue(v, unit){
+  if (unit === 'currency') {
+    if (v >= 1_000_000) return '$' + (v/1_000_000).toFixed(2) + 'M';
+    if (v >= 1_000) return '$' + (v/1_000).toFixed(0) + 'K';
+    return '$' + v.toFixed(0);
+  }
+  if (unit === '%') return v.toFixed(2) + ' %';
+  if (unit === 'x') return v.toFixed(2) + ' x';
+  return String(v);
+}
+function fmtThreshold(v, unit){
+  if (unit === 'currency') {
+    if (v >= 1_000_000) return '$ ' + (v/1_000_000).toFixed(0) + 'M';
+    if (v >= 1_000) return '$ ' + (v/1_000).toFixed(0) + 'K';
+    return '$ ' + v.toFixed(0);
+  }
+  if (unit === '%') return v.toFixed(2) + ' %';
+  if (unit === 'x') return v.toFixed(0) + ' x';
+  return String(v);
+}
+
+function statusOf(c){
+  const tol = c.type === 'max' ? c.threshold * 0.9 : c.threshold * 1.1; // 10% buffer
+  if (c.type === 'max') {
+    if (c.current > c.threshold) return 'breach';
+    if (c.current >= tol) return 'watch';
+    return 'compliant';
+  } else { // min
+    if (c.current < c.threshold) return 'breach';
+    if (c.current <= tol) return 'watch';
+    return 'compliant';
+  }
+}
+
+function statusChip(s){
+  if (s === 'compliant') return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success-bg text-success text-xs font-bold font-primary"><i class="ph ph-check"></i> Compliant</span>`;
+  if (s === 'watch')    return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-warning-bg text-warning text-xs font-bold font-primary"><i class="ph ph-warning"></i> Watch</span>`;
+  return                       `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-danger-bg text-danger text-xs font-bold font-primary"><i class="ph ph-x-circle"></i> Non-compliant</span>`;
+}
+
+// Build SVG line chart
+function buildChart(c){
+  const W = 540, H = 200, PAD_L = 56, PAD_R = 16, PAD_T = 20, PAD_B = 28;
+  const plotW = W - PAD_L - PAD_R, plotH = H - PAD_T - PAD_B;
+
+  const values = c.series.map(p => p.value);
+  const minV = Math.min(...values, c.threshold);
+  const maxV = Math.max(...values, c.threshold);
+  const range = (maxV - minV) || 1;
+  // Add 15% padding
+  const yMin = minV - range * 0.15;
+  const yMax = maxV + range * 0.15;
+  const yRange = yMax - yMin;
+
+  const xStep = plotW / (c.series.length - 1);
+  const px = i => PAD_L + i * xStep;
+  const py = v => PAD_T + plotH - ((v - yMin) / yRange) * plotH;
+
+  // Y axis labels (5 ticks)
+  const yTicks = [];
+  for (let i = 0; i <= 4; i++){
+    const v = yMin + (yRange * i / 4);
+    yTicks.push({ v, y: py(v) });
+  }
+
+  const reportedPath = c.series.map((p, i) => `${i===0?'M':'L'}${px(i)},${py(p.value)}`).join(' ');
+  const reportedCircles = c.series.map((p, i) => `<circle cx="${px(i)}" cy="${py(p.value)}" r="4" fill="#FFFFFF" stroke="#910057" stroke-width="2"/>`).join('');
+  const thresholdY = py(c.threshold);
+  const thresholdCircles = c.series.map((_, i) => `<circle cx="${px(i)}" cy="${thresholdY}" r="3.5" fill="#FFFFFF" stroke="#06B6D4" stroke-width="2"/>`).join('');
+
+  const yLabels = yTicks.map(t => `<text x="${PAD_L - 8}" y="${t.y + 3}" text-anchor="end" font-family="Space Mono" font-size="10" fill="#94A3B8">${fmtValue(t.v, c.unit)}</text>`).join('');
+  const yGrid = yTicks.map(t => `<line x1="${PAD_L}" y1="${t.y}" x2="${W - PAD_R}" y2="${t.y}" stroke="#E2E8F0" stroke-width="1"/>`).join('');
+  const xLabels = c.series.map((p, i) => `<text x="${px(i)}" y="${H - 8}" text-anchor="middle" font-family="Noto Sans" font-size="10" fill="#64748B">${p.label}</text>`).join('');
+
+  return `
+    <svg viewBox="0 0 ${W} ${H}" class="w-full h-[200px]" preserveAspectRatio="xMidYMid meet">
+      ${yGrid}
+      <line x1="${PAD_L}" y1="${PAD_T + plotH}" x2="${W - PAD_R}" y2="${PAD_T + plotH}" stroke="#CBD5E1" stroke-width="1"/>
+      ${yLabels}
+      ${xLabels}
+      <!-- Threshold dashed line -->
+      <line x1="${PAD_L}" y1="${thresholdY}" x2="${W - PAD_R}" y2="${thresholdY}" stroke="#06B6D4" stroke-width="1.5" stroke-dasharray="5 4"/>
+      ${thresholdCircles}
+      <!-- Reported line -->
+      <path d="${reportedPath}" fill="none" stroke="#910057" stroke-width="2"/>
+      ${reportedCircles}
+    </svg>
+  `;
+}
+
+function buildCard(c){
+  const status = statusOf(c);
+  const bgClass = status === 'compliant' ? 'bg-success-bg' : status === 'watch' ? 'bg-warning-bg' : 'bg-danger-bg';
+  const thresholdLabel = c.type === 'max' ? 'Max' : 'Min';
+  return `
+    <article class="bg-surface border border-border rounded-xl p-5">
+      <header class="flex items-center justify-between gap-3 mb-3 flex-wrap">
+        <h3 class="font-primary text-sm font-bold uppercase tracking-wider text-text m-0 flex items-center gap-2 flex-1 min-w-0">
+          <span class="w-7 h-7 rounded-md bg-bg border border-border grid place-items-center flex-shrink-0">
+            <i class="ph ph-chart-line-up text-text-secondary"></i>
+          </span>
+          <span class="truncate">${c.title}</span>
+        </h3>
+        ${statusChip(status)}
+      </header>
+
+      <div class="${bgClass} rounded-lg px-4 py-3 mb-4 flex items-baseline justify-between gap-3 flex-wrap">
+        <div>
+          <div class="text-[11px] text-text-secondary font-semibold">Last Reported</div>
+          <div class="text-2xl font-bold text-text font-mono mt-0.5">${fmtValue(c.current, c.unit)}</div>
+          <div class="text-[11px] text-text-secondary mt-0.5">${thresholdLabel}: ${fmtThreshold(c.threshold, c.unit)}</div>
+        </div>
+        <div class="text-[11px] text-text-secondary text-right">${c.desc}</div>
+      </div>
+
+      <div class="flex items-center justify-center gap-5 text-xs text-text-secondary mb-1">
+        <span class="inline-flex items-center gap-1.5"><span class="inline-block w-3 h-px bg-secondary"></span><span class="w-1.5 h-1.5 rounded-full border border-secondary bg-white inline-block"></span> Reported</span>
+        <span class="inline-flex items-center gap-1.5"><span class="inline-block w-3 h-px bg-cyan" style="background:repeating-linear-gradient(to right,#06B6D4 0 3px,transparent 3px 6px)"></span><span class="w-1.5 h-1.5 rounded-full border border-cyan bg-white inline-block"></span> ${thresholdLabel === 'Max' ? 'Maximum' : 'Minimum'}</span>
+      </div>
+
+      ${buildChart(c)}
+    </article>
+  `;
+}
+
+// Render
+const grid = document.getElementById('covenantsGrid');
+grid.innerHTML = COVENANTS.map(buildCard).join('');
+
+// Summary counts
+let nC=0, nW=0, nB=0;
+COVENANTS.forEach(c => { const s = statusOf(c); if(s==='compliant')nC++; else if(s==='watch')nW++; else nB++; });
+document.getElementById('cntCompliant').textContent = nC;
+document.getElementById('cntWatch').textContent = nW;
+document.getElementById('cntBreach').textContent = nB;
+</script>
+
+</body>
+</html>
