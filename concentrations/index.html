@@ -38,7 +38,9 @@
   main.app-main { transition: margin-left 250ms cubic-bezier(.4,0,.2,1); margin-left: 516px; }
   body.primary-collapsed .primary-sidebar { width: 64px; }
   body.primary-collapsed .primary-sidebar .nav-label,
-  body.primary-collapsed .primary-sidebar .nav-caret { opacity: 0; pointer-events: none; }
+  body.primary-collapsed .primary-sidebar .nav-caret,
+  body.primary-collapsed .primary-sidebar .nav-section-label,
+  body.primary-collapsed .primary-sidebar .nav-group-children { opacity: 0; pointer-events: none; }
   body.primary-collapsed .primary-sidebar .nav-item { justify-content: center; }
   body.primary-collapsed .secondary-sidebar { left: 64px; }
   body.secondary-hidden .secondary-sidebar { transform: translateX(-105%); }
@@ -68,20 +70,35 @@
 
 <aside class="primary-sidebar fixed top-[52px] left-0 h-[calc(100vh-52px)] bg-bg border-r border-border p-3 z-40 overflow-y-auto flex flex-col gap-1">
   <button onclick="document.body.classList.toggle('primary-collapsed')" class="self-end w-7 h-7 rounded-md grid place-items-center hover:bg-border-strong text-text-secondary mb-1" title="Toggle primary sidebar"><i class="ph ph-sidebar text-base"></i></button>
-  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text font-semibold bg-border cursor-pointer" title="Portfolio Monitoring"><i class="ph ph-chart-line-up text-secondary-active flex-shrink-0"></i><span class="nav-label text-sm truncate">Portfolio Monitoring</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
+
+  <!-- ── MONITOREAR ── -->
+  <div class="nav-section-label text-[10px] font-bold uppercase tracking-wider text-text-muted font-primary px-3 mt-2 mb-1">Monitorear</div>
+  <a href="../LEN-521-facility-health-signals.html" class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text font-semibold bg-border border-l-[3px] border-secondary-active cursor-pointer" title="Portfolio Monitoring"><i class="ph ph-chart-line-up text-secondary-active flex-shrink-0"></i><span class="nav-label text-sm truncate">Portfolio Monitoring</span></a>
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-coins flex-shrink-0"></i><span class="nav-label truncate">Financials</span></a>
+
+  <!-- ── OPERAR ── -->
+  <div class="nav-section-label text-[10px] font-bold uppercase tracking-wider text-text-muted font-primary px-3 mt-3 mb-1">Operar</div>
   <div class="flex flex-col">
-    <a onclick="toggleFlujos()" class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer" title="Flujo de Fondos"><i class="ph ph-flow-arrow flex-shrink-0"></i><span class="nav-label truncate">Flujo de Fondos</span><i id="flujosCaret" class="nav-caret ph ph-caret-right ml-auto text-xs text-text-muted"></i></a>
+    <a onclick="toggleFlujos()" class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer" title="Flujo de Fondos">
+      <i class="ph ph-flow-arrow flex-shrink-0"></i>
+      <span class="nav-label truncate">Flujo de Fondos</span>
+      <i id="flujosCaret" class="nav-caret ph ph-caret-right ml-auto text-xs text-text-muted"></i>
+    </a>
     <div id="flujosKids" class="nav-group-children hidden flex flex-col gap-0.5 mt-1 ml-2 pl-3 border-l border-border">
       <a href="../flujo-de-fondos/?view=disposiciones" class="flex items-center gap-2 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-arrow-line-down flex-shrink-0"></i><span class="nav-label truncate">Disposiciones</span><span class="nav-label ml-auto inline-flex items-center justify-center min-w-[22px] h-[18px] px-1.5 rounded-full bg-warning-bg text-warning border border-warning text-[10px] font-bold font-primary">2</span></a>
       <a href="../flujo-de-fondos/?view=distribuciones" class="flex items-center gap-2 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-arrow-line-up flex-shrink-0"></i><span class="nav-label truncate">Distribuciones</span><span class="nav-label ml-auto inline-flex items-center justify-center min-w-[22px] h-[18px] px-1.5 rounded-full bg-warning-bg text-warning border border-warning text-[10px] font-bold font-primary">1</span></a>
     </div>
   </div>
-  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-coins flex-shrink-0"></i><span class="nav-label truncate">Financials</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
   <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-buildings flex-shrink-0"></i><span class="nav-label truncate">Companies</span></a>
-  <hr class="border-0 border-t border-border my-2" />
-  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-graph flex-shrink-0"></i><span class="nav-label truncate">Data Studio</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
-  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-seal-check flex-shrink-0"></i><span class="nav-label truncate">RUG Smart Search</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
-  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-robot flex-shrink-0"></i><span class="nav-label truncate">AI Verification Agent</span><i class="nav-caret ph ph-caret-left ml-auto text-xs text-text-muted"></i></a>
+
+  <!-- ── EXPLORAR ── -->
+  <div class="nav-section-label text-[10px] font-bold uppercase tracking-wider text-text-muted font-primary px-3 mt-3 mb-1">Explorar</div>
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-graph flex-shrink-0"></i><span class="nav-label truncate">Data Studio</span></a>
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-seal-check flex-shrink-0"></i><span class="nav-label truncate">RUG Smart Search</span></a>
+  <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-robot flex-shrink-0"></i><span class="nav-label truncate">AI Verification Agent</span></a>
+
+  <!-- ── CONFIGURAR ── -->
+  <div class="nav-section-label text-[10px] font-bold uppercase tracking-wider text-text-muted font-primary px-3 mt-3 mb-1">Configurar</div>
   <a class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-gear flex-shrink-0"></i><span class="nav-label truncate">Admin</span></a>
 </aside>
 
