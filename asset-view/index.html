@@ -298,6 +298,23 @@
     </div>
   </div>
 
+  <!-- ROLE SELECTOR (LEN-284 · HU-1.6 PII matrix demo) -->
+  <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;margin-bottom:12px;flex-wrap:wrap">
+    <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;font-family:'Sofia Sans',sans-serif">
+      <i class="ph ph-user-circle" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>
+      Acting as
+    </span>
+    <select id="roleSelect" onchange="onRoleChange(this.value)"
+            style="padding:6px 12px;border:1px solid #CBD5E1;border-radius:6px;background:#fff;font-size:13px;font-family:'Noto Sans',sans-serif;color:#334155;cursor:pointer">
+      <option value="analyst">Lender Analyst</option>
+      <option value="admin">Lender Admin (no PII permission)</option>
+      <option value="admin_pii">Lender Admin (with PII permission)</option>
+      <option value="super_admin" selected>Lender Super Admin</option>
+      <option value="cxc">CXC / Superadmin</option>
+    </select>
+    <span id="roleMatrix" style="display:flex;gap:6px;flex-wrap:wrap;margin-left:auto"></span>
+  </div>
+
   <!-- TOOLBAR -->
   <div class="toolbar">
     <div class="search-wrap">
@@ -305,7 +322,8 @@
       <input class="search-input" id="searchInput" placeholder="Search by name, Tax ID, Asset ID…" oninput="refresh()">
     </div>
     <button class="btn" id="filterBtn" onclick="openFilterModal()"><i class="ph ph-funnel"></i> Filters</button>
-    <button class="btn" onclick="openColModal()"><i class="ph ph-columns"></i> Columns</button>
+    <button class="btn" id="colsBtn" onclick="onColsClick()"><i class="ph ph-columns"></i> Columns</button>
+    <button class="btn" id="auditBtn" onclick="openAuditModal()" style="display:none"><i class="ph ph-clipboard-text"></i> Audit log</button>
     <button class="btn btn-primary" onclick="exportCSV()"><i class="ph ph-download-simple"></i> Export CSV</button>
   </div>
   <div id="filterChips" style="display:flex;gap:6px;flex-wrap:wrap;min-height:0"></div>
@@ -371,6 +389,42 @@
         <button class="btn" onclick="closeColModal()">Cancel</button>
         <button class="btn btn-primary" id="applyColBtn" onclick="applyColVisibility()">Apply</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ AUDIT LOG MODAL · LEN-284 HU-1.4 ════════ -->
+<div id="auditModal" class="modal-overlay" style="display:none" onclick="closeAuditModal(event)">
+  <div class="modal-box" style="width:880px;max-width:95vw">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title"><i class="ph ph-clipboard-text" style="vertical-align:-2px;margin-right:4px"></i> Audit log · CSV exports &amp; views</div>
+        <div class="modal-sub">Silent log of every data access. Visible only to Lender Super Admin and CXC roles.</div>
+      </div>
+      <button class="modal-close" onclick="closeAuditModal()"><i class="ph ph-x"></i></button>
+    </div>
+    <div class="modal-divider"></div>
+    <div class="modal-body" style="padding:0">
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead>
+          <tr style="background:#F8FAFC">
+            <th style="text-align:left;padding:10px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0">User</th>
+            <th style="text-align:left;padding:10px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0">Timestamp</th>
+            <th style="text-align:left;padding:10px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0">Action</th>
+            <th style="text-align:left;padding:10px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0">Filters applied</th>
+            <th style="text-align:right;padding:10px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0">Records</th>
+            <th style="text-align:left;padding:10px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0">PII access</th>
+          </tr>
+        </thead>
+        <tbody id="auditBody"></tbody>
+      </table>
+    </div>
+    <div class="modal-divider"></div>
+    <div class="modal-footer">
+      <div style="font-size:11px;color:#94A3B8;font-family:'Space Mono',monospace">
+        Stored in <code>fct_assets_audit_log</code> · retention 7 years per CNBV
+      </div>
+      <button class="btn btn-primary" onclick="closeAuditModal()">Close</button>
     </div>
   </div>
 </div>
@@ -634,6 +688,100 @@ function genDataset(co) {
   return arr;
 }
 
+// ─── ROLE & PERMISSIONS · LEN-284 ────────────────────────────────────────────
+// Matrix per JIRA:
+//                       │ View │ PII  │ CSV │ Col cfg │ Audit │
+//   Lender Analyst      │  ✓   │  ✗   │  ✓  │   ✗     │   ✗   │
+//   Lender Admin        │  ✓   │  ⚙   │  ✓  │   ✓     │   ✗   │  (PII only with permission)
+//   Lender Super Admin  │  ✓   │  ✓   │  ✓  │   ✓     │   ✓   │
+//   CXC / Superadmin    │  ✓   │  ✓   │  ✓  │   ✓     │   ✓   │
+let currentRole = 'super_admin';
+const ROLE_LABELS = {
+  analyst: 'Lender Analyst',
+  admin: 'Lender Admin',
+  admin_pii: 'Lender Admin (+PII)',
+  super_admin: 'Lender Super Admin',
+  cxc: 'CXC / Superadmin',
+};
+function canSeePII()     { return ['admin_pii','super_admin','cxc'].includes(currentRole); }
+function canConfigCols() { return ['admin','admin_pii','super_admin','cxc'].includes(currentRole); }
+function canSeeAudit()   { return ['super_admin','cxc'].includes(currentRole); }
+
+// Audit log entries seeded for demo
+let auditLog = [
+  { user:'luis.gomez@bbva.com',     when:'2026-04-03 09:14 CT', action:'CSV Export', filters:'status=delinquent, dpd_bucket=61-90',  records:38,  pii:true  },
+  { user:'eduardo.lopez@bbva.com',  when:'2026-04-02 16:21 CT', action:'View',       filters:'(none)',                                records:100, pii:false },
+  { user:'maria.hernandez@bbva.com',when:'2026-04-02 11:08 CT', action:'CSV Export', filters:'state=Jalisco',                         records:12,  pii:true  },
+  { user:'luis.gomez@bbva.com',     when:'2026-04-01 08:55 CT', action:'View',       filters:'origination_year=2024',                 records:47,  pii:true  },
+  { user:'staff@cxc.com.mx',        when:'2026-03-31 18:40 CT', action:'CSV Export', filters:'(none)',                                records:200, pii:true  },
+];
+
+function onRoleChange(role){
+  currentRole = role;
+  // Toggle Audit button visibility
+  document.getElementById('auditBtn').style.display = canSeeAudit() ? 'inline-flex' : 'none';
+  // Toggle Columns button enabled state
+  const colsBtn = document.getElementById('colsBtn');
+  if (canConfigCols()) {
+    colsBtn.style.opacity = '1';
+    colsBtn.style.cursor = 'pointer';
+    colsBtn.removeAttribute('data-tooltip');
+  } else {
+    colsBtn.style.opacity = '0.5';
+    colsBtn.style.cursor = 'not-allowed';
+    colsBtn.setAttribute('data-tooltip','Only Lender Admin and above can configure columns');
+  }
+  renderRoleMatrix();
+  renderAll(); // re-render table with new PII state
+}
+
+function onColsClick(){
+  if (!canConfigCols()) return; // gated by role
+  openColModal();
+}
+
+function renderRoleMatrix(){
+  const cap = (ok, label) => `<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:999px;background:${ok?'#F0FDF4':'#FEF2F2'};color:${ok?'#16A34A':'#DC2626'};font-size:10px;font-weight:700;font-family:'Sofia Sans',sans-serif">
+    <i class="ph ${ok?'ph-check':'ph-x'}" style="font-size:10px"></i>${label}</span>`;
+  document.getElementById('roleMatrix').innerHTML =
+    cap(true,'View') + cap(canSeePII(),'PII') + cap(true,'CSV') + cap(canConfigCols(),'Columns') + cap(canSeeAudit(),'Audit');
+}
+
+function openAuditModal(){
+  if (!canSeeAudit()) return;
+  const rows = auditLog.map(l=>`
+    <tr>
+      <td style="padding:10px 12px;border-bottom:1px solid #E2E8F0;font-family:'Space Mono',monospace;font-size:11px;color:#334155">${l.user}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #E2E8F0;font-family:'Space Mono',monospace;font-size:11px;color:#64748B">${l.when}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #E2E8F0">
+        ${l.action==='CSV Export'
+          ? `<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;background:#F0F9FF;color:#0284C7;font-size:11px;font-weight:700"><i class="ph ph-download-simple" style="font-size:11px"></i>${l.action}</span>`
+          : `<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;background:#F8FAFC;color:#64748B;font-size:11px;font-weight:700"><i class="ph ph-eye" style="font-size:11px"></i>${l.action}</span>`}
+      </td>
+      <td style="padding:10px 12px;border-bottom:1px solid #E2E8F0;font-family:'Space Mono',monospace;font-size:11px;color:${l.filters==='(none)'?'#94A3B8':'#334155'}">${l.filters}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #E2E8F0;text-align:right;font-family:'Space Mono',monospace;font-weight:700">${l.records.toLocaleString('en-US')}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #E2E8F0">
+        ${l.pii
+          ? `<span style="color:#DC2626;font-size:11px;font-weight:700"><i class="ph ph-lock-open" style="font-size:11px;vertical-align:-1px"></i> Unmasked</span>`
+          : `<span style="color:#94A3B8;font-size:11px">Masked</span>`}
+      </td>
+    </tr>
+  `).join('');
+  document.getElementById('auditBody').innerHTML = rows;
+  document.getElementById('auditModal').style.display='flex';
+}
+function closeAuditModal(e){
+  if(!e||e.target===e.currentTarget) document.getElementById('auditModal').style.display='none';
+}
+
+function appendAuditEntry(action, filters, records){
+  auditLog.unshift({
+    user: ROLE_LABELS[currentRole] + ' · demo@cxc.local',
+    when: new Date().toISOString().slice(0,16).replace('T',' ') + ' CT',
+    action, filters, records, pii: canSeePII(),
+  });
+}
+
 // ─── STATE ──────────────────────────────────────────────────────────────────
 let currentCo = 'kueski';
 let datasets = {};
@@ -647,6 +795,9 @@ function getData(id){ if(!datasets[id]) datasets[id]=genDataset(COMPANIES[id]); 
 // ─── INIT ───────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
   buildCompanyBar();
+  // initialize role-based UI on first load
+  document.getElementById('roleSelect').value = currentRole;
+  onRoleChange(currentRole);
   switchCompany('kueski');
 });
 
@@ -789,10 +940,15 @@ const STANDARD_COLS = [
   { key:'saldo_actual',     head:'Outstanding',      render:(v)=>fmtMXN(v), align:'right' },
   // ── remaining standard cols ──
   { key:'debtor_id',        head:'Debtor ID',        render:(v)=>`<span style="font-family:monospace;font-size:12px;color:#64748B">${v}</span>` },
-  { key:'nombre',           head:'Borrower Name',    render:()=>`<span style="color:#94A3B8">****</span>` },
-  { key:'ap_paterno',      head:'First Surname',    render:()=>`<span style="color:#94A3B8">****</span>` },
-  { key:'ap_materno',      head:'Second Surname',   render:()=>`<span style="color:#94A3B8">****</span>` },
-  { key:'rfc',              head:'Tax ID',           render:(v)=>v==='NDA'?`<span style="color:#DC2626;font-size:11px">NDA</span>`:`<span style="color:#94A3B8;font-family:monospace;font-size:12px">XXXX##</span>` },
+  { key:'nombre',           head:'Borrower Name',    render:(v)=>canSeePII() ? `<span style="color:#334155">${v||'<span style=color:#CBD5E1>NA</span>'}</span>` : `<span style="color:#94A3B8" data-tooltip="PII masked — your role does not have permission to see borrower name">****</span>` },
+  { key:'ap_paterno',      head:'First Surname',    render:(v)=>canSeePII() ? `<span style="color:#334155">${v||'<span style=color:#CBD5E1>NA</span>'}</span>` : `<span style="color:#94A3B8">****</span>` },
+  { key:'ap_materno',      head:'Second Surname',   render:(v)=>canSeePII() ? `<span style="color:#334155">${v||'<span style=color:#CBD5E1>NA</span>'}</span>` : `<span style="color:#94A3B8">****</span>` },
+  { key:'rfc',              head:'Tax ID',           render:(v)=>{
+    if (v==='NA' || v==='NDA' || !v) return `<span style="color:#DC2626;font-size:11px">NDA</span>`;
+    return canSeePII()
+      ? `<span style="font-family:monospace;font-size:12px;color:#334155">${v}</span>`
+      : `<span style="color:#94A3B8;font-family:monospace;font-size:12px" data-tooltip="PII masked">XXXX##</span>`;
+  }},
   { key:'estado',           head:'State',            render:(v)=>v },
   { key:'elegibilidad',     head:'Eligibility',      render:()=>`<span style="color:#94A3B8;font-size:11px" data-tooltip="DEBT-01: eligibility field not yet available in BQ — will be added in a future release">NA</span>` },
   { key:'tipo_credito',     head:'Asset Type',       render:(v)=>v },
@@ -952,8 +1108,12 @@ function exportCSV(){
   const co=COMPANIES[currentCo];
   const allCols=getAllCols(co).filter(c=>!hiddenCols.has(c.key));
   const headers=allCols.map(c=>c.head);
+  const piiOk = canSeePII();
+  const piiCols = new Set(['nombre','ap_paterno','ap_materno','rfc']);
   const rows=filtered.map(row=>allCols.map(c=>{
-    const v=row[c.key];
+    let v=row[c.key];
+    // HU-1.6: mask PII in CSV if role does not have permission
+    if (piiCols.has(c.key) && !piiOk) v = '****';
     if(v===null||v===undefined) return 'NA';
     if(typeof v==='string'&&v.includes(',')) return `"${v}"`;
     return v;
@@ -967,8 +1127,12 @@ function exportCSV(){
   const a=document.createElement('a');
   a.href=url; a.download=filename; a.click();
   URL.revokeObjectURL(url);
-  // audit log (console)
-  console.log('[AUDIT EXPORT]',{user:'lender_demo',facility:co.id,records:filtered.length,cols:allCols.length,filters:{...activeFilters},timestamp:new Date().toISOString()});
+  // HU-1.4 audit log entry
+  const filtersStr = Object.keys(activeFilters).length === 0
+    ? '(none)'
+    : Object.entries(activeFilters).map(([k,v])=>`${k}=${v}`).join(', ');
+  appendAuditEntry('CSV Export', filtersStr, filtered.length);
+  console.log('[AUDIT EXPORT]',{role:currentRole,facility:co.id,records:filtered.length,cols:allCols.length,filters:{...activeFilters},pii_unmasked:piiOk,timestamp:new Date().toISOString()});
 }
 
 // ─── COLUMN MODAL ─────────────────────────────────────────────────────────────
