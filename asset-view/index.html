@@ -218,6 +218,7 @@
     [data-tooltip]::after { content:attr(data-tooltip); position:absolute; bottom:calc(100%+6px); left:50%; transform:translateX(-50%); background:#1E293B; color:#fff; font-size:11px; padding:5px 8px; border-radius:5px; white-space:nowrap; pointer-events:none; opacity:0; transition:opacity .15s; z-index:100; max-width:220px; white-space:normal; text-align:left; line-height:1.4; }
     [data-tooltip]:hover::after { opacity:1; }
   </style>
+  <script src="./real-data.js"></script>
 </head>
 <body>
 
@@ -579,6 +580,12 @@ function dpd_to_bucket(d){ if(d===0)return'0'; if(d<=30)return'1-30'; if(d<=60)r
 function fmtMXN(n){ return '$'+Math.round(n).toLocaleString('es-MX'); }
 
 function genDataset(co) {
+  // ✅ Use REAL BigQuery data when available · falls back to mock generation
+  if (window.REAL_ASSET_DATA && window.REAL_ASSET_DATA[co.id] && window.REAL_ASSET_DATA[co.id].length > 0) {
+    console.log(`[asset-view] Using REAL data for ${co.id} · ${window.REAL_ASSET_DATA[co.id].length} records from BigQuery`);
+    return window.REAL_ASSET_DATA[co.id];
+  }
+  console.log(`[asset-view] Fallback to mock data for ${co.id}`);
   const n = 200;
   const arr = [];
   for (let i=0;i<n;i++){
