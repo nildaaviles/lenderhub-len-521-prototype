@@ -75,7 +75,7 @@
   .nav-item .pill{margin-left:auto;font-size:0.625rem;padding:1px 7px;border-radius:10px;font-weight:700}
   .pill-amber{background:var(--warning-100);color:var(--warning-700)}
 
-  .main{margin-left:var(--sidebar-w);padding-top:var(--topbar-h);min-height:100vh}
+  .main{margin-left:0;padding-top:var(--topbar-h);min-height:100vh}
   .shell{background:var(--card);margin:24px;border-radius:8px;padding:24px;min-height:calc(100vh - var(--topbar-h) - 48px)}
 
   /* ===================== ATOMS ===================== */
@@ -292,8 +292,8 @@
     </div>
   </header>
 
-  <!-- ===================== SIDEBAR ===================== -->
-  <nav class="sidebar">
+  <!-- ===================== SIDEBAR ===================== (hidden — wrapper provides primary nav) -->
+  <nav class="sidebar" style="display:none">
     <div class="sb-org" id="sb-org">Sesión: <b>CXC Operations</b><br/>Master Servicer</div>
     <div class="sb-cat">Portafolio</div>
     <div class="nav-item"><i class="ph ph-squares-four"></i> Overview</div>
