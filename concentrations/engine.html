@@ -231,9 +231,9 @@ tbody tr:hover{background:var(--bg);}
 // ═══════════════════════════════════════════════════════════════
 const FACILITIES = {
 
-'F-5602': {
-  name: 'Solufi',
-  originator: 'Grupo Solufi, S.A.P.I. de C.V.',
+'F-1600': {
+  name: 'LEASE MD F/1600',
+  originator: 'RETROFIN, S.A. DE C.V.',
   product: 'Arrendamiento puro',
   total_amount: 329346186.79,
   base_metric_label: 'Valor Presente Elegible',
@@ -799,7 +799,7 @@ function renderTopChart(canvasId, rule) {
 }
 
 // ─── Selector wiring ────────────────────────────────────
-let _currentFacility = 'F-5602';
+let _currentFacility = 'F-1600';
 function currentFacility() { return _currentFacility; }
 
 document.querySelectorAll('.fac-pill').forEach(pill => {
