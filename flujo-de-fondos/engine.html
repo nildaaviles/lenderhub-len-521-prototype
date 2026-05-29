@@ -881,6 +881,15 @@
   function applyGuards(){ ['lender','fondeo','dist-lender','dist-pagado'].forEach(guardView); }
 
   qa('[data-go]').forEach(el=>el.addEventListener('click',()=>{ if(el.dataset.role) setRole(el.dataset.role); go(el.dataset.go); }));
+
+  // Hash routing — lets the wrapper navigate to a specific view via iframe src=engine.html#<view>
+  function navigateFromHash(){
+    const h = (location.hash || '').slice(1);
+    const valid = ['bandeja','solicitar','lender','fondeo','dist-bandeja','dist-calcular','dist-lender','dist-pagado'];
+    if (valid.includes(h)) go(h);
+  }
+  window.addEventListener('hashchange', navigateFromHash);
+  navigateFromHash();
   $('seg-cxc').addEventListener('click',()=>{ setRole('cxc'); if(roleOfView[view]!=='cxc') go('bandeja'); });
   $('seg-lender').addEventListener('click',()=>{ setRole('lender'); go('lender'); });
   qa('[data-switch]').forEach(b=>b.addEventListener('click',()=>setRole(b.dataset.switch)));
