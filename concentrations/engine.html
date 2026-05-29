@@ -294,11 +294,6 @@ const FACILITIES = {
         ['FREIGHTLINER',20009243.45,6.08,0],
       ]
     },
-    { id:'C6', ordinal:6, subject_type:'delinquency', label:'Delinquency 1–15 days', icon:'ph-clock-countdown',
-      legal_text:'Al momento de la cesión y transmisión de los Derechos de Crédito Cedidos, la suma del componente de rentas (saldo principal insoluto) de los Derechos de Crédito Cedidos relacionados con los Contratos de Arrendamiento <b>con morosidad de entre 1 (uno) y 15 (quince) días</b> representará menos del <b>5% (cinco por ciento)</b> del total del saldo insoluto de capital de la Cartera Aportada.',
-      aggregation:'aggregate', operator:'max', threshold_pct:5.00, is_binding:true,
-      status:'pending', pending_reason:'DWH integration with aging data', pending_owner:'JC Soto', pending_ticket:'LEN-665'
-    }
   ]
 },
 
@@ -482,21 +477,7 @@ function renderFacility(facId) {
   if (!f) { root.innerHTML = ''; return; }
 
   // Facility card
-  let html = `
-    <div class="facility-card">
-      <div class="facility-row">
-        <div class="facility-icon"><i class="ph ph-bank"></i></div>
-        <div>
-          <div class="facility-name">${facId} · ${f.name}</div>
-          <div class="facility-meta">${f.originator} · ${f.product} · ${f.total_amount > 0 ? fmt$(f.total_amount) : '—'} ${f.base_metric_label}</div>
-        </div>
-        <div class="cutoff-block">
-          <span class="cutoff-label">Cut-off</span>
-          <select class="cutoff-select"><option>${f.cutoff}</option></select>
-        </div>
-      </div>
-    </div>
-  `;
+  let html = '';
 
   // Empty state
   if (f.rules.length === 0) {
