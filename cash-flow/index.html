@@ -124,20 +124,20 @@
 
   <!-- Tabs -->
   <div class="flex gap-2 border-b border-border mb-5">
-    <button id="tab-history" onclick="switchTab('history')" class="cf-tab px-4 py-2 text-sm font-semibold border-b-2 border-secondary -mb-px font-primary text-text">
-      <i class="ph ph-clock-counter-clockwise mr-1"></i> Payment History
-    </button>
-    <button id="tab-collection" onclick="switchTab('collection')" class="cf-tab px-4 py-2 text-sm font-medium border-b-2 border-transparent -mb-px font-primary text-text-secondary hover:text-text">
+    <button id="tab-collection" onclick="switchTab('collection')" class="cf-tab px-4 py-2 text-sm font-semibold border-b-2 border-secondary -mb-px font-primary text-text">
       <i class="ph ph-chart-bar mr-1"></i> Collection Chart
     </button>
-    <a href="./payment-history.html" target="_blank" class="ml-auto inline-flex items-center gap-1 text-xs text-text-secondary hover:text-text" title="Open in new tab">
+    <button id="tab-history" onclick="switchTab('history')" class="cf-tab px-4 py-2 text-sm font-medium border-b-2 border-transparent -mb-px font-primary text-text-secondary hover:text-text">
+      <i class="ph ph-clock-counter-clockwise mr-1"></i> Payment History
+    </button>
+    <a href="./collection-chart.html" target="_blank" class="ml-auto inline-flex items-center gap-1 text-xs text-text-secondary hover:text-text" title="Open in new tab">
       <i class="ph ph-arrow-square-out"></i> Open standalone
     </a>
   </div>
 
   <!-- Iframes (only one visible at a time) -->
-  <iframe id="frame-history" class="cf-frame" src="./payment-history.html" title="Payment History"></iframe>
-  <iframe id="frame-collection" class="cf-frame hidden" src="./collection-chart.html" title="Collection Chart"></iframe>
+  <iframe id="frame-collection" class="cf-frame" src="./collection-chart.html" title="Collection Chart"></iframe>
+  <iframe id="frame-history" class="cf-frame hidden" src="./payment-history.html" title="Payment History"></iframe>
 
 </main>
 
@@ -158,7 +158,7 @@
       }
     });
     // Update "Open standalone" link
-    document.querySelector('a[title="Open in new tab"]').href = tab === 'history' ? './payment-history.html' : './collection-chart.html';
+    document.querySelector('a[title="Open in new tab"]').href = tab === 'collection' ? './collection-chart.html' : './payment-history.html';
   }
 </script>
 
