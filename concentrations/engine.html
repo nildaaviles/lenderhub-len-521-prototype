@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Concentrations V2 · Generic Engine · LenderHub</title>
+<title>Concentraciones · LenderHub</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -77,8 +77,9 @@ body{background:var(--bg);font-family:var(--font-ui);color:var(--text);line-heig
 .badge-breach{background:var(--red-bg);color:var(--red);border:1px solid var(--red-b);}
 .badge-na{background:var(--gray-bg);color:var(--text-muted);border:1px solid var(--border);}
 .badge-info{background:var(--blue-bg);color:var(--blue);border:1px solid #BAE6FD;}
-.badge-max{background:var(--red-bg);color:var(--red);border:1px solid var(--red-b);}
-.badge-min{background:var(--green-bg);color:var(--green);border:1px solid var(--green-b);}
+/* Límite = dato neutro, NO alarma. Rojo se reserva para breach/excess. */
+.badge-max{background:var(--gray-bg);color:var(--text-secondary);border:1px solid var(--border-strong);}
+.badge-min{background:var(--gray-bg);color:var(--text-secondary);border:1px solid var(--border-strong);}
 .badge-binding{background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-b);}
 .badge-informative{background:var(--gray-bg);color:var(--text-secondary);border:1px solid var(--border);}
 
@@ -157,7 +158,7 @@ tbody tr:hover{background:var(--bg);}
 .agg-bar-track{height:16px;background:var(--gray-bg);border-radius:8px;position:relative;}
 .agg-bar-fill{height:100%;background:linear-gradient(90deg,var(--secondary),#B5347A);border-radius:8px;}
 .agg-bar-limit{position:absolute;top:-6px;bottom:-6px;width:2px;background:var(--red);}
-.agg-bar-limit::after{content:'Limit';position:absolute;top:-22px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;color:var(--red);white-space:nowrap;}
+.agg-bar-limit::after{content:'Límite';position:absolute;top:-22px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;color:var(--red);white-space:nowrap;}
 .agg-bar-scale{display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-top:8px;}
 
 /* Empty state */
@@ -181,31 +182,31 @@ tbody tr:hover{background:var(--bg);}
 
   <!-- Cut-off date selector (same pattern as Insights) -->
   <div class="cutoff-strip" id="cutoffStrip" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 14px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;margin-bottom:20px;font-family:'Noto Sans',sans-serif">
-    <span style="font-family:'Sofia Sans',sans-serif;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748B">Cut-off date</span>
+    <span style="font-family:'Sofia Sans',sans-serif;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748B">Fecha de corte</span>
     <div style="position:relative">
       <button id="cutoffBtn" type="button"
               onclick="document.getElementById('cutoffPanel').classList.toggle('open')"
               style="display:flex;align-items:center;gap:10px;padding:8px 14px;border:1px solid #CBD5E1;border-radius:6px;background:#FFFFFF;cursor:pointer;text-align:left;color:#334155;font-family:'Noto Sans',sans-serif">
         <i class="ph ph-calendar-blank" style="color:#64748B"></i>
         <span style="display:flex;flex-direction:column;line-height:1.1">
-          <span style="font-size:14px;font-weight:600">March 31, 2026</span>
-          <span style="font-size:11px;color:#64748B;margin-top:2px">Tuesday · Latest available</span>
+          <span style="font-size:14px;font-weight:600">31 mar 2026</span>
+          <span style="font-size:11px;color:#64748B;margin-top:2px">Martes · Última disponible</span>
         </span>
         <i class="ph ph-caret-down" style="font-size:12px;color:#94A3B8;margin-left:6px"></i>
       </button>
       <div id="cutoffPanel" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.10),0 1px 2px rgba(0,0,0,.06);min-width:300px;padding:8px;z-index:50;font-family:'Noto Sans',sans-serif">
-        <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748B;font-family:'Sofia Sans',sans-serif;padding:6px 8px;border-top:1px solid #E2E8F0;display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:#B45309"></span>MARCH 2026</div>
-        <div style="padding:8px;border-radius:6px;background:#E2E8F0;font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:space-between"><span>March 31, 2026</span><span style="display:inline-block;padding:2px 6px;border-radius:4px;background:#CBD5E1;color:#1F2733;font-size:10px;font-weight:700;letter-spacing:.04em">LATEST</span></div>
-        <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748B;font-family:'Sofia Sans',sans-serif;padding:6px 8px;border-top:1px solid #E2E8F0;margin-top:4px">FEBRUARY 2026</div>
-        <div style="padding:8px;border-radius:6px;cursor:pointer;font-size:13px" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background=''">February 28, 2026</div>
-        <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748B;font-family:'Sofia Sans',sans-serif;padding:6px 8px;border-top:1px solid #E2E8F0;margin-top:4px">JANUARY 2026</div>
-        <div style="padding:8px;border-radius:6px;cursor:pointer;font-size:13px" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background=''">January 31, 2026</div>
-        <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748B;font-family:'Sofia Sans',sans-serif;padding:6px 8px;border-top:1px solid #E2E8F0;margin-top:4px">DECEMBER 2025</div>
-        <div style="padding:8px;border-radius:6px;cursor:pointer;font-size:13px" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background=''">December 31, 2025</div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748B;font-family:'Sofia Sans',sans-serif;padding:6px 8px;border-top:1px solid #E2E8F0;display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:#B45309"></span>MARZO 2026</div>
+        <div style="padding:8px;border-radius:6px;background:#E2E8F0;font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:space-between"><span>31 mar 2026</span><span style="display:inline-block;padding:2px 6px;border-radius:4px;background:#CBD5E1;color:#1F2733;font-size:10px;font-weight:700;letter-spacing:.04em">ÚLTIMA</span></div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748B;font-family:'Sofia Sans',sans-serif;padding:6px 8px;border-top:1px solid #E2E8F0;margin-top:4px">FEBRERO 2026</div>
+        <div style="padding:8px;border-radius:6px;cursor:pointer;font-size:13px" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background=''">28 feb 2026</div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748B;font-family:'Sofia Sans',sans-serif;padding:6px 8px;border-top:1px solid #E2E8F0;margin-top:4px">ENERO 2026</div>
+        <div style="padding:8px;border-radius:6px;cursor:pointer;font-size:13px" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background=''">31 ene 2026</div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748B;font-family:'Sofia Sans',sans-serif;padding:6px 8px;border-top:1px solid #E2E8F0;margin-top:4px">DICIEMBRE 2025</div>
+        <div style="padding:8px;border-radius:6px;cursor:pointer;font-size:13px" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background=''">31 dic 2025</div>
       </div>
     </div>
     <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:#F0F9FF;color:#0284C7;font-size:12px;font-weight:700;font-family:'Sofia Sans',sans-serif">
-      <i class="ph ph-clock-counter-clockwise" style="font-size:12px"></i> Monthly
+      <i class="ph ph-clock-counter-clockwise" style="font-size:12px"></i> Mensual
     </span>
   </div>
   <style>
@@ -241,7 +242,7 @@ const FACILITIES = {
   currency: 'MXN',
   cutoff: 'Apr 2026',
   rules: [
-    { id:'C1', ordinal:1, subject_type:'contract', label:'Per Individual Lease Contract', icon:'ph-file-text',
+    { id:'C1', ordinal:1, subject_type:'contract', label:'Por contrato individual', icon:'ph-file-text',
       legal_text:'El total de los flujos derivados de ningún <b>Contrato de Arrendamiento individual</b> en el colateral representará más del <b>2% (dos por ciento)</b> del total de los flujos de la Cartera Aportada.',
       aggregation:'individual', operator:'max', threshold_pct:2.00, is_binding:true,
       total_count:248, max_pct:1.75, total_excess:0, status:'ok',
@@ -255,7 +256,7 @@ const FACILITIES = {
         ['8477','9796','Fisica','FREIGHTLINER',3714990.84,1.13,0],
       ]
     },
-    { id:'C2', ordinal:2, subject_type:'legal_entity', label:'Per Legal Entity', icon:'ph-buildings',
+    { id:'C2', ordinal:2, subject_type:'legal_entity', label:'Por persona moral', icon:'ph-buildings',
       legal_text:'El total los flujos derivados de los Contratos de Arrendamiento de <b>ninguna persona moral</b> deberá ser mayor al <b>3.6% (tres punto seis por ciento)</b> del total de los flujos de la Cartera Aportada.',
       aggregation:'individual', operator:'max', threshold_pct:3.60, is_binding:true,
       total_count:156, max_pct:2.14, total_excess:0, status:'ok',
@@ -267,7 +268,7 @@ const FACILITIES = {
         ['9544','SITRAK','Moral',5771168.39,1.75,0],
       ]
     },
-    { id:'C3', ordinal:3, subject_type:'individual_person', label:'Per Individual Person', icon:'ph-user',
+    { id:'C3', ordinal:3, subject_type:'individual_person', label:'Por persona física', icon:'ph-user',
       legal_text:'El total los flujos derivados de los Contratos de Arrendamiento de <b>ninguna persona física</b> deberá ser mayor al <b>2% (dos por ciento)</b> del total de los flujos de la Cartera Aportada.',
       aggregation:'individual', operator:'max', threshold_pct:2.00, is_binding:true,
       total_count:67, max_pct:1.13, total_excess:0, status:'ok',
@@ -278,12 +279,12 @@ const FACILITIES = {
         ['10067','FREIGHTLINER','Fisica',3470886.81,1.05,0],
       ]
     },
-    { id:'C4', ordinal:4, subject_type:'aggregate_personality', label:'Aggregate Individual Persons', icon:'ph-users-three',
+    { id:'C4', ordinal:4, subject_type:'aggregate_personality', label:'Agregado personas físicas', icon:'ph-users-three',
       legal_text:'El total los flujos derivados de los Contratos de Arrendamiento de <b>personas físicas</b> deberá ser menor al <b>35% (treinta y cinco por ciento)</b> del total de los flujos de la Cartera Aportada.',
       aggregation:'aggregate', operator:'max', threshold_pct:35.00, is_binding:true,
       aggregate_pct:14.09, aggregate_amount:46419243.05, status:'ok'
     },
-    { id:'C5', ordinal:5, subject_type:'brand', label:'Per Brand', icon:'ph-tag',
+    { id:'C5', ordinal:5, subject_type:'brand', label:'Por marca', icon:'ph-tag',
       legal_text:'El total los flujos derivados de los Contratos Arrendamiento de <b>ninguna marca</b> deberá ser mayor al <b>35% (treinta y cinco por ciento)</b> del total de los flujos de la Cartera Aportada.',
       aggregation:'individual', operator:'max', threshold_pct:35.00, is_binding:true,
       total_count:34, max_pct:11.99, total_excess:0, status:'ok',
@@ -307,7 +308,7 @@ const FACILITIES = {
   currency: 'MXN',
   cutoff: 'Apr 2026',
   rules: [
-    { id:'C1', ordinal:1, subject_type:'merchant', label:'Per Merchant', icon:'ph-storefront',
+    { id:'C1', ordinal:1, subject_type:'merchant', label:'Por merchant', icon:'ph-storefront',
       legal_text:'Ningún <b>Merchant</b> podrá representar más del <b>20% (veinte por ciento)</b> del Valor Nominal del colateral.',
       aggregation:'individual', operator:'max', threshold_pct:20.00, is_binding:true,
       total_count:18, max_pct:4.54, total_excess:0, status:'ok',
@@ -319,7 +320,7 @@ const FACILITIES = {
         ['mer_1713584505',5227759.33,4.02,0],
       ]
     },
-    { id:'C2', ordinal:2, subject_type:'debtor', label:'Per Obligado — Tier 1', icon:'ph-user-circle',
+    { id:'C2', ordinal:2, subject_type:'debtor', label:'Por obligado — Tier 1', icon:'ph-user-circle',
       legal_text:'Ningún <b>Obligado individual</b> podrá representar más del <b>3.4% (tres punto cuatro por ciento)</b> del Valor Nominal del colateral.',
       aggregation:'individual', operator:'max', threshold_pct:3.40, is_binding:true,
       total_count:312, max_pct:4.54, total_excess:1488738.22, status:'breach',
@@ -332,7 +333,7 @@ const FACILITIES = {
         ['buy_9953236431','JORGE ALBERTO AGUILAR',3243252.00,2.49,0],
       ]
     },
-    { id:'C3', ordinal:3, subject_type:'debtor', label:'Per Obligado — Cap', icon:'ph-user-circle-gear',
+    { id:'C3', ordinal:3, subject_type:'debtor', label:'Por obligado — Tope', icon:'ph-user-circle-gear',
       legal_text:'Ningún <b>Obligado individual</b> podrá representar más del <b>10% (diez por ciento)</b> del Valor Nominal del colateral (cap absoluto).',
       aggregation:'individual', operator:'max', threshold_pct:10.00, is_binding:true,
       total_count:312, max_pct:4.54, total_excess:0, status:'ok',
@@ -351,7 +352,7 @@ const FACILITIES = {
   currency: 'MXN',
   cutoff: 'Apr 2026',
   rules: [
-    { id:'C1', ordinal:1, subject_type:'customer', label:'Per Customer', icon:'ph-user',
+    { id:'C1', ordinal:1, subject_type:'customer', label:'Por cliente', icon:'ph-user',
       legal_text:'Concentración por cliente — métrica informativa, sin límite contractual.',
       aggregation:'individual', operator:'none', is_binding:false,
       total_count:35672, max_pct:0.003, status:'info',
@@ -363,7 +364,7 @@ const FACILITIES = {
         ['64d2ac917a0dfb21',11500,0.003],
       ]
     },
-    { id:'C2', ordinal:2, subject_type:'state', label:'Per State — Variable Limits', icon:'ph-map-pin',
+    { id:'C2', ordinal:2, subject_type:'state', label:'Por estado — Límites variables', icon:'ph-map-pin',
       legal_text:'Concentración por <b>Estado</b> con límites variables por grupo geográfico: top metropolitano <b>27.5%</b>, top regional <b>15%</b>, resto <b>10%</b>.',
       aggregation:'individual', operator:'max', is_binding:true,
       threshold_by_attribute:true,
@@ -391,7 +392,7 @@ const FACILITIES = {
   currency: 'MXN',
   cutoff: 'May 2026',
   rules: [
-    { id:'C1', ordinal:1, subject_type:'customer', label:'Per Customer', icon:'ph-user',
+    { id:'C1', ordinal:1, subject_type:'customer', label:'Por cliente', icon:'ph-user',
       legal_text:'Concentración por cliente — métrica informativa, sin límite contractual.',
       aggregation:'individual', operator:'none', is_binding:false,
       total_count:124, max_pct:5.75, status:'info',
@@ -403,7 +404,7 @@ const FACILITIES = {
         ['01489','LUIS FERNANDO MARTINEZ',15000000.00,5.35],
       ]
     },
-    { id:'C2', ordinal:2, subject_type:'state', label:'Per State', icon:'ph-map-pin',
+    { id:'C2', ordinal:2, subject_type:'state', label:'Por estado', icon:'ph-map-pin',
       legal_text:'Concentración por <b>Estado</b> — métrica informativa.',
       aggregation:'individual', operator:'none', is_binding:false,
       total_count:18, max_pct:49.03, status:'info',
@@ -415,7 +416,7 @@ const FACILITIES = {
         ['YUCATAN',16126930.29,5.75],
       ]
     },
-    { id:'C3', ordinal:3, subject_type:'reca', label:'RECA — Revolvente vs Simple', icon:'ph-arrow-clockwise',
+    { id:'C3', ordinal:3, subject_type:'reca', label:'RECA — Revolvente vs Simple', icon:'ph-arrow-clockwise', // dominio MX, sin traducir
       legal_text:'Distribución por tipo de contrato (Revolvente vs Simple) — métrica informativa.',
       aggregation:'individual', operator:'none', is_binding:false,
       total_count:2, status:'info',
@@ -425,7 +426,7 @@ const FACILITIES = {
         ['Simple',66194470.65,23.94],
       ]
     },
-    { id:'C4', ordinal:4, subject_type:'industry', label:'Per Industry Code', icon:'ph-factory',
+    { id:'C4', ordinal:4, subject_type:'industry', label:'Por industria', icon:'ph-factory',
       legal_text:'Concentración por <b>Industria</b> — métrica informativa.',
       aggregation:'individual', operator:'none', is_binding:false,
       total_count:9, max_pct:41.40, status:'info',
@@ -437,7 +438,7 @@ const FACILITIES = {
         ['EXPLOTACION Y ENERGÍA',23834691.61,8.50],
       ]
     },
-    { id:'C5', ordinal:5, subject_type:'asset_type', label:'Asset Type', icon:'ph-stack',
+    { id:'C5', ordinal:5, subject_type:'asset_type', label:'Tipo de activo', icon:'ph-stack',
       legal_text:'Concentración por tipo de activo — métrica informativa.',
       aggregation:'individual', operator:'none', is_binding:false,
       total_count:1, status:'info',
@@ -471,6 +472,16 @@ function fmt$(n) {
 }
 function fmtPct(n) { return n.toFixed(2) + '%'; }
 
+// Etiqueta de columna en español. Las claves internas (table_cols) se mantienen
+// en inglés para no romper la lógica de render; esto solo traduce el header visible.
+const COL_LABELS = {
+  'Contract':'Contrato', 'Debtor':'Deudor', 'Personality':'Personalidad', 'Brand':'Marca',
+  'Amount':'Monto', '%':'%', 'Excess':'Excedente', 'Limit':'Límite', 'Name':'Nombre',
+  'Customer':'Cliente', 'Customer ID':'ID cliente', 'Merchant':'Merchant', 'State':'Estado',
+  'Industry':'Industria', 'Type':'Tipo', 'Asset Type':'Tipo de activo'
+};
+const colLabel = (c) => COL_LABELS[c] || c;
+
 function renderFacility(facId) {
   const f = FACILITIES[facId];
   const root = document.getElementById('dynamic-content');
@@ -485,9 +496,9 @@ function renderFacility(facId) {
     html += `
       <div class="empty-card">
         <i class="ph ph-shield-slash"></i>
-        <h3>No concentration rules defined for this facility</h3>
-        <p>This facility's agreement does not include concentration covenants.<br/>
-        Engine renders nothing — there is no list of 5 "default" criteria forced onto every facility.</p>
+        <h3>Esta facility no tiene reglas de concentración definidas</h3>
+        <p>El contrato de esta facility no incluye covenants de concentración.<br/>
+        El motor no renderiza nada — no se fuerzan 5 criterios "por defecto" en cada facility.</p>
       </div>
     `;
     root.innerHTML = html;
@@ -499,8 +510,8 @@ function renderFacility(facId) {
     <div class="section-card">
       <div class="section-hdr">
         <div class="section-icon"><i class="ph ph-scroll"></i></div>
-        <span class="section-title">CONCENTRATION CRITERIA</span>
-        <span class="section-subtitle">— ${f.rules.length} rule${f.rules.length>1?'s':''} declared in facility agreement</span>
+        <span class="section-title">CRITERIOS DE CONCENTRACIÓN</span>
+        <span class="section-subtitle">— ${f.rules.length} regla${f.rules.length>1?'s':''} declarada${f.rules.length>1?'s':''} en el contrato</span>
       </div>
       <div class="section-body">
         <div class="criteria-grid">
@@ -508,7 +519,7 @@ function renderFacility(facId) {
             <div class="criterion-row">
               <div class="criterion-num">${r.ordinal}</div>
               <div class="criterion-text">${r.legal_text}</div>
-              ${r.operator === 'none' ? '<span class="badge badge-informative">INFO</span>' : `<span class="badge badge-max">${r.operator.toUpperCase()} ${r.threshold_pct}%</span>`}
+              ${r.operator === 'none' ? '<span class="badge badge-informative">INFO</span>' : `<span class="badge badge-max">${r.operator === 'max' ? 'MÁX' : 'MÍN'} ${r.threshold_pct}%</span>`}
             </div>
           `).join('')}
         </div>
@@ -524,15 +535,15 @@ function renderFacility(facId) {
   const info = f.rules.filter(r => !r.is_binding).length;
 
   let overviewBadge = '';
-  if (breached > 0) overviewBadge = `<span class="badge badge-breach"><i class="ph-bold ph-warning-circle"></i> ${breached} Breach · ${ok} OK${pending ? ' · '+pending+' Pending' : ''}</span>`;
-  else if (pending > 0) overviewBadge = `<span class="badge badge-warn"><i class="ph-bold ph-clock"></i> ${ok}/${binding.length} OK · ${pending} Pending</span>`;
-  else overviewBadge = `<span class="badge badge-ok"><i class="ph-bold ph-check-circle"></i> ${ok}/${binding.length} Compliant${info ? ' · '+info+' Info' : ''}</span>`;
+  if (breached > 0) overviewBadge = `<span class="badge badge-breach"><i class="ph-bold ph-warning-circle"></i> ${breached} en incumplimiento · ${ok} OK${pending ? ' · '+pending+' pendiente' : ''}</span>`;
+  else if (pending > 0) overviewBadge = `<span class="badge badge-warn"><i class="ph-bold ph-clock"></i> ${ok}/${binding.length} OK · ${pending} pendiente${pending>1?'s':''}</span>`;
+  else overviewBadge = `<span class="badge badge-ok"><i class="ph-bold ph-check-circle"></i> ${ok}/${binding.length} en cumplimiento${info ? ' · '+info+' info' : ''}</span>`;
 
   html += `
     <div class="section-card">
       <div class="section-hdr">
         <div class="section-icon"><i class="ph ph-shield-check"></i></div>
-        <span class="section-title">COMPLIANCE OVERVIEW</span>
+        <span class="section-title">RESUMEN DE CUMPLIMIENTO</span>
         <div class="crit-hdr-extra">${overviewBadge}</div>
       </div>
       <div class="section-body">
@@ -546,9 +557,9 @@ function renderFacility(facId) {
             const val = r.status === 'pending' ? '—' :
                         r.aggregation === 'aggregate' ? fmtPct(r.aggregate_pct) :
                         r.max_pct != null ? fmtPct(r.max_pct) : '—';
-            const sub = r.status === 'pending' ? `Pending · ${r.pending_owner}` :
-                        r.operator === 'none' ? `Informative · ${r.total_count} items` :
-                        `Limit ${r.threshold_pct}% · ${r.total_excess > 0 ? '⚠ Excess ' + fmt$(r.total_excess) : 'Excess $0'}`;
+            const sub = r.status === 'pending' ? `Pendiente · ${r.pending_owner}` :
+                        r.operator === 'none' ? `Informativo · ${r.total_count} elementos` :
+                        `Límite ${r.threshold_pct}% · ${r.total_excess > 0 ? '⚠ Excedente ' + fmt$(r.total_excess) : 'Excedente $0'}`;
             return `
               <div class="kpi-card ${cls}">
                 <div class="kpi-label">${r.ordinal} · ${r.label}${r.multi_threshold ? '<span class="multi-threshold-tag">MULTI</span>' : ''}</div>
@@ -583,17 +594,17 @@ function renderFacility(facId) {
 
 function renderCriterionSection(r, f) {
   const statusBadge =
-    r.status === 'breach' ? '<span class="badge badge-breach"><i class="ph-bold ph-warning-circle"></i> Breach</span>' :
-    r.status === 'pending' ? '<span class="badge badge-na"><i class="ph ph-clock"></i> Pending data source</span>' :
-    r.status === 'info' ? '<span class="badge badge-info"><i class="ph ph-info"></i> Informative</span>' :
-    '<span class="badge badge-ok"><i class="ph-bold ph-check-circle"></i> Compliant</span>';
+    r.status === 'breach' ? '<span class="badge badge-breach"><i class="ph-bold ph-warning-circle"></i> Incumplimiento</span>' :
+    r.status === 'pending' ? '<span class="badge badge-na"><i class="ph ph-clock"></i> Fuente de datos pendiente</span>' :
+    r.status === 'info' ? '<span class="badge badge-info"><i class="ph ph-info"></i> Informativo</span>' :
+    '<span class="badge badge-ok"><i class="ph-bold ph-check-circle"></i> En cumplimiento</span>';
 
   const bindingBadge = '';
 
   const limitPill = r.threshold_pct != null && !r.threshold_by_attribute
-    ? `<span class="crit-limit-pill">LIMIT ${r.threshold_pct.toFixed(2)}%</span>`
+    ? `<span class="crit-limit-pill">LÍMITE ${r.threshold_pct.toFixed(2)}%</span>`
     : r.threshold_by_attribute
-      ? `<span class="crit-limit-pill">VARIABLE LIMITS</span>`
+      ? `<span class="crit-limit-pill">LÍMITES VARIABLES</span>`
       : '';
 
   let body = '';
@@ -602,20 +613,20 @@ function renderCriterionSection(r, f) {
   if (r.aggregation === 'aggregate' && r.status !== 'pending') {
     body = `
       <div class="crit-summary-row">
-        <div class="crit-summary-cell"><div class="crit-summary-label">Aggregate Amount</div><div class="crit-summary-val">${fmt$(r.aggregate_amount)}</div></div>
+        <div class="crit-summary-cell"><div class="crit-summary-label">Monto agregado</div><div class="crit-summary-val">${fmt$(r.aggregate_amount)}</div></div>
         <div class="crit-summary-cell"><div class="crit-summary-label">%</div><div class="crit-summary-val green">${fmtPct(r.aggregate_pct)}</div></div>
-        <div class="crit-summary-cell"><div class="crit-summary-label">Limit</div><div class="crit-summary-val">${fmtPct(r.threshold_pct)}</div></div>
-        <div class="crit-summary-cell"><div class="crit-summary-label">Headroom</div><div class="crit-summary-val green">${(r.threshold_pct - r.aggregate_pct).toFixed(2)} pp</div></div>
+        <div class="crit-summary-cell"><div class="crit-summary-label">Límite</div><div class="crit-summary-val">${fmtPct(r.threshold_pct)}</div></div>
+        <div class="crit-summary-cell"><div class="crit-summary-label">Margen</div><div class="crit-summary-val green">${(r.threshold_pct - r.aggregate_pct).toFixed(2)} pp</div></div>
       </div>
       <div class="agg-bar-block">
-        <div class="agg-bar-label">Aggregate vs limit</div>
+        <div class="agg-bar-label">Agregado vs límite</div>
         <div class="agg-bar-track">
           <div class="agg-bar-fill" style="width:${(r.aggregate_pct / 100 * 100).toFixed(1)}%"></div>
           <div class="agg-bar-limit" style="left:${r.threshold_pct}%"></div>
         </div>
         <div class="agg-bar-scale">
           <span>0%</span>
-          <span style="color:var(--secondary);font-weight:700;">Current ${fmtPct(r.aggregate_pct)}</span>
+          <span style="color:var(--secondary);font-weight:700;">Actual ${fmtPct(r.aggregate_pct)}</span>
           <span>100%</span>
         </div>
       </div>
@@ -628,7 +639,7 @@ function renderCriterionSection(r, f) {
         <i class="ph ph-database" style="font-size:28px;color:var(--text-muted);"></i>
         <div>
           <strong style="color:var(--text);">${r.pending_reason}</strong><br/>
-          <span style="font-size:11px;color:var(--text-muted);">Owner: <strong style="color:var(--text);">${r.pending_owner}</strong> · Tracking: <strong style="color:var(--text);">${r.pending_ticket}</strong></span>
+          <span style="font-size:11px;color:var(--text-muted);">Responsable: <strong style="color:var(--text);">${r.pending_owner}</strong> · Seguimiento: <strong style="color:var(--text);">${r.pending_ticket}</strong></span>
         </div>
       </div>
     `;
@@ -638,9 +649,9 @@ function renderCriterionSection(r, f) {
     const excessClass = r.total_excess > 0 ? 'red' : 'green';
     const summaryCells = r.aggregation === 'individual' ? `
       <div class="crit-summary-cell"><div class="crit-summary-label">Total ${f.base_metric_label}</div><div class="crit-summary-val">${fmt$(f.total_amount)}</div></div>
-      <div class="crit-summary-cell"><div class="crit-summary-label">${r.subject_type === 'merchant' ? 'Merchants' : r.subject_type === 'state' ? 'States' : r.subject_type === 'industry' ? 'Industries' : r.subject_type === 'brand' ? 'Brands' : 'Items'}</div><div class="crit-summary-val">${r.total_count}</div></div>
-      <div class="crit-summary-cell"><div class="crit-summary-label">Max %</div><div class="crit-summary-val ${r.max_pct >= (r.threshold_pct || 100) ? 'red' : ''}">${fmtPct(r.max_pct)}</div></div>
-      <div class="crit-summary-cell"><div class="crit-summary-label">Total Excess</div><div class="crit-summary-val ${excessClass}">${fmt$(r.total_excess || 0)}</div></div>
+      <div class="crit-summary-cell"><div class="crit-summary-label">${r.subject_type === 'merchant' ? 'Merchants' : r.subject_type === 'state' ? 'Estados' : r.subject_type === 'industry' ? 'Industrias' : r.subject_type === 'brand' ? 'Marcas' : 'Elementos'}</div><div class="crit-summary-val">${r.total_count}</div></div>
+      <div class="crit-summary-cell"><div class="crit-summary-label">Máx %</div><div class="crit-summary-val ${r.max_pct >= (r.threshold_pct || 100) ? 'red' : ''}">${fmtPct(r.max_pct)}</div></div>
+      <div class="crit-summary-cell"><div class="crit-summary-label">Excedente total</div><div class="crit-summary-val ${excessClass}">${fmt$(r.total_excess || 0)}</div></div>
     ` : '';
 
     let chart = '';
@@ -648,10 +659,10 @@ function renderCriterionSection(r, f) {
       chart = `
         <div class="chart-block">
           <div class="chart-block-header">
-            <span class="chart-block-label">Top 10 by concentration</span>
+            <span class="chart-block-label">Top 10 por concentración</span>
             <div class="chart-block-legend">
-              <span class="legend-swatch"><span class="sw"></span>Concentration %</span>
-              <span class="legend-swatch"><span class="sw-line"></span>Limit ${r.threshold_pct.toFixed(2)}%</span>
+              <span class="legend-swatch"><span class="sw"></span>Concentración %</span>
+              <span class="legend-swatch"><span class="sw-line"></span>Límite ${r.threshold_pct.toFixed(2)}%</span>
             </div>
           </div>
           <div class="chart-canvas-wrap"><canvas id="chart-${currentFacility()}-${r.id}"></canvas></div>
@@ -661,9 +672,9 @@ function renderCriterionSection(r, f) {
       chart = `
         <div class="chart-block">
           <div class="chart-block-header">
-            <span class="chart-block-label">Top 10 by concentration (informative)</span>
+            <span class="chart-block-label">Top 10 por concentración (informativo)</span>
             <div class="chart-block-legend">
-              <span class="legend-swatch"><span class="sw" style="background:var(--blue);"></span>Concentration %</span>
+              <span class="legend-swatch"><span class="sw" style="background:var(--blue);"></span>Concentración %</span>
             </div>
           </div>
           <div class="chart-canvas-wrap"><canvas id="chart-${currentFacility()}-${r.id}"></canvas></div>
@@ -672,7 +683,7 @@ function renderCriterionSection(r, f) {
     }
 
     const tableHeaders = r.table_cols.map(c =>
-      ['Amount','%','Excess','Limit'].includes(c) ? `<th class="num">${c}</th>` : `<th>${c}</th>`
+      ['Amount','%','Excess','Limit'].includes(c) ? `<th class="num">${colLabel(c)}</th>` : `<th>${colLabel(c)}</th>`
     ).join('');
 
     const tableBody = r.table_data.map(row => {
@@ -700,8 +711,8 @@ function renderCriterionSection(r, f) {
       ${r.aggregation === 'individual' ? '<div class="crit-summary-row">' + summaryCells + '</div>' : ''}
       ${chart}
       <div class="toolbar">
-        <div class="search-wrap"><i class="ph ph-magnifying-glass"></i><input type="text" placeholder="Search ${r.subject_type.replace('_', ' ')}..." /></div>
-        <a class="btn-link"><i class="ph ph-download-simple"></i> Download CSV</a>
+        <div class="search-wrap"><i class="ph ph-magnifying-glass"></i><input type="text" placeholder="Buscar..." /></div>
+        <a class="btn-link"><i class="ph ph-download-simple"></i> Descargar CSV</a>
       </div>
       <div class="table-wrap">
         <table>
@@ -709,7 +720,7 @@ function renderCriterionSection(r, f) {
           <tbody>${tableBody}</tbody>
         </table>
       </div>
-      <div class="table-footer">Showing top ${r.table_data.length} of ${r.total_count || r.table_data.length} ${r.subject_type.replace('_', ' ')}s · sorted by amount desc</div>
+      <div class="table-footer">Mostrando top ${r.table_data.length} de ${r.total_count || r.table_data.length} · ordenado por monto desc</div>
     `;
   }
 
@@ -717,7 +728,7 @@ function renderCriterionSection(r, f) {
     <div class="section-card">
       <div class="section-hdr">
         <div class="section-icon"><i class="ph ${r.icon}"></i></div>
-        <span class="section-title">CRITERION ${r.ordinal} · ${r.label.toUpperCase()}</span>
+        <span class="section-title">CRITERIO ${r.ordinal} · ${r.label.toUpperCase()}</span>
         <div class="crit-hdr-extra">
           ${bindingBadge}
           ${limitPill}
@@ -791,14 +802,14 @@ function renderTopChart(canvasId, rule) {
   const barColors = values.map(v => (limit && v > limit) ? breachColor : (isInfo ? '#0284C7' : '#910057'));
 
   const datasets = [{
-    type:'bar', label:'Concentration %', data:values,
+    type:'bar', label:'Concentración %', data:values,
     backgroundColor: barColors,
     borderWidth:0, borderRadius:4,
     barPercentage:0.72, categoryPercentage:0.88, order:2
   }];
   if (limit) {
     datasets.push({
-      type:'line', label:`Limit ${limit.toFixed(2)}%`,
+      type:'line', label:`Límite ${limit.toFixed(2)}%`,
       data: labels.map(()=>limit),
       borderColor:'#DC2626', borderWidth:2, borderDash:[6,4],
       pointRadius:0, fill:false, tension:0, order:1
@@ -827,8 +838,8 @@ function renderTopChart(canvasId, rule) {
           callbacks: {
             label: (c) => {
               const v = c.parsed.y.toFixed(2);
-              const head = limit ? `  vs limit ${limit.toFixed(2)}%` : '';
-              const flag = (limit && c.parsed.y > limit) ? '  · BREACH' : '';
+              const head = limit ? `  vs límite ${limit.toFixed(2)}%` : '';
+              const flag = (limit && c.parsed.y > limit) ? '  · INCUMPLE' : '';
               return ` ${v}%${head}${flag}`;
             }
           }
