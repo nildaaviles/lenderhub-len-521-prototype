@@ -159,6 +159,7 @@ tbody tr:hover{background:var(--bg);}
 .agg-bar-fill{height:100%;background:linear-gradient(90deg,var(--secondary),#B5347A);border-radius:8px;}
 .agg-bar-limit{position:absolute;top:-6px;bottom:-6px;width:2px;background:var(--red);}
 .agg-bar-limit::after{content:'Límite';position:absolute;top:-22px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;color:var(--red);white-space:nowrap;}
+.agg-bar-limit.is-floor::after{content:'Mínimo';}
 .agg-bar-scale{display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-top:8px;}
 
 /* Empty state */
@@ -179,6 +180,13 @@ tbody tr:hover{background:var(--bg);}
 </head>
 <body>
 <div class="container">
+
+  <!-- Selector de fideicomiso (demo · prueba de fuego del catálogo de reglas) -->
+  <div class="facility-selector">
+    <span class="selector-label">Fideicomiso</span>
+    <div class="fac-pill active" data-facility="F-1600"><span>LEASE MD · Arrendamiento</span><span class="fac-id">F/1600</span></div>
+    <div class="fac-pill" data-facility="F-2087"><span>Consumo · BNPL</span><span class="fac-id">F/2087</span></div>
+  </div>
 
   <!-- Cut-off date selector (same pattern as Insights) -->
   <div class="cutoff-strip" id="cutoffStrip" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 14px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;margin-bottom:20px;font-family:'Noto Sans',sans-serif">
@@ -294,6 +302,56 @@ const FACILITIES = {
         ['JAC',39490335.47,11.99,0],
         ['VOLKSWAGEN',25232717.14,7.66,0],
         ['FREIGHTLINER',20009243.45,6.08,0],
+      ]
+    },
+  ]
+},
+
+'F-2087': {
+  name: 'Consumo BNPL F/2087',
+  originator: 'Originador Demo, S.A.P.I. de C.V., SOFOM, E.N.R.',
+  product: 'Crédito al consumo / BNPL',
+  total_amount: 412500000.00,
+  base_metric_label: 'Cartera Cedida Elegible',
+  currency: 'MXN',
+  cutoff: 'May 2026',
+  rules: [
+    // Tipo NUEVO: piso de composición — "al menos X% del pool cumple una condición".
+    { id:'C1', ordinal:1, subject_type:'composition', label:'Por enganche', icon:'ph-hand-coins',
+      legal_text:'Por lo menos el <b>70% (setenta por ciento)</b> de la cartera cedida en el Fideicomiso tendrá que ser de clientes que pagaron un enganche.',
+      kind:'composition_floor', aggregation:'aggregate', operator:'min', threshold_pct:70.00, is_binding:true,
+      condition_label:'Clientes con enganche', aggregate_pct:78.40, aggregate_amount:323400000.00, status:'ok'
+    },
+    { id:'C2', ordinal:2, subject_type:'composition', label:'Por recurrencia', icon:'ph-arrows-clockwise',
+      legal_text:'Composición de al menos <b>40% (cuarenta por ciento)</b> de créditos de clientes recurrentes dentro de la estructura.',
+      kind:'composition_floor', aggregation:'aggregate', operator:'min', threshold_pct:40.00, is_binding:true,
+      condition_label:'Clientes recurrentes', aggregate_pct:46.20, aggregate_amount:190575000.00, status:'ok'
+    },
+    // Tipo EXISTENTE: máx por sujeto con límite variable por atributo (mismo patrón que Kueski).
+    { id:'C3', ordinal:3, subject_type:'state', label:'Por estado', icon:'ph-map-pin',
+      legal_text:'Concentración máxima de créditos originados por estado de <b>25% (veinticinco por ciento)</b>, con excepción de la Ciudad de México y Estado de México que podrán representar el <b>100% (cien por ciento)</b> de la cartera.',
+      aggregation:'individual', operator:'max', threshold_pct:25.00, is_binding:true, threshold_by_attribute:true,
+      total_count:28, max_pct:31.50, total_excess:0, status:'ok',
+      table_cols:['State','Amount','Limit','%','Excess'],
+      table_data:[
+        ['Ciudad de México',129937500.00,100.00,31.50,0],
+        ['Estado de México',102300000.00,100.00,24.80,0],
+        ['Jalisco',37950000.00,25.00,9.20,0],
+        ['Nuevo León',31350000.00,25.00,7.60,0],
+        ['Puebla',21037500.00,25.00,5.10,0],
+      ]
+    },
+    // Tipo EXISTENTE: máx por sujeto (mismo patrón que F-1600).
+    { id:'C4', ordinal:4, subject_type:'industry', label:'Por industria', icon:'ph-factory',
+      legal_text:'Los créditos originados por comercios de la misma industria no podrán superar el <b>50% (cincuenta por ciento)</b> de los Derechos de Cobro elegibles cedidos.',
+      aggregation:'individual', operator:'max', threshold_pct:50.00, is_binding:true,
+      total_count:9, max_pct:38.20, total_excess:0, status:'ok',
+      chart_data:[['Comercio',38.20],['Servicios',22.10],['Alim/Beb',14.70],['Salud',9.40],['Transporte',6.30],['Educación',3.80],['Manufactura',2.90],['Inmob.',1.30],['Otros',1.30]],
+      table_cols:['Industry','Amount','%','Excess'],
+      table_data:[
+        ['Comercio al menudeo',157575000.00,38.20,0],
+        ['Servicios profesionales',91162500.00,22.10,0],
+        ['Alimentos y bebidas',60637500.00,14.70,0],
       ]
     },
   ]
@@ -559,6 +617,7 @@ function renderFacility(facId) {
                         r.max_pct != null ? fmtPct(r.max_pct) : '—';
             const sub = r.status === 'pending' ? `Pendiente · ${r.pending_owner}` :
                         r.operator === 'none' ? `Informativo · ${r.total_count} elementos` :
+                        r.operator === 'min' ? `Mínimo ${r.threshold_pct}% · ${r.aggregate_pct >= r.threshold_pct ? '✓ cumple' : '⚠ por debajo'}` :
                         `Límite ${r.threshold_pct}% · ${r.total_excess > 0 ? '⚠ Excedente ' + fmt$(r.total_excess) : 'Excedente $0'}`;
             return `
               <div class="kpi-card ${cls}">
@@ -611,18 +670,21 @@ function renderCriterionSection(r, f) {
 
   // Aggregate type — bar progress, no table
   if (r.aggregation === 'aggregate' && r.status !== 'pending') {
+    // operator 'min' = piso de composición (al menos X%); 'max' = tope agregado.
+    const isMin = r.operator === 'min';
+    const margen = isMin ? (r.aggregate_pct - r.threshold_pct) : (r.threshold_pct - r.aggregate_pct);
     body = `
       <div class="crit-summary-row">
-        <div class="crit-summary-cell"><div class="crit-summary-label">Monto agregado</div><div class="crit-summary-val">${fmt$(r.aggregate_amount)}</div></div>
-        <div class="crit-summary-cell"><div class="crit-summary-label">%</div><div class="crit-summary-val green">${fmtPct(r.aggregate_pct)}</div></div>
-        <div class="crit-summary-cell"><div class="crit-summary-label">Límite</div><div class="crit-summary-val">${fmtPct(r.threshold_pct)}</div></div>
-        <div class="crit-summary-cell"><div class="crit-summary-label">Margen</div><div class="crit-summary-val green">${(r.threshold_pct - r.aggregate_pct).toFixed(2)} pp</div></div>
+        <div class="crit-summary-cell"><div class="crit-summary-label">${isMin ? 'Monto que cumple' : 'Monto agregado'}</div><div class="crit-summary-val">${fmt$(r.aggregate_amount)}</div></div>
+        <div class="crit-summary-cell"><div class="crit-summary-label">% ${isMin ? 'que cumple' : 'agregado'}</div><div class="crit-summary-val green">${fmtPct(r.aggregate_pct)}</div></div>
+        <div class="crit-summary-cell"><div class="crit-summary-label">${isMin ? 'Mínimo requerido' : 'Límite'}</div><div class="crit-summary-val">${fmtPct(r.threshold_pct)}</div></div>
+        <div class="crit-summary-cell"><div class="crit-summary-label">${isMin ? 'Margen sobre piso' : 'Margen'}</div><div class="crit-summary-val green">${margen.toFixed(2)} pp</div></div>
       </div>
       <div class="agg-bar-block">
-        <div class="agg-bar-label">Agregado vs límite</div>
+        <div class="agg-bar-label">${isMin ? 'Cumplimiento vs piso mínimo' : 'Agregado vs límite'}</div>
         <div class="agg-bar-track">
           <div class="agg-bar-fill" style="width:${(r.aggregate_pct / 100 * 100).toFixed(1)}%"></div>
-          <div class="agg-bar-limit" style="left:${r.threshold_pct}%"></div>
+          <div class="agg-bar-limit${isMin ? ' is-floor' : ''}" style="left:${r.threshold_pct}%"></div>
         </div>
         <div class="agg-bar-scale">
           <span>0%</span>
@@ -650,7 +712,7 @@ function renderCriterionSection(r, f) {
     const summaryCells = r.aggregation === 'individual' ? `
       <div class="crit-summary-cell"><div class="crit-summary-label">Total ${f.base_metric_label}</div><div class="crit-summary-val">${fmt$(f.total_amount)}</div></div>
       <div class="crit-summary-cell"><div class="crit-summary-label">${r.subject_type === 'merchant' ? 'Merchants' : r.subject_type === 'state' ? 'Estados' : r.subject_type === 'industry' ? 'Industrias' : r.subject_type === 'brand' ? 'Marcas' : 'Elementos'}</div><div class="crit-summary-val">${r.total_count}</div></div>
-      <div class="crit-summary-cell"><div class="crit-summary-label">Máx %</div><div class="crit-summary-val ${r.max_pct >= (r.threshold_pct || 100) ? 'red' : ''}">${fmtPct(r.max_pct)}</div></div>
+      <div class="crit-summary-cell"><div class="crit-summary-label">Máx %</div><div class="crit-summary-val ${(!r.threshold_by_attribute && r.max_pct >= (r.threshold_pct || 100)) ? 'red' : ''}">${fmtPct(r.max_pct)}</div></div>
       <div class="crit-summary-cell"><div class="crit-summary-label">Excedente total</div><div class="crit-summary-val ${excessClass}">${fmt$(r.total_excess || 0)}</div></div>
     ` : '';
 
