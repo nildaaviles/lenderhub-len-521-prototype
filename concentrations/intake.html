@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Concentration Criteria · Intake</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+<style>
+:root{--secondary:#910057;--bg:#F8FAFC;--surface:#FFFFFF;--border:#E2E8F0;--border-strong:#CBD5E1;--text:#334155;--text-secondary:#64748B;--text-muted:#94A3B8;--green:#16A34A;--green-bg:#F0FDF4;--green-b:#BBF7D0;--amber:#B45309;--amber-bg:#FFFBEB;--amber-b:#FCD34D;--purple:#7C3AED;--purple-bg:#F5F3FF;--purple-b:#DDD6FE;--gray-bg:#F1F5F9;--blue:#0284C7;--blue-bg:#F0F9FF;--radius:8px;--radius-lg:12px;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);padding:28px 32px 90px;line-height:1.5}
+.container{max-width:1280px;margin:0 auto}
+h1{font-family:'Nunito',sans-serif;font-size:20px;font-weight:700;margin-bottom:4px}
+.sub{font-size:13px;color:var(--text-secondary);margin-bottom:22px}
+.mono{font-family:'Space Mono';font-size:11px}
+.step{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:18px}
+.step-hd{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.step-n{width:24px;height:24px;border-radius:50%;background:var(--secondary);color:#fff;font-family:'Nunito';font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center}
+.step-t{font-family:'Nunito';font-size:14px;font-weight:700}
+textarea{width:100%;min-height:180px;border:1px solid var(--border-strong);border-radius:var(--radius);padding:12px 14px;font-family:'DM Sans';font-size:13px;color:var(--text);resize:vertical}
+.btn{display:inline-flex;align-items:center;gap:7px;background:var(--secondary);color:#fff;border:0;border-radius:var(--radius);padding:9px 16px;font-family:'DM Sans';font-weight:700;font-size:13px;cursor:pointer;margin-top:12px}
+.hint{font-size:11.5px;color:var(--text-muted);margin-top:8px}
+.ai-tag{display:inline-flex;align-items:center;gap:4px;background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-b);border-radius:99px;padding:1px 7px;font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.crit{border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;background:var(--bg)}
+.crit-top{display:grid;grid-template-columns:24px 1fr auto;gap:12px;align-items:start;margin-bottom:12px}
+.crit-n{width:22px;height:22px;border-radius:50%;background:#FDF2F8;color:var(--secondary);font-family:'Nunito';font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.crit-text{font-size:12.5px;color:var(--text);line-height:1.45}
+.chip-prev{background:var(--gray-bg);color:var(--text-secondary);border:1px solid var(--border-strong);border-radius:99px;padding:4px 11px;font-size:11px;font-weight:700;white-space:nowrap}
+.meta{display:grid;grid-template-columns:1.2fr 1fr 1.3fr;gap:10px;padding-top:12px;border-top:1px dashed var(--border)}
+.f label{display:block;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px}
+.f select,.f input{width:100%;border:1px solid var(--border-strong);border-radius:6px;padding:7px 9px;font-family:'DM Sans';font-size:12px;color:var(--text);background:var(--surface)}
+.f.sugg select,.f.sugg input{border-color:var(--purple-b);background:var(--purple-bg)}
+.limits{margin-top:12px}
+.limits-hd{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.lrow{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 28px;gap:8px;margin-bottom:6px;align-items:center}
+.lrow select,.lrow input{width:100%;border:1px solid var(--border-strong);border-radius:6px;padding:6px 8px;font-size:11.5px;background:var(--surface);font-family:'DM Sans'}
+.lrow .xx{border:0;background:transparent;color:var(--text-muted);cursor:pointer;font-size:15px}
+.addl{background:var(--surface);border:1px dashed var(--border-strong);color:var(--secondary);border-radius:6px;padding:6px 10px;font-size:11.5px;font-weight:600;cursor:pointer}
+.tag-exc{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-b);border-radius:99px;padding:1px 6px;font-size:9px;font-weight:700}
+.note{background:var(--purple-bg);border:1px solid var(--purple-b);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:#5b21b6;margin-top:10px;display:flex;gap:9px}
+.note i{font-size:16px;color:var(--purple);flex-shrink:0}
+.save-bar{display:flex;align-items:center;gap:14px}
+.status-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:99px;font-size:11px;font-weight:700;background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-b)}
+.status-pill.done{background:var(--green-bg);color:var(--green);border-color:var(--green-b)}
+pre{background:#1E293B;color:#E2E8F0;border-radius:var(--radius);padding:14px;font-family:'Space Mono';font-size:11px;overflow:auto;max-height:320px;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Concentration Criteria · Intake</h1>
+  <div class="sub">Captura/estructuración de criterios — segmentar → estructurar tipo, <b>uno o varios límites</b> (con unidad), excepción y condición por criterio. (Prototipo · LEN-664)</div>
+
+  <div class="step">
+    <div class="step-hd"><div class="step-n">1</div><div class="step-t">Cargar clausulado del contrato</div></div>
+    <textarea id="src">A. Concentración. En cualquier fecha de determinación:
+1. El monto principal otorgado de los Créditos no deberá ser mayor a $40,000.00 M.N. por Cliente; como excepción, la Acreditada podrá otorgar Créditos hasta por un máximo de $75,000.00 M.N. siempre que la suma de los que excedan el Monto Base no exceda del 20% (veinte por ciento) del total de los Créditos.
+2. Por lo menos el 50% (cincuenta por ciento) de la Cartera Aportada deberá corresponder a clientes con 6 (seis) o más pagos consecutivos sin atraso.
+3. Concentración máxima de créditos originados por estado de 25% (veinticinco por ciento), con excepción de la Ciudad de México y Estado de México que podrán representar el 100%.
+4. La suma del saldo insoluto de los Créditos con morosidad de entre 1 (uno) y 15 (quince) días representará menos del 5% (cinco por ciento) del saldo insoluto total.
+5. Ningún Crédito Grupal podrá tener más de 25 (veinticinco) coacreditados.
+6. El promedio ponderado del puntaje de Buró (B-Score) deberá ser mayor o igual a 587 puntos.</textarea>
+    <button class="btn" onclick="segment()"><i class="ph ph-scissors"></i> Auto-segmentar criterios</button>
+    <div class="hint">Parte por delimitadores: <b>1. 2. 3.</b> · <b>a. b.</b> · <b>1) 2)</b> · <b>i. ii.</b> — y la IA detecta %, $, días, conteo y puntos.</div>
+  </div>
+
+  <div class="step" id="step2" style="display:none">
+    <div class="step-hd"><div class="step-n">2</div><div class="step-t">Estructurar cada criterio <span class="ai-tag"><i class="ph ph-sparkle"></i> IA pre-llenó · valida</span></div></div>
+    <div id="crits"></div>
+    <div class="note"><i class="ph ph-warning"></i><div>La IA propone <b>tipo, unidad y límite(s)</b> (campos morados). <b>Valida tú</b> — el fraseo legal engaña y los montos/excepciones se detectan parcialmente. Un criterio puede tener <b>varios límites</b> (base + excepción + por atributo). El texto legal queda verbatim.</div></div>
+  </div>
+
+  <div class="step" id="step3" style="display:none">
+    <div class="step-hd"><div class="step-n">3</div><div class="step-t">Guardar</div></div>
+    <div class="save-bar">
+      <button class="btn" onclick="save()"><i class="ph ph-check"></i> Guardar criterios estructurados</button>
+      <span id="status" class="status-pill"><i class="ph ph-clock"></i> criteria_status: pending</span>
+    </div>
+    <pre id="out" style="display:none"></pre>
+  </div>
+</div>
+
+<script>
+const KINDS=[['concentration_max','Concentración máx por sujeto'],['aggregate_cap','Tope agregado'],['composition_floor','Piso de composición'],['count_limit','Límite de conteo'],['eligibility','Elegibilidad'],['informative','Informativo']];
+const UNITS=[['%','%'],['$','$ (monto)'],['dias','días'],['conteo','conteo'],['pts','puntos']];
+const LTYPES=[['base','base'],['excepcion','excepción'],['atributo','por atributo']];
+let CRITS=[];
+
+function splitItems(text){
+  const lines=text.split(/\n/).map(l=>l.trim()).filter(Boolean);
+  const mark=/^\s*(\d{1,2}\.|\d{1,2}\)|[A-Za-z]\.|[A-Za-z]\)|[ivxIVX]{1,4}\.)\s+/;
+  const items=[]; let cur=null;
+  for(const ln of lines){
+    if(mark.test(ln)){ if(cur) items.push(cur); cur=ln.replace(mark,'').trim(); }
+    else if(cur!==null){ cur+=' '+ln; }
+  }
+  if(cur) items.push(cur);
+  if(items.length===0) return [text.trim()];
+  const clean=items.filter(t=>!(/[:：]\s*$/.test(t) && !/[\d%$]/.test(t)));
+  return clean.length? clean : items;
+}
+// ---- detección de candidatos (valor, unidad) ----
+function detectLimits(t){
+  const out=[];
+  // montos $
+  for(const m of t.matchAll(/\$\s?([\d.,]+)/g)){ out.push({value:m[1].replace(/,/g,'').replace(/\.00$/,''), unit:'$'}); }
+  // porcentajes
+  for(const m of t.matchAll(/(\d+(?:\.\d+)?)\s*%/g)){ out.push({value:m[1], unit:'%'}); }
+  // días
+  for(const m of t.matchAll(/(\d+)\s*\(?[a-záéíóú]*\)?\s*d[ií]as/gi)){ out.push({value:m[1], unit:'dias'}); }
+  // conteo (coacreditados / pagos)
+  for(const m of t.matchAll(/(\d+)\s*\(?[a-záéíóú]*\)?\s*(?:coacreditad|pagos|cr[eé]ditos\b)/gi)){ out.push({value:m[1], unit:'conteo'}); }
+  // puntos / score
+  for(const m of t.matchAll(/(\d+)\s*puntos|b-?score[^0-9]*(\d+)/gi)){ out.push({value:m[1]||m[2], unit:'pts'}); }
+  // dedup por value+unit, conservar orden
+  const seen=new Set(), uniq=[];
+  for(const o of out){ const k=o.value+'|'+o.unit; if(!seen.has(k)){seen.add(k);uniq.push(o);} }
+  return uniq;
+}
+function suggestOp(t){ const s=t.toLowerCase(); if(/al menos|por lo menos|mayor o igual|no menor|cuando menos/.test(s)) return 'min'; return 'max'; }
+function suggestKind(t){ const s=t.toLowerCase();
+  if(/d[ií]as|morosidad|score|puntaje|bur[oó]/.test(s)) return 'eligibility';
+  if(/al menos|por lo menos|deberá corresponder|mayor o igual/.test(s)) return 'composition_floor';
+  if(/coacreditad|no podrá tener más de/.test(s)) return 'count_limit';
+  return 'concentration_max';
+}
+function hasException(t){ return /excepci|excepto|salvo|no obstante/i.test(t); }
+function suggestCondition(t){ const m=t.match(/(?:con|que)\s+\d+\s*\([^)]*\)?\s*o más[^.,;]*/i); return m? m[0].trim():''; }
+
+function segment(){
+  CRITS=splitItems(document.getElementById('src').value).map(t=>{
+    const cands=detectLimits(t);
+    const op=suggestOp(t);
+    const exc=hasException(t);
+    const limits=[];
+    if(cands.length){ limits.push({ltype:'base',operator:op,value:cands[0].value,unit:cands[0].unit}); }
+    if(exc && cands.length>1){ limits.push({ltype:'excepcion',operator:op,value:cands[1].value,unit:cands[1].unit}); }
+    return {t, kind:suggestKind(t), subject:'', condition:suggestCondition(t), limits};
+  });
+  renderCrits();
+  document.getElementById('step2').style.display='block';
+  document.getElementById('step3').style.display='block';
+  resetStatus();
+}
+function fmtLimit(l){
+  if(!l.value) return '—';
+  const op=l.operator==='max'?'MAX':l.operator==='min'?'MIN':'';
+  let v=l.value;
+  if(l.unit==='$') v='$'+Number(l.value).toLocaleString('en-US');
+  else if(l.unit==='%') v=l.value+'%';
+  else if(l.unit==='dias') v=l.value+'d';
+  else if(l.unit==='pts') v=l.value+' pts';
+  return (op?op+' ':'')+v;
+}
+function chipFor(c){
+  if(c.kind==='eligibility') return 'ELEGIBILIDAD';
+  if(c.kind==='informative') return 'INFO';
+  if(!c.limits.length || !c.limits[0].value) return 'N/A';
+  if(c.limits.length===1) return fmtLimit(c.limits[0]);
+  return 'MULTI · '+c.limits.length+' límites';
+}
+function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+function limitRow(i,j,l){
+  const sel=(opts,val,fn)=>`<select onchange="${fn}">${opts.map(o=>`<option value="${o[0]}" ${o[0]===val?'selected':''}>${o[1]}</option>`).join('')}</select>`;
+  return `<div class="lrow">
+    ${sel(LTYPES,l.ltype,`updL(${i},${j},'ltype',this.value)`)}
+    ${sel([['max','MAX (tope)'],['min','MIN (piso)']],l.operator,`updL(${i},${j},'operator',this.value)`)}
+    <input value="${l.value}" placeholder="valor" oninput="updL(${i},${j},'value',this.value)">
+    ${sel(UNITS,l.unit,`updL(${i},${j},'unit',this.value)`)}
+    <button class="xx" title="Quitar límite" onclick="rmL(${i},${j})"><i class="ph ph-x"></i></button>
+  </div>`;
+}
+function renderCrits(){
+  const wrap=document.getElementById('crits'); wrap.innerHTML='';
+  CRITS.forEach((c,i)=>{
+    const div=document.createElement('div'); div.className='crit';
+    const exc=hasException(c.t)?'<span class="tag-exc">excepción detectada</span>':'';
+    div.innerHTML=`
+      <div class="crit-top">
+        <div class="crit-n">${i+1}</div>
+        <div class="crit-text">${esc(c.t)} ${exc}</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="chip-prev" id="chip${i}">${chipFor(c)}</div>
+          <button title="Eliminar criterio" onclick="removeCrit(${i})" style="border:0;background:transparent;color:var(--text-muted);cursor:pointer;font-size:16px"><i class="ph ph-x"></i></button>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="f sugg"><label>Tipo (kind)</label><select onchange="upd(${i},'kind',this.value)">${KINDS.map(k=>`<option value="${k[0]}" ${k[0]===c.kind?'selected':''}>${k[1]}</option>`).join('')}</select></div>
+        <div class="f"><label>Sujeto</label><input placeholder="cliente / estado / marca…" value="${c.subject}" oninput="upd(${i},'subject',this.value)"></div>
+        <div class="f ${c.condition?'sugg':''}"><label>Condición (opcional)</label><input placeholder="ej. con 6+ pagos consecutivos" value="${esc(c.condition||'')}" oninput="upd(${i},'condition',this.value)"></div>
+      </div>
+      <div class="limits">
+        <div class="limits-hd">Límite(s) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-muted)">· tipo · operador · valor · unidad</span></div>
+        <div id="limits${i}">${c.limits.map((l,j)=>limitRow(i,j,l)).join('')||'<div style="font-size:11.5px;color:var(--text-muted);margin-bottom:6px">Sin límite detectado — agrega uno.</div>'}</div>
+        <button class="addl" onclick="addL(${i})">+ Agregar límite</button>
+      </div>`;
+    wrap.appendChild(div);
+  });
+}
+function refreshChip(i){ document.getElementById('chip'+i).textContent=chipFor(CRITS[i]); }
+function upd(i,k,v){ CRITS[i][k]=v; refreshChip(i); resetStatus(); }
+function updL(i,j,k,v){ CRITS[i].limits[j][k]=v; refreshChip(i); resetStatus(); }
+function addL(i){ CRITS[i].limits.push({ltype:'base',operator:'max',value:'',unit:'%'}); renderCrits(); resetStatus(); }
+function rmL(i,j){ CRITS[i].limits.splice(j,1); renderCrits(); resetStatus(); }
+function removeCrit(i){ CRITS.splice(i,1); renderCrits(); resetStatus(); }
+function resetStatus(){ const s=document.getElementById('status'); s.className='status-pill'; s.innerHTML='<i class="ph ph-clock"></i> criteria_status: pending'; document.getElementById('out').style.display='none'; }
+function save(){
+  const payload={ criteria_status:'defined', criterias_concentration: CRITS.map((c,i)=>({
+    index:i+1, legal_text:c.t, kind:c.kind, subject:c.subject||null, condition:c.condition||null,
+    limits:c.limits.map(l=>({type:l.ltype, operator:l.operator, value:(l.value===''?null:(isNaN(Number(l.value))?l.value:Number(l.value))), unit:l.unit}))
+  })) };
+  const out=document.getElementById('out'); out.style.display='block'; out.textContent=JSON.stringify(payload,null,2);
+  const s=document.getElementById('status'); s.className='status-pill done'; s.innerHTML='<i class="ph ph-check-circle"></i> criteria_status: defined · '+CRITS.length+' criterios';
+}
+</script>
+</body>
+</html>
