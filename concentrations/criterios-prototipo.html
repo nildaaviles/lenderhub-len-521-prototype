@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Concentration Criteria · Prototipo (Universo + Intake)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+<style>
+:root{--secondary:#910057;--bg:#F8FAFC;--surface:#FFFFFF;--border:#E2E8F0;--border-strong:#CBD5E1;--text:#334155;--text-secondary:#64748B;--text-muted:#94A3B8;}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);display:flex;flex-direction:column}
+.top{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 28px 0}
+.brand{display:flex;align-items:baseline;gap:10px;margin-bottom:12px}
+.brand h1{font-family:'Nunito',sans-serif;font-size:17px;font-weight:700}
+.brand .tag{font-size:11px;color:var(--text-muted)}
+.tabs{display:flex;gap:4px}
+.tab{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border:1px solid transparent;border-bottom:0;border-radius:8px 8px 0 0;background:transparent;color:var(--text-secondary);font-family:'DM Sans';font-size:13px;font-weight:600;cursor:pointer;position:relative;top:1px}
+.tab.active{background:var(--bg);border-color:var(--border);color:var(--secondary)}
+.tab i{font-size:15px}
+.frame-wrap{flex:1;min-height:0}
+iframe{width:100%;height:100%;border:0;display:block;background:var(--bg)}
+</style>
+</head>
+<body>
+  <div class="top">
+    <div class="brand">
+      <h1>Concentration Criteria · Prototipo</h1>
+      <span class="tag">LEN-664 · LEN-659 · LenderHub — universo real CXC + flujo de captura</span>
+    </div>
+    <div class="tabs">
+      <button class="tab active" id="t-universe" onclick="show('universe')"><i class="ph ph-list-checks"></i> Universo de operaciones (77)</button>
+      <button class="tab" id="t-intake" onclick="show('intake')"><i class="ph ph-scissors"></i> Captura de criterios (Intake)</button>
+      <button class="tab" id="t-module" onclick="show('module')"><i class="ph ph-squares-four"></i> Módulo (criterios + cumplimiento)</button>
+    </div>
+  </div>
+  <div class="frame-wrap"><iframe id="frame" src="./universe.html" title="Prototipo"></iframe></div>
+<script>
+  const SRC={universe:'./universe.html', intake:'./intake.html', module:'./index.html'};
+  function show(k){
+    document.getElementById('frame').src=SRC[k];
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+    document.getElementById('t-'+k).classList.add('active');
+  }
+</script>
+</body>
+</html>
