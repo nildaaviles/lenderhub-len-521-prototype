@@ -252,6 +252,8 @@ tbody tr:hover{background:var(--bg);}
 // ═══════════════════════════════════════════════════════════════
 const FACILITIES = {
 
+// Datos reales extraídos de F-5602_reports (LEASE MD · RETROFIN), cut-off Mar 31 2026.
+// Conteos/agregados = totales del reporte; tablas y charts = top-N. En prod esto vendría del DWH.
 'F-1600': {
   name: 'LEASE MD F/1600',
   originator: 'RETROFIN, S.A. DE C.V.',
@@ -264,7 +266,7 @@ const FACILITIES = {
     { id:'C1', ordinal:1, subject_type:'contract', label:'Per Individual Lease Contract', icon:'ph-file-text',
       legal_text:'El total de los flujos derivados de ningún <b>Contrato de Arrendamiento individual</b> en el colateral representará más del <b>2% (dos por ciento)</b> del total de los flujos de la Cartera Aportada.',
       aggregation:'individual', operator:'max', threshold_pct:2.00, is_binding:true,
-      total_count:248, max_pct:1.75, total_excess:0, status:'ok',
+      total_count:611, max_pct:1.75, total_excess:0, status:'ok',
       chart_data:[['8559',1.75],['8458',1.54],['9116',1.35],['8369',1.26],['8477',1.13],['8693',1.07],['8301',1.07],['8302',1.07],['9173',1.05],['8358',1.05]],
       table_cols:['Contract','Debtor','Personality','Brand','Amount','%','Excess'],
       table_data:[
@@ -273,46 +275,66 @@ const FACILITIES = {
         ['9116','9721','Moral','GMC',4449940.07,1.35,0],
         ['8369','9761','Moral','SITRAK',4151201.92,1.26,0],
         ['8477','9796','Fisica','FREIGHTLINER',3714990.84,1.13,0],
+        ['8693','9477','Moral','SCANIA',3531415.83,1.07,0],
+        ['8301','9741','Moral','SITRAK',3517044.42,1.07,0],
+        ['8302','9741','Moral','SITRAK',3517044.42,1.07,0],
       ]
     },
     { id:'C2', ordinal:2, subject_type:'legal_entity', label:'Per Legal Entity', icon:'ph-buildings',
       legal_text:'El total los flujos derivados de los Contratos de Arrendamiento de <b>ninguna persona moral</b> deberá ser mayor al <b>3.6% (tres punto seis por ciento)</b> del total de los flujos de la Cartera Aportada.',
       aggregation:'individual', operator:'max', threshold_pct:3.60, is_binding:true,
-      total_count:156, max_pct:2.14, total_excess:0, status:'ok',
+      total_count:338, max_pct:2.14, total_excess:0, status:'ok',
       chart_data:[['9741',2.14],['4713',1.77],['9544',1.75],['7767',1.66],['9721',1.35],['9761',1.26],['6479',1.20],['9477',1.07],['9259',1.05],['9180',1.01]],
       table_cols:['Debtor','Brand','Personality','Amount','%','Excess'],
       table_data:[
         ['9741','SITRAK','Moral',7034088.85,2.14,0],
         ['4713','HINO','Moral',5830320.25,1.77,0],
         ['9544','SITRAK','Moral',5771168.39,1.75,0],
+        ['7767','INTERNATIONAL','Moral',5461128.86,1.66,0],
+        ['9721','GMC','Moral',4449940.07,1.35,0],
+        ['9761','SITRAK','Moral',4151201.92,1.26,0],
+        ['6479','FORD','Moral',3938194.07,1.20,0],
+        ['9477','SCANIA','Moral',3531415.83,1.07,0],
       ]
     },
     { id:'C3', ordinal:3, subject_type:'individual_person', label:'Per Individual Person', icon:'ph-user',
       legal_text:'El total los flujos derivados de los Contratos de Arrendamiento de <b>ninguna persona física</b> deberá ser mayor al <b>2% (dos por ciento)</b> del total de los flujos de la Cartera Aportada.',
       aggregation:'individual', operator:'max', threshold_pct:2.00, is_binding:true,
-      total_count:67, max_pct:1.13, total_excess:0, status:'ok',
+      total_count:121, max_pct:1.13, total_excess:0, status:'ok',
       chart_data:[['9796',1.13],['10067',1.05],['10085',0.68],['10027',0.54],['9807',0.47],['5131',0.43],['10032',0.32],['9237',0.30],['9814',0.29],['7686',0.28]],
       table_cols:['Debtor','Brand','Personality','Amount','%','Excess'],
       table_data:[
         ['9796','FREIGHTLINER','Fisica',3714990.84,1.13,0],
         ['10067','FREIGHTLINER','Fisica',3470886.81,1.05,0],
+        ['10085','KENWORTH','Fisica',2228453.01,0.68,0],
+        ['10027','ISUZU','Fisica',1773366.86,0.54,0],
+        ['9807','GENERAL MOTORS','Fisica',1539347.39,0.47,0],
+        ['5131','TESLA','Fisica',1414990.71,0.43,0],
+        ['10032','TOYOTA','Fisica',1061753.78,0.32,0],
+        ['9237','MERCEDES BENZ','Fisica',987402.23,0.30,0],
       ]
     },
     { id:'C4', ordinal:4, subject_type:'aggregate_personality', label:'Aggregate Individual Persons', icon:'ph-users-three',
       legal_text:'El total los flujos derivados de los Contratos de Arrendamiento de <b>personas físicas</b> deberá ser menor al <b>35% (treinta y cinco por ciento)</b> del total de los flujos de la Cartera Aportada.',
       aggregation:'aggregate', operator:'max', threshold_pct:35.00, is_binding:true,
-      aggregate_pct:14.09, aggregate_amount:46419243.05, status:'ok'
+      aggregate_pct:14.09, aggregate_amount:46419243.05, status:'ok',
+      comp_label:'Personas físicas', comp_rest_label:'Personas morales'
     },
     { id:'C5', ordinal:5, subject_type:'brand', label:'Per Brand', icon:'ph-tag',
       legal_text:'El total los flujos derivados de los Contratos Arrendamiento de <b>ninguna marca</b> deberá ser mayor al <b>35% (treinta y cinco por ciento)</b> del total de los flujos de la Cartera Aportada.',
       aggregation:'individual', operator:'max', threshold_pct:35.00, is_binding:true,
-      total_count:34, max_pct:11.99, total_excess:0, status:'ok',
+      total_count:59, max_pct:11.99, total_excess:0, status:'ok',
       chart_data:[['JAC',11.99],['VW',7.66],['FRGHT',6.08],['SITRAK',5.66],['FORD',5.30],['NISSAN',4.95],['CHEV',3.52],['ISUZU',3.21],['BYD',2.74],['KIA',2.74]],
       table_cols:['Brand','Amount','%','Excess'],
       table_data:[
         ['JAC',39490335.47,11.99,0],
         ['VOLKSWAGEN',25232717.14,7.66,0],
         ['FREIGHTLINER',20009243.45,6.08,0],
+        ['SITRAK',18629511.66,5.66,0],
+        ['FORD',17444726.33,5.30,0],
+        ['NISSAN',16302898.42,4.95,0],
+        ['CHEVROLET',11585998.01,3.52,0],
+        ['ISUZU',10559236.52,3.21,0],
       ]
     },
   ]
@@ -686,6 +708,8 @@ function renderFacility(facId) {
       f.rules.forEach(r => {
         if (r.chart_data && r.aggregation === 'individual') {
           renderTopChart(`chart-${facId}-${r.id}`, r);
+        } else if (r.aggregation === 'aggregate' && r.status !== 'pending') {
+          renderAggChart(`chart-${facId}-${r.id}`, r);
         }
       });
     });
@@ -714,24 +738,25 @@ function renderCriterionSection(r, f) {
     // operator 'min' = piso de composición (al menos X%); 'max' = tope agregado.
     const isMin = r.operator === 'min';
     const margen = isMin ? (r.aggregate_pct - r.threshold_pct) : (r.threshold_pct - r.aggregate_pct);
+    const aggBreach = isMin ? (r.aggregate_pct < r.threshold_pct) : (r.aggregate_pct > r.threshold_pct);
+    const aggValClass = aggBreach ? 'red' : 'green';
     body = `
       <div class="crit-summary-row">
         <div class="crit-summary-cell"><div class="crit-summary-label">${isMin ? 'Qualifying amount' : 'Aggregate amount'}</div><div class="crit-summary-val">${fmt$(r.aggregate_amount)}</div></div>
-        <div class="crit-summary-cell"><div class="crit-summary-label">% ${isMin ? 'qualifying' : 'aggregate'}</div><div class="crit-summary-val green">${fmtPct(r.aggregate_pct)}</div></div>
+        <div class="crit-summary-cell"><div class="crit-summary-label">% ${isMin ? 'qualifying' : 'aggregate'}</div><div class="crit-summary-val ${aggValClass}">${fmtPct(r.aggregate_pct)}</div></div>
         <div class="crit-summary-cell"><div class="crit-summary-label">${isMin ? 'Minimum required' : 'Limit'}</div><div class="crit-summary-val">${fmtPct(r.threshold_pct)}</div></div>
-        <div class="crit-summary-cell"><div class="crit-summary-label">${isMin ? 'Margin over floor' : 'Margin'}</div><div class="crit-summary-val green">${margen.toFixed(2)} pp</div></div>
+        <div class="crit-summary-cell"><div class="crit-summary-label">${isMin ? 'Margin over floor' : 'Headroom to limit'}</div><div class="crit-summary-val ${aggValClass}">${margen.toFixed(2)} pp</div></div>
       </div>
-      <div class="agg-bar-block">
-        <div class="agg-bar-label">${isMin ? 'Compliance vs minimum floor' : 'Aggregate vs limit'}</div>
-        <div class="agg-bar-track">
-          <div class="agg-bar-fill" style="width:${(r.aggregate_pct / 100 * 100).toFixed(1)}%"></div>
-          <div class="agg-bar-limit${isMin ? ' is-floor' : ''}" style="left:${r.threshold_pct}%"></div>
+      <div class="chart-block">
+        <div class="chart-block-header">
+          <span class="chart-block-label">${isMin ? 'Composition vs minimum floor' : 'Pool composition vs limit'}</span>
+          <div class="chart-block-legend">
+            <span class="legend-swatch"><span class="sw"></span>${isMin ? (r.condition_label || 'Qualifying') : (r.comp_label || 'In scope')}</span>
+            <span class="legend-swatch"><span class="sw" style="background:#CBD5E1"></span>${r.comp_rest_label || 'Rest of pool'}</span>
+            <span class="legend-swatch"><span class="sw-line" style="border-top-color:${isMin ? 'var(--green)' : 'var(--red)'}"></span>${isMin ? 'Floor' : 'Limit'} ${r.threshold_pct.toFixed(2)}%</span>
+          </div>
         </div>
-        <div class="agg-bar-scale">
-          <span>0%</span>
-          <span style="color:var(--secondary);font-weight:700;">Current ${fmtPct(r.aggregate_pct)}</span>
-          <span>100%</span>
-        </div>
+        <div class="chart-canvas-wrap"><canvas id="chart-${currentFacility()}-${r.id}"></canvas></div>
       </div>
     `;
   }
@@ -951,6 +976,116 @@ function renderTopChart(canvasId, rule) {
       scales:{
         x:{ grid:{display:false}, border:{color:'#E2E8F0'},
             ticks:{font:{family:'DM Sans',size:10},color:'#64748B',maxRotation:0,autoSkip:false} },
+        y:{ beginAtZero:true, max:yMax,
+            border:{color:'#E2E8F0'}, grid:{color:'#F1F5F9'},
+            ticks:{font:{family:'DM Sans',size:11},color:'#64748B', callback:v=>`${v}%`} }
+      }
+    }
+  });
+}
+
+// Aggregate / composition criteria measure ONE pool-level figure, not a
+// distribution. Render it as composition: the in-scope slice vs the rest of the
+// pool, with the limit/floor drawn ONLY over the slice it applies to (drawing it
+// across the "rest" bar would falsely read as a breach).
+function renderAggChart(canvasId, rule) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  if (_chartInstances[canvasId]) {
+    try { _chartInstances[canvasId].destroy(); } catch(e) {}
+    delete _chartInstances[canvasId];
+  }
+  const isMin = rule.operator === 'min';
+  const subjectPct = rule.aggregate_pct;
+  const restPct = Math.max(0, 100 - subjectPct);
+  const limit = rule.threshold_pct;
+  const breach = isMin ? (subjectPct < limit) : (subjectPct > limit);
+
+  const subjLabel = isMin ? (rule.condition_label || 'Qualifying') : (rule.comp_label || 'In scope');
+  const restLabel = rule.comp_rest_label || 'Rest of pool';
+  const labels = [subjLabel, restLabel];
+  const values = [subjectPct, restPct];
+
+  const subjColor = breach ? '#DC2626' : '#910057';
+  const restColor = '#CBD5E1';
+  const barColors = [subjColor, restColor];
+
+  function niceCeil(v){
+    if (v <= 1)  return Math.ceil(v * 10) / 10;
+    if (v <= 5)  return Math.ceil(v * 2)  / 2;
+    if (v <= 20) return Math.ceil(v);
+    if (v <= 100) return Math.ceil(v / 5) * 5;
+    return Math.ceil(v / 10) * 10;
+  }
+  const yMax = Math.min(100, niceCeil(Math.max(subjectPct, restPct, limit) * 1.15));
+
+  // límite/piso aplica solo al sujeto → línea punteada SOLO sobre la 1ª barra.
+  const limitColor = isMin ? '#16A34A' : '#DC2626';
+  const limitLinePlugin = {
+    id: 'limitLine',
+    afterDatasetsDraw(chart) {
+      const { ctx, scales:{y} } = chart;
+      const meta = chart.getDatasetMeta(0);
+      const bar = meta && meta.data && meta.data[0];
+      if (!bar) return;
+      const yPos = y.getPixelForValue(limit);
+      const half = (bar.width || 40) * 0.78;
+      ctx.save();
+      ctx.beginPath();
+      ctx.setLineDash([6,4]);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = limitColor;
+      ctx.moveTo(bar.x - half, yPos);
+      ctx.lineTo(bar.x + half, yPos);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.font = '700 10px "DM Sans","Noto Sans",sans-serif';
+      ctx.fillStyle = limitColor;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'bottom';
+      ctx.fillText(`${isMin ? 'Floor' : 'Limit'} ${limit.toFixed(0)}%`, bar.x + half + 4, yPos - 2);
+      ctx.restore();
+    }
+  };
+
+  const datasets = [
+    { type:'bar', label:'%', data:values,
+      backgroundColor: barColors, borderWidth:0, borderRadius:4,
+      barPercentage:0.6, categoryPercentage:0.7 }
+  ];
+
+  _chartInstances[canvasId] = new Chart(canvas.getContext('2d'), {
+    data: { labels, datasets },
+    plugins: [valueLabelPlugin, limitLinePlugin],
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      devicePixelRatio: window.devicePixelRatio || 2,
+      animation: { duration: 400 },
+      layout: { padding: { top: 18, right: 8, bottom: 4, left: 4 } },
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:'#1E293B', titleColor:'#94A3B8', bodyColor:'#F8FAFC',
+          padding:10, cornerRadius:6,
+          titleFont:{family:'DM Sans',size:12,weight:'700'},
+          bodyFont:{family:'DM Sans',size:12},
+          callbacks: {
+            label: (c) => {
+              const v = c.parsed.y.toFixed(2);
+              if (c.dataIndex === 0) {
+                const ref = isMin ? `  vs floor ${limit.toFixed(2)}%` : `  vs limit ${limit.toFixed(2)}%`;
+                const flag = breach ? (isMin ? '  · BELOW FLOOR' : '  · BREACH') : '';
+                return ` ${v}%${ref}${flag}`;
+              }
+              return ` ${v}%  · not bound by this limit`;
+            }
+          }
+        }
+      },
+      scales:{
+        x:{ grid:{display:false}, border:{color:'#E2E8F0'},
+            ticks:{font:{family:'DM Sans',size:11},color:'#64748B',maxRotation:0,autoSkip:false} },
         y:{ beginAtZero:true, max:yMax,
             border:{color:'#E2E8F0'}, grid:{color:'#F1F5F9'},
             ticks:{font:{family:'DM Sans',size:11},color:'#64748B', callback:v=>`${v}%`} }
