@@ -173,6 +173,9 @@ tbody tr:hover{background:var(--bg);}
 .empty-card i{font-size:48px;color:var(--text-muted);margin-bottom:16px;display:block;}
 .empty-card h3{font-family:var(--font-primary);font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px;}
 .empty-card p{font-size:13px;}
+/* Caso C — criterios no extraídos: tono pendiente (ámbar), distinto del Caso B */
+.empty-card.empty-pending{background:var(--amber-bg);border-color:var(--amber-b);}
+.empty-card.empty-pending i{color:var(--amber);}
 
 /* Engine info box */
 .engine-info{background:var(--purple-bg);border:1px solid var(--purple-b);border-radius:var(--radius-lg);padding:14px 18px;margin-bottom:24px;display:flex;align-items:flex-start;gap:12px;}
@@ -192,6 +195,8 @@ tbody tr:hover{background:var(--bg);}
     <span class="selector-label">Facility</span>
     <div class="fac-pill active" data-facility="F-1600"><span>LEASE MD · Leasing</span><span class="fac-id">F/1600</span></div>
     <div class="fac-pill" data-facility="F-2087"><span>Consumo BNPL</span><span class="fac-id">F/2087</span></div>
+    <div class="fac-pill" data-facility="F-5572"><span>Exitus · No criteria</span><span class="fac-id">F/5572</span></div>
+    <div class="fac-pill" data-facility="F-9100"><span>Onboarding · Pending</span><span class="fac-id">F/9100</span></div>
   </div>
 
   <!-- Cut-off date selector (same pattern as Insights) -->
@@ -514,7 +519,20 @@ const FACILITIES = {
   ]
 },
 
+'F-9100': {
+  name: 'Onboarding Demo F/9100',
+  originator: '—',
+  product: '—',
+  total_amount: 0,
+  base_metric_label: '—',
+  currency: 'MXN',
+  cutoff: 'May 2026',
+  criteria_status: 'pending',
+  rules: []
+},
+
 'F-5572': {
+  criteria_status: 'none',
   name: 'Exitus Credit — Sin reglas',
   originator: 'Exitus Credit, S.A.P.I. de C.V. SOFOM, E.N.R.',
   product: 'Sin definir',
@@ -557,14 +575,25 @@ function renderFacility(facId) {
 
   // Empty state
   if (f.rules.length === 0) {
-    html += `
-      <div class="empty-card">
-        <i class="ph ph-shield-slash"></i>
-        <h3>No concentration rules defined for this facility</h3>
-        <p>This facility's agreement does not include concentration covenants.<br/>
-        Engine renders nothing — there is no list of 5 "default" criteria forced onto every facility.</p>
+    if (f.criteria_status === 'pending') {
+      // Caso C — el contrato SÍ tiene criterios, pero el DWH aún no los extrajo.
+      html += `
+      <div class="empty-card empty-pending">
+        <i class="ph ph-clock"></i>
+        <h3>Criteria not loaded yet</h3>
+        <p>This facility's concentration criteria haven't been extracted into the platform yet. They'll appear once processed.</p>
       </div>
     `;
+    } else {
+      // Caso B — el contrato no define criterios de concentración (estado final).
+      html += `
+      <div class="empty-card">
+        <i class="ph ph-shield"></i>
+        <h3>No concentration criteria</h3>
+        <p>This facility's agreement doesn't define concentration limits.</p>
+      </div>
+    `;
+    }
     root.innerHTML = html;
     return;
   }
