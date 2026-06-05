@@ -678,12 +678,13 @@
         </article>
       </undrawn-commitment-card>
 
-      <!-- Utilization trajectory mini-chart (internal-chart wrapper) -->
-      <article class="bg-surface border border-border rounded-xl p-5">
+      <!-- Utilization trajectory mini-chart (internal-chart wrapper) · click = ciclar casos de uso -->
+      <article id="utilCard" onclick="cycleUtilScenario(event)" class="bg-surface border border-border rounded-xl p-5 cursor-pointer hover:border-border-strong transition-colors" title="Click para ciclar entre casos de uso">
         <div class="flex items-center gap-2 mb-2">
           <h3 class="text-base font-bold text-text font-primary m-0">Utilization trajectory</h3>
           <i class="ph ph-info text-text-muted cursor-help" data-tt="Outstanding Debt ÷ Borrowing Base at each cut-off. Above 100% = drawn balance exceeds the borrowing base (over-advance). NOT against the $300M ceiling (that ratio is 75.5%)."></i>
-          <span class="ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-danger-bg text-danger border border-danger-border text-[10px] font-bold font-primary"
+          <span id="utilScenarioTag" class="text-[10px] font-primary font-semibold text-text-muted inline-flex items-center gap-1"><i class="ph ph-cursor-click"></i> Breach (1/6)</span>
+          <span id="utilBadge" class="ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-danger-bg text-danger border border-danger-border text-[10px] font-bold font-primary"
                 data-tt="Breach: utilization above 100%">
             <i class="ph ph-gauge text-[10px]"></i> 105.3% · Breach
           </span>
@@ -1071,24 +1072,25 @@
 
     <!-- ════════ <borrowing-base-section> · LEN-918 — order 2 ════════ -->
     <borrowing-base-section class="order-2 block">
-      <article class="bg-surface border border-border rounded-xl p-4">
+      <article id="bbCard" onclick="toggleBB(event)" class="bg-surface border border-border rounded-xl p-4 cursor-pointer hover:border-border-strong transition-colors" title="Click para alternar Availability ⇄ Excess">
         <header class="flex items-center gap-2.5 mb-3 flex-wrap">
           <h3 class="font-primary text-base font-bold uppercase tracking-wider text-text m-0">Borrowing Base</h3>
-          <!-- Two INDEPENDENT pills · LEN-918 -->
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-danger-bg text-danger border border-danger-border text-xs font-bold font-primary"
+          <!-- Two INDEPENDENT pills · LEN-918 · alternables por caso -->
+          <span id="bbPill1" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-danger-bg text-danger border border-danger-border text-xs font-bold font-primary"
                 data-tt="Breach: Outstanding Debt exceeds the Borrowing Base">
             <i class="ph ph-x-circle text-xs"></i> Non-compliant · BB deficit
           </span>
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-danger-bg text-danger border border-danger-border text-xs font-bold font-primary"
+          <span id="bbPill2" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-danger-bg text-danger border border-danger-border text-xs font-bold font-primary"
                 data-tt="Utilization above 100% — drawn balance exceeds borrowing base">
             <i class="ph ph-gauge text-xs"></i> 105.3% Utilization · Breach
           </span>
+          <span id="bbScenarioTag" class="ml-auto text-[10px] font-primary font-semibold text-text-muted inline-flex items-center gap-1"><i class="ph ph-cursor-click"></i> Excess (déficit)</span>
         </header>
 
         <!-- KPI strip · 3 primary numbers -->
         <div class="grid grid-cols-3 gap-3 mb-3 max-[900px]:grid-cols-1">
-          <!-- Excess — primary, breach severity · deficit = danger -->
-          <kpi-card class="block bg-danger-bg border border-danger-border rounded-xl p-4 min-h-[118px]"
+          <!-- Primary KPI · alternable: Excess (déficit) ⇄ Availability (cushion) -->
+          <kpi-card id="bbPrimaryCard" class="block bg-danger-bg border border-danger-border rounded-xl p-4 min-h-[118px]"
                     data-tt="Outstanding Debt − Borrowing Base = $226.40M − $215.00M = $11.40M over-advance">
             <div class="flex items-center gap-1.5 mb-1">
               <h4 class="font-primary text-sm font-medium text-danger m-0">Excess</h4>
@@ -1104,7 +1106,7 @@
               <i class="ph ph-info text-text-muted text-sm cursor-help"
                  data-tt="Max amount the originator can draw, given the eligible pool"></i>
             </div>
-            <div class="num text-3xl font-bold text-text leading-tight">$215.00M</div>
+            <div id="bbValue" class="num text-3xl font-bold text-text leading-tight">$215.00M</div>
           </kpi-card>
 
           <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[118px]">
@@ -1121,7 +1123,7 @@
         <!-- Legend -->
         <div class="flex justify-center gap-4 text-xs text-text-secondary mb-1.5">
           <span class="text-secondary"><span class="inline-block w-4 h-0.5 bg-current mr-1 align-middle"></span>Borrowing Base</span>
-          <span class="text-danger"><span class="inline-block w-4 h-0.5 bg-current mr-1 align-middle" style="background:repeating-linear-gradient(to right,currentColor 0 4px,transparent 4px 7px)"></span>Outstanding Debt</span>
+          <span id="bbLegendOD" class="text-danger"><span class="inline-block w-4 h-0.5 bg-current mr-1 align-middle" style="background:repeating-linear-gradient(to right,currentColor 0 4px,transparent 4px 7px)"></span>Outstanding Debt</span>
         </div>
 
         <!-- Chart: 2 lines — Borrowing Base vs Outstanding Debt · breach wedge where OD > BB -->
@@ -1146,40 +1148,34 @@
               <text x="36" y="133" text-anchor="end">$220M</text>
               <text x="36" y="173" text-anchor="end">$200M</text>
             </g>
-            <!-- Availability wedge (BB above OD) — Nov → crossover ~Feb -->
-            <!-- Nov: BB=$245M OD=$210M (+35) … Jan: BB=$230M OD=$221M (+9) -->
-            <polygon points="60,67.5 160,85 260,105 342,121 260,127.5 160,140 60,155" fill="url(#bbAvail)"/>
-            <!-- Excess / over-advance wedge (OD above BB) — crossover → Mar -->
-            <!-- Feb: BB=$222M OD=$224M (−2) … Mar: BB=$215M OD=$226.4M (−11.4) -->
-            <polygon points="342,121 360,120 460,114 460,142.5 360,125" fill="#DC2626" opacity="0.18"/>
-            <!-- OD line (dashed, danger — now exceeds BB) -->
-            <polyline points="60,155 160,140 260,127.5 360,120 460,114" fill="none" stroke="#DC2626" stroke-width="2.5" stroke-dasharray="5 3"/>
-            <g fill="#DC2626">
-              <circle cx="60" cy="155" r="3"/><circle cx="160" cy="140" r="3"/>
-              <circle cx="260" cy="127.5" r="3"/><circle cx="360" cy="120" r="3"/>
-              <circle cx="460" cy="114" r="3.5" stroke="#fff" stroke-width="1.5"/>
+            <!-- Capa de datos · reescrita por toggleBB (Availability ⇄ Excess) -->
+            <g id="bbDynamic">
+              <polygon points="60,67.5 160,85 260,105 342,121 260,127.5 160,140 60,155" fill="url(#bbAvail)"/>
+              <polygon points="342,121 360,120 460,114 460,142.5 360,125" fill="#DC2626" opacity="0.18"/>
+              <polyline points="60,155 160,140 260,127.5 360,120 460,114" fill="none" stroke="#DC2626" stroke-width="2.5" stroke-dasharray="5 3"/>
+              <g fill="#DC2626">
+                <circle cx="60" cy="155" r="3"/><circle cx="160" cy="140" r="3"/>
+                <circle cx="260" cy="127.5" r="3"/><circle cx="360" cy="120" r="3"/>
+                <circle cx="460" cy="114" r="3.5" stroke="#fff" stroke-width="1.5"/>
+              </g>
+              <polyline points="60,67.5 160,85 260,105 360,125 460,142.5" fill="none" stroke="#910057" stroke-width="2.5"/>
+              <g fill="#910057">
+                <circle cx="60" cy="67.5" r="3"/><circle cx="160" cy="85" r="3"/>
+                <circle cx="260" cy="105" r="3"/><circle cx="360" cy="125" r="3"/>
+                <circle cx="460" cy="142.5" r="3.5" stroke="#fff" stroke-width="1.5"/>
+              </g>
+              <circle cx="342" cy="121" r="3" fill="#fff" stroke="#DC2626" stroke-width="1.5"/>
+              <text x="342" y="112" text-anchor="middle" font-family="Sofia Sans" font-size="8.5" font-weight="700" fill="#DC2626">breach</text>
+              <g font-family="Sofia Sans" font-size="10" fill="#64748B">
+                <text x="60" y="190" text-anchor="middle">Nov 25</text>
+                <text x="160" y="190" text-anchor="middle">Dec 25</text>
+                <text x="260" y="190" text-anchor="middle">Jan 26</text>
+                <text x="360" y="190" text-anchor="middle">Feb 26</text>
+                <text x="460" y="190" text-anchor="middle">Mar 26</text>
+              </g>
+              <line x1="460" y1="114" x2="460" y2="142.5" stroke="#DC2626" stroke-width="1" stroke-dasharray="2 2"/>
+              <text x="455" y="131" text-anchor="end" font-family="Space Mono" font-size="9" fill="#DC2626" font-weight="bold">−$11.4M</text>
             </g>
-            <!-- BB line (solid secondary) -->
-            <polyline points="60,67.5 160,85 260,105 360,125 460,142.5" fill="none" stroke="#910057" stroke-width="2.5"/>
-            <g fill="#910057">
-              <circle cx="60" cy="67.5" r="3"/><circle cx="160" cy="85" r="3"/>
-              <circle cx="260" cy="105" r="3"/><circle cx="360" cy="125" r="3"/>
-              <circle cx="460" cy="142.5" r="3.5" stroke="#fff" stroke-width="1.5"/>
-            </g>
-            <!-- Crossover marker -->
-            <circle cx="342" cy="121" r="3" fill="#fff" stroke="#DC2626" stroke-width="1.5"/>
-            <text x="342" y="112" text-anchor="middle" font-family="Sofia Sans" font-size="8.5" font-weight="700" fill="#DC2626">breach</text>
-            <!-- X axis labels -->
-            <g font-family="Sofia Sans" font-size="10" fill="#64748B">
-              <text x="60" y="190" text-anchor="middle">Nov 25</text>
-              <text x="160" y="190" text-anchor="middle">Dec 25</text>
-              <text x="260" y="190" text-anchor="middle">Jan 26</text>
-              <text x="360" y="190" text-anchor="middle">Feb 26</text>
-              <text x="460" y="190" text-anchor="middle">Mar 26</text>
-            </g>
-            <!-- Annotation on latest — Excess callout -->
-            <line x1="460" y1="114" x2="460" y2="142.5" stroke="#DC2626" stroke-width="1" stroke-dasharray="2 2"/>
-            <text x="455" y="131" text-anchor="end" font-family="Space Mono" font-size="9" fill="#DC2626" font-weight="bold">−$11.4M</text>
           </svg>
         </div>
 
@@ -1197,7 +1193,7 @@
               <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Utilization</th>
               <th class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Status</th>
             </tr></thead>
-            <tbody>
+            <tbody id="bbTableBody">
               <tr><td class="p-3 border-b border-border">Nov 30, 2025</td><td class="p-3 border-b border-border text-right num">$245.0M</td><td class="p-3 border-b border-border text-right num">$210.0M</td><td class="p-3 border-b border-border text-right num text-success">$35.0M</td><td class="p-3 border-b border-border text-right num">85.7%</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
               <tr><td class="p-3 border-b border-border">Dec 31, 2025</td><td class="p-3 border-b border-border text-right num">$238.0M</td><td class="p-3 border-b border-border text-right num">$216.0M</td><td class="p-3 border-b border-border text-right num text-success">$22.0M</td><td class="p-3 border-b border-border text-right num">90.8%</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
               <tr><td class="p-3 border-b border-border">Jan 31, 2026</td><td class="p-3 border-b border-border text-right num">$230.0M</td><td class="p-3 border-b border-border text-right num">$221.0M</td><td class="p-3 border-b border-border text-right num text-warning">$9.0M</td><td class="p-3 border-b border-border text-right num">96.1%</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
@@ -1954,50 +1950,99 @@
   }
 </script>
 <script>
-/* ════════ Trend range selector → Utilization trajectory (LEN-521) ════════
-   Control global de ventana temporal + degradación con pocos cortes.
-   En Angular: trendRange sería un signal compartido; availableCutOffs vendría del
-   historial real de la facility. Demo: override ?cuts=N simula una facility nueva. */
+/* ════════ Utilization trajectory · Trend range + cycling de casos de uso (LEN-521) ════════
+   - Trend range (3M/6M/12M/YTD): control global de ventana temporal + degradación con pocos cortes.
+   - Click en el card: cicla los 6 casos de uso del componente (demo).
+   En Angular: trendRange = signal compartido; el cycling es solo afordance de prototipo. */
 (function(){
-  // OD/BB por cut-off mensual · as-of Mar 31 2026 · 12 meses de historia
+  // Caso base (Breach) · 12 meses · as-of Mar 31 2026. ?cuts=N simula facility nueva (BOUS/CIM).
   const FULL = [
     {m:'Apr 25',u:68.0},{m:'May 25',u:70.0},{m:'Jun 25',u:72.0},
     {m:'Jul 25',u:71.0},{m:'Aug 25',u:74.0},{m:'Sep 25',u:78.0},
     {m:'Oct 25',u:82.0},{m:'Nov 25',u:85.7},{m:'Dec 25',u:90.8},
     {m:'Jan 26',u:96.1},{m:'Feb 26',u:100.9},{m:'Mar 26',u:105.3},
   ];
-  // ── Demo: ?cuts=N simula una facility con menos historial (BOUS/CIM) ──
   const qp = new URLSearchParams(location.search);
   const cap = Math.max(0, Math.min(parseInt(qp.get('cuts'), 10) || FULL.length, FULL.length));
-  const SERIES = FULL.slice(FULL.length - cap);          // cortes realmente disponibles
-  const AVAILABLE = SERIES.length;
-  const YTD_CUTS = SERIES.filter(d => d.m.endsWith(' 26')).length; // cortes del año en curso
 
-  const RANGES = { '3M':3, '6M':6, '12M':12, 'YTD': YTD_CUTS };
+  const badgeBase = 'ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold font-primary ';
+  // Los 6 casos de uso del componente (mismos de la galería de estados)
+  const SCENARIOS = [
+    { key:'breach', name:'Breach', color:'#DC2626', icon:'ph-gauge', badge:'105.3% · Breach',
+      badgeCls:'bg-danger-bg text-danger border border-danger-border', series: FULL.slice(FULL.length - cap) },
+    { key:'watch', name:'Watch', color:'#EA580C', icon:'ph-warning', badge:'94.9% · Watch',
+      badgeCls:'bg-warning-bg text-warning border border-warning-border',
+      series:[{m:'Nov 25',u:85.7},{m:'Dec 25',u:88.7},{m:'Jan 26',u:91.1},{m:'Feb 26',u:93.1},{m:'Mar 26',u:94.9}] },
+    { key:'sano', name:'Sano', color:'#16A34A', icon:'ph-check-circle', badge:'60% · Sano',
+      badgeCls:'bg-success-bg text-success border border-success/30',
+      series:[{m:'Nov 25',u:58},{m:'Dec 25',u:60},{m:'Jan 26',u:59},{m:'Feb 26',u:61},{m:'Mar 26',u:60}] },
+    { key:'revolvente', name:'Revolvente', color:'#0284C7', icon:'ph-arrows-clockwise', badge:'Revolvente · ~90%',
+      badgeCls:'bg-info-bg text-info border border-info/30',
+      series:[{m:'Aug 25',u:72},{m:'Sep 25',u:88},{m:'Oct 25',u:74},{m:'Nov 25',u:90},{m:'Dec 25',u:76},{m:'Jan 26',u:91},{m:'Feb 26',u:78},{m:'Mar 26',u:89}] },
+    { key:'arco', name:'Arco amortizante', color:'#475569', icon:'ph-chart-line-down', badge:'Amortizando',
+      badgeCls:'bg-slate-100 text-text-secondary border border-border-strong',
+      series:[{m:'Nov 25',u:70},{m:'Dec 25',u:85},{m:'Jan 26',u:92},{m:'Feb 26',u:80},{m:'Mar 26',u:64}] },
+    { key:'mejorando', name:'Mejorando', color:'#16A34A', icon:'ph-trend-down', badge:'Mejorando ↓',
+      badgeCls:'bg-success-bg text-success border border-success/30',
+      series:[{m:'Nov 25',u:95},{m:'Dec 25',u:93},{m:'Jan 26',u:88},{m:'Feb 26',u:82},{m:'Mar 26',u:75}] },
+  ];
+
+  const RANGES = { '3M':3, '6M':6, '12M':12, 'YTD':3 }; // YTD ≈ últimos 3 (ene–mar del año en curso)
   const yScale = u => +(8 + (110 - u) * 1.48).toFixed(1); // ventana 60–110%
   const X0 = 4, X1 = 312;
   const $ = id => document.getElementById(id);
 
-  // Un rango está habilitado si hay al menos los cortes que pide (YTD: ≥1 corte del año)
-  const enabled = r => r === 'YTD' ? YTD_CUTS >= 1 : AVAILABLE >= RANGES[r];
+  let idx = 0;          // escenario actual
+  let range = '6M';     // ventana actual
+  const sc = () => SCENARIOS[idx];
+  const avail = () => sc().series.length;
+  const enabled = r => r === 'YTD' ? avail() >= 1 : avail() >= RANGES[r];
 
   function showLine(on){
     ['utilArea','utilLine','utilDot'].forEach(id => $(id).style.display = on ? '' : 'none');
     $('utilNoData').style.display = on ? 'none' : '';
   }
 
-  function render(range){
-    const want = RANGES[range] || AVAILABLE;
-    const data = SERIES.slice(SERIES.length - Math.min(want, AVAILABLE));
+  function applyColor(c){
+    document.querySelectorAll('#utilGrad stop').forEach(s => s.setAttribute('stop-color', c));
+    $('utilLine').setAttribute('stroke', c);
+    $('utilDot').setAttribute('fill', c);
+  }
 
-    // Piso: 1 corte → no hay trayectoria
+  function setBadge(){
+    const s = sc();
+    $('utilBadge').className = badgeBase + s.badgeCls;
+    $('utilBadge').innerHTML = `<i class="ph ${s.icon} text-[10px]"></i> ${s.badge}`;
+    $('utilScenarioTag').innerHTML = `<i class="ph ph-cursor-click"></i> ${s.name} (${idx+1}/${SCENARIOS.length})`;
+  }
+
+  function syncButtons(){
+    document.querySelectorAll('.trend-btn').forEach(b=>{
+      const r = b.dataset.range, ok = enabled(r);
+      b.disabled = !ok;
+      b.classList.toggle('opacity-40', !ok);
+      b.classList.toggle('cursor-not-allowed', !ok);
+      if (!ok) b.setAttribute('data-tt', `Requiere ${RANGES[r]} cortes · este caso tiene ${avail()}`);
+      else b.removeAttribute('data-tt');
+      const on = ok && r === range;
+      b.classList.toggle('bg-secondary', on);
+      b.classList.toggle('text-white', on);
+      b.classList.toggle('shadow-sm', on);
+      b.classList.toggle('text-text-secondary', !on);
+    });
+  }
+
+  function render(){
+    const want = range === 'YTD' ? Math.min(3, avail()) : RANGES[range];
+    const data = sc().series.slice(sc().series.length - Math.min(want, avail()));
+    const note = $('utilNote');
+
     if (data.length <= 1){
       showLine(false);
       $('utilNoData').textContent = 'Sin historial de tendencia';
       $('utilLabelLeft').textContent = data[0] ? `${data[0].m} · ${data[0].u}%` : '—';
       $('utilLabelRight').textContent = '';
       $('utilCount').textContent = `${data.length} corte`;
-      const note = $('utilNote');
       note.className = 'mt-1.5 text-[10px] font-primary font-semibold text-text-muted';
       note.textContent = '○ 1 corte disponible — se requieren ≥2 para una tendencia';
       return;
@@ -2005,8 +2050,7 @@
 
     showLine(true);
     const step = (X1 - X0) / (data.length - 1);
-    const pts = data.map((d,i)=>`${(X0 + i*step).toFixed(1)},${yScale(d.u)}`);
-    const line = pts.join(' ');
+    const line = data.map((d,i)=>`${(X0 + i*step).toFixed(1)},${yScale(d.u)}`).join(' ');
     const lastX = (X0 + (data.length-1)*step).toFixed(1);
     $('utilLine').setAttribute('points', line);
     $('utilArea').setAttribute('points', `${line} ${lastX},96 ${X0},96`);
@@ -2016,41 +2060,140 @@
     $('utilLabelRight').textContent = `${data[data.length-1].m} · ${data[data.length-1].u}%`;
     $('utilCount').textContent = `${data.length} cut-offs`;
 
-    // Nota: tendencia preliminar con solo 2 cortes
-    const note = $('utilNote');
     if (data.length === 2){
       note.className = 'mt-1.5 text-[10px] font-primary font-semibold text-warning';
       note.textContent = '△ Tendencia preliminar — solo 2 cortes';
-    } else {
-      note.className = 'hidden';
-    }
+    } else { note.className = 'hidden'; }
   }
 
-  window.setTrendRange = function(range){
-    if (!enabled(range)) return;                         // botón deshabilitado: no-op
-    document.querySelectorAll('.trend-btn').forEach(b=>{
-      const on = b.dataset.range === range;
-      b.classList.toggle('bg-secondary', on);
-      b.classList.toggle('text-white', on);
-      b.classList.toggle('shadow-sm', on);
-      b.classList.toggle('text-text-secondary', !on && !b.disabled);
-    });
-    render(range);
+  function refresh(){
+    applyColor(sc().color);
+    setBadge();
+    if (!enabled(range)) range = ['6M','12M','3M','YTD'].find(enabled) || '3M';
+    syncButtons();
+    render();
+  }
+
+  window.setTrendRange = function(r){
+    if (!enabled(r)) return;
+    range = r; syncButtons(); render();
   };
 
-  // Estado inicial de botones: deshabilita rangos imposibles, default = mayor disponible
-  document.querySelectorAll('.trend-btn').forEach(b=>{
-    const r = b.dataset.range;
-    if (!enabled(r)){
-      b.disabled = true;
-      b.classList.add('opacity-40','cursor-not-allowed');
-      b.classList.remove('bg-secondary','text-white','shadow-sm');
-      b.classList.add('text-text-secondary');
-      b.setAttribute('data-tt', `Requiere ${RANGES[r]} cortes · esta facility tiene ${AVAILABLE}`);
-    }
-  });
-  const defaultRange = ['6M','12M','3M','YTD'].find(enabled) || '3M';
-  window.setTrendRange(defaultRange);
+  // Click en el card → ciclar caso de uso (los botones de rango viven fuera del card)
+  window.cycleUtilScenario = function(e){
+    idx = (idx + 1) % SCENARIOS.length;
+    refresh();
+  };
+
+  refresh();
+})();
+</script>
+<script>
+/* ════════ Borrowing Base · toggle Availability ⇄ Excess (LEN-521) ════════
+   Click en el card alterna los 2 casos de uso (cushion vs over-advance) para demo. */
+(function(){
+  const $ = id => document.getElementById(id);
+  const pillBase = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold font-primary ';
+
+  const rows = data => data.map((r,i)=>{
+    const last = i === data.length - 1;
+    const tr = last ? '<tr class="bg-bg">' : '<tr>';
+    const c1 = last ? '<td class="p-3"><strong>'+r.d+' · latest</strong></td>'
+                    : '<td class="p-3 border-b border-border">'+r.d+'</td>';
+    const bcl = last ? '' : ' border-b border-border';
+    const fb = last ? ' font-bold' : '';
+    const avCls = r.av < 0 ? 'text-danger' : 'text-success';
+    const utCls = r.ut > 100 ? 'text-danger' : '';
+    const stCls = r.av < 0 ? 'text-danger' : 'text-success';
+    const st = r.av < 0 ? 'Breach' : 'Compliant';
+    const fmt = v => (v<0?'−$':'$') + Math.abs(v).toFixed(1) + 'M';
+    return tr + c1
+      + '<td class="p-3'+bcl+' text-right num'+fb+'">$'+r.bb.toFixed(1)+'M</td>'
+      + '<td class="p-3'+bcl+' text-right num'+fb+'">$'+r.od.toFixed(1)+'M</td>'
+      + '<td class="p-3'+bcl+' text-right num'+fb+' '+avCls+'">'+fmt(r.av)+'</td>'
+      + '<td class="p-3'+bcl+' text-right num'+fb+' '+utCls+'">'+r.ut.toFixed(1)+'%</td>'
+      + '<td class="p-3'+bcl+'"><span class="'+stCls+' text-xs font-'+(last?'bold':'semibold')+'">'+st+'</span></td></tr>';
+  }).join('');
+
+  const CASES = {
+    excess: {
+      tag:'<i class="ph ph-cursor-click"></i> Excess (déficit)',
+      pill1:{cls:'bg-danger-bg text-danger border border-danger-border', html:'<i class="ph ph-x-circle text-xs"></i> Non-compliant · BB deficit'},
+      pill2:{cls:'bg-danger-bg text-danger border border-danger-border', html:'<i class="ph ph-gauge text-xs"></i> 105.3% Utilization · Breach'},
+      card:{cls:'block bg-danger-bg border border-danger-border rounded-xl p-4 min-h-[118px]',
+            tt:'Outstanding Debt − Borrowing Base = $226.40M − $215.00M = $11.40M over-advance',
+            title:'Excess', tcls:'text-danger', val:'−$11.40M', vcls:'text-danger', sub:'Drawn beyond borrowing base · over-advance'},
+      bbVal:'$215.00M', legendOD:'text-danger',
+      dynamic:
+        '<polygon points="60,67.5 160,85 260,105 342,121 260,127.5 160,140 60,155" fill="url(#bbAvail)"/>'+
+        '<polygon points="342,121 360,120 460,114 460,142.5 360,125" fill="#DC2626" opacity="0.18"/>'+
+        '<polyline points="60,155 160,140 260,127.5 360,120 460,114" fill="none" stroke="#DC2626" stroke-width="2.5" stroke-dasharray="5 3"/>'+
+        '<g fill="#DC2626"><circle cx="60" cy="155" r="3"/><circle cx="160" cy="140" r="3"/><circle cx="260" cy="127.5" r="3"/><circle cx="360" cy="120" r="3"/><circle cx="460" cy="114" r="3.5" stroke="#fff" stroke-width="1.5"/></g>'+
+        '<polyline points="60,67.5 160,85 260,105 360,125 460,142.5" fill="none" stroke="#910057" stroke-width="2.5"/>'+
+        '<g fill="#910057"><circle cx="60" cy="67.5" r="3"/><circle cx="160" cy="85" r="3"/><circle cx="260" cy="105" r="3"/><circle cx="360" cy="125" r="3"/><circle cx="460" cy="142.5" r="3.5" stroke="#fff" stroke-width="1.5"/></g>'+
+        '<circle cx="342" cy="121" r="3" fill="#fff" stroke="#DC2626" stroke-width="1.5"/><text x="342" y="112" text-anchor="middle" font-family="Sofia Sans" font-size="8.5" font-weight="700" fill="#DC2626">breach</text>'+
+        '<g font-family="Sofia Sans" font-size="10" fill="#64748B"><text x="60" y="190" text-anchor="middle">Nov 25</text><text x="160" y="190" text-anchor="middle">Dec 25</text><text x="260" y="190" text-anchor="middle">Jan 26</text><text x="360" y="190" text-anchor="middle">Feb 26</text><text x="460" y="190" text-anchor="middle">Mar 26</text></g>'+
+        '<line x1="460" y1="114" x2="460" y2="142.5" stroke="#DC2626" stroke-width="1" stroke-dasharray="2 2"/><text x="455" y="131" text-anchor="end" font-family="Space Mono" font-size="9" fill="#DC2626" font-weight="bold">−$11.4M</text>',
+      table: rows([
+        {d:'Nov 30, 2025',bb:245,od:210,av:35,ut:85.7},
+        {d:'Dec 31, 2025',bb:238,od:216,av:22,ut:90.8},
+        {d:'Jan 31, 2026',bb:230,od:221,av:9,ut:96.1},
+        {d:'Feb 28, 2026',bb:222,od:224,av:-2,ut:100.9},
+        {d:'Mar 31, 2026',bb:215,od:226.4,av:-11.4,ut:105.3},
+      ]),
+    },
+    availability: {
+      tag:'<i class="ph ph-cursor-click"></i> Availability (cushion)',
+      pill1:{cls:'bg-success-bg text-success border border-success/30', html:'<i class="ph ph-check-circle text-xs"></i> Compliant'},
+      pill2:{cls:'bg-warning-bg text-warning border border-warning-border', html:'<i class="ph ph-gauge text-xs"></i> 94.9% Utilization · Watch'},
+      card:{cls:'block bg-warning-bg border border-warning-border rounded-xl p-4 min-h-[118px]',
+            tt:'Borrowing Base − Outstanding Debt = $238.50M − $226.40M = $12.10M headroom',
+            title:'Availability', tcls:'text-warning', val:'$12.10M', vcls:'text-warning', sub:'Headroom before breach'},
+      bbVal:'$238.50M', legendOD:'text-warning',
+      dynamic:
+        '<polygon points="60,67.5 160,72.5 260,76.25 360,80 460,83.75 460,114 360,121.25 260,130 160,141.25 60,155" fill="url(#bbAvail)"/>'+
+        '<polyline points="60,155 160,141.25 260,130 360,121.25 460,114" fill="none" stroke="#B45309" stroke-width="2.5" stroke-dasharray="5 3"/>'+
+        '<g fill="#B45309"><circle cx="60" cy="155" r="3"/><circle cx="160" cy="141.25" r="3"/><circle cx="260" cy="130" r="3"/><circle cx="360" cy="121.25" r="3"/><circle cx="460" cy="114" r="3.5" stroke="#fff" stroke-width="1.5"/></g>'+
+        '<polyline points="60,67.5 160,72.5 260,76.25 360,80 460,83.75" fill="none" stroke="#910057" stroke-width="2.5"/>'+
+        '<g fill="#910057"><circle cx="60" cy="67.5" r="3"/><circle cx="160" cy="72.5" r="3"/><circle cx="260" cy="76.25" r="3"/><circle cx="360" cy="80" r="3"/><circle cx="460" cy="83.75" r="3.5" stroke="#fff" stroke-width="1.5"/></g>'+
+        '<g font-family="Sofia Sans" font-size="10" fill="#64748B"><text x="60" y="190" text-anchor="middle">Nov 25</text><text x="160" y="190" text-anchor="middle">Dec 25</text><text x="260" y="190" text-anchor="middle">Jan 26</text><text x="360" y="190" text-anchor="middle">Feb 26</text><text x="460" y="190" text-anchor="middle">Mar 26</text></g>'+
+        '<line x1="460" y1="83.75" x2="460" y2="114" stroke="#B45309" stroke-width="1" stroke-dasharray="2 2"/><text x="455" y="102" text-anchor="end" font-family="Space Mono" font-size="9" fill="#B45309" font-weight="bold">$12.1M</text>',
+      table: rows([
+        {d:'Nov 30, 2025',bb:245,od:210,av:35,ut:85.7},
+        {d:'Dec 31, 2025',bb:243,od:215.5,av:27.5,ut:88.7},
+        {d:'Jan 31, 2026',bb:241.5,od:220,av:21.5,ut:91.1},
+        {d:'Feb 28, 2026',bb:240,od:223.5,av:16.5,ut:93.1},
+        {d:'Mar 31, 2026',bb:238.5,od:226.4,av:12.1,ut:94.9},
+      ]),
+    },
+  };
+
+  let cur = 'excess';
+  function renderBB(){
+    const c = CASES[cur];
+    $('bbScenarioTag').innerHTML = c.tag;
+    $('bbPill1').className = pillBase + c.pill1.cls; $('bbPill1').innerHTML = c.pill1.html;
+    $('bbPill2').className = pillBase + c.pill2.cls; $('bbPill2').innerHTML = c.pill2.html;
+    const card = $('bbPrimaryCard');
+    card.className = c.card.cls; card.setAttribute('data-tt', c.card.tt);
+    card.innerHTML =
+      '<div class="flex items-center gap-1.5 mb-1"><h4 class="font-primary text-sm font-medium '+c.card.tcls+' m-0">'+c.card.title+'</h4>'+
+      '<i class="ph ph-info text-text-muted text-sm cursor-help"></i></div>'+
+      '<div class="num text-3xl font-bold '+c.card.vcls+' leading-tight">'+c.card.val+'</div>'+
+      '<div class="text-xs text-text-secondary mt-1">'+c.card.sub+'</div>';
+    $('bbValue').textContent = c.bbVal;
+    $('bbLegendOD').className = c.legendOD;
+    $('bbDynamic').innerHTML = c.dynamic;
+    $('bbTableBody').innerHTML = c.table;
+  }
+
+  window.toggleBB = function(e){
+    if (e && e.target.closest('details')) return; // no togglear al abrir la tabla
+    cur = cur === 'excess' ? 'availability' : 'excess';
+    renderBB();
+  };
+
+  renderBB();
 })();
 </script>
 </body>
