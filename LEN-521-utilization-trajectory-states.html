@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Utilization Trajectory · Estados del componente — LEN-521</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web" />
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:wght@400;500;700&family=Noto+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = {
+    theme: { extend: {
+      colors: {
+        primary:'#1F2733', secondary:'#910057', bg:'#F8FAFC', surface:'#FFFFFF',
+        border:'#E2E8F0', 'border-strong':'#CBD5E1', text:'#334155',
+        'text-secondary':'#64748B', 'text-muted':'#94A3B8',
+        success:'#16A34A','success-bg':'#F0FDF4', warning:'#B45309','warning-bg':'#FFFBEB','warning-border':'#FCD34D',
+        danger:'#DC2626','danger-bg':'#FEF2F2','danger-border':'#FCA5A5', info:'#0284C7','info-bg':'#F0F9FF',
+      },
+      fontFamily: { primary:['Sofia Sans','sans-serif'], ui:['Noto Sans','sans-serif'], mono:['Space Mono','monospace'] },
+      boxShadow: { card:'0 1px 3px rgba(0,0,0,.10), 0 1px 2px rgba(0,0,0,.06)' },
+    }},
+  };
+</script>
+<style>
+  body { font-family:'Noto Sans',system-ui,sans-serif; color:#334155; }
+  h1,h2,h3,h4 { font-family:'Sofia Sans',system-ui,sans-serif; }
+  .num { font-family:'Space Mono',monospace; font-feature-settings:"tnum"; }
+  [data-tt]{position:relative}
+  [data-tt]:hover::after{content:attr(data-tt);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#1F2733;color:#fff;font-size:.72rem;padding:6px 9px;border-radius:6px;width:230px;white-space:normal;z-index:50;font-weight:400;line-height:1.35}
+</style>
+</head>
+<body class="bg-bg text-text m-0 p-0">
+
+<div class="max-w-[1200px] mx-auto p-8">
+
+  <header class="mb-6">
+    <h1 class="font-primary text-2xl font-bold text-text m-0">Utilization trajectory · estados del componente</h1>
+    <p class="text-text-secondary text-sm mt-1 max-w-[820px]">
+      Cómo se ve el mismo gráfico bajo distintos comportamientos de facility. <strong>Escala compartida 40–110%</strong> y
+      las dos líneas de referencia (<span class="text-warning font-semibold">90% watch</span> · <span class="text-danger font-semibold">100% breach</span>)
+      están fijas en todas las tarjetas, así la posición vertical codifica severidad de forma comparable.
+      Métrica: <span class="num">Outstanding ÷ Borrowing Base</span> por cut-off.
+    </p>
+  </header>
+
+  <div id="grid" class="grid grid-cols-2 gap-5 max-[860px]:grid-cols-1"></div>
+
+  <p class="text-xs text-text-muted mt-8 num">Prototype · LEN-521 · Utilization trajectory states · CXC Design System v1.0</p>
+</div>
+
+<script>
+// y = 8 + (110 − pct) · 1.057  ·  ventana 40–110% sobre 74px
+const Y = p => +(8 + (110 - p) * 1.057).toFixed(1);
+const xs5 = [4,81,158,235,312];
+const xs8 = [4,48,92,136,180,224,268,312];
+const pts = (xs, vals) => xs.map((x,i)=>`${x},${Y(vals[i])}`).join(' ');
+
+const STATES = [
+  {
+    key:'healthy', color:'#16A34A',
+    badge:'61% · Sano', badgeCls:'bg-success-bg text-success border border-success/30',
+    tip:'Utilización baja y estable — amplio headroom contra el borrowing base.',
+    vals:[58,60,59,61,60], xs:xs5,
+    left:'Nov · 58%', right:'Mar · 61%',
+    icon:'ph-check-circle', iconCls:'text-success',
+    cap:'Estable ~60% — <strong class="text-text">~40 pts de headroom</strong> al borrowing base. Sin presión de disposición; un revolver subutilizado. Oportunidad comercial: hay espacio para colocar más.'
+  },
+  {
+    key:'revolving', color:'#0284C7',
+    badge:'Revolvente · picos ~90%', badgeCls:'bg-info-bg text-info border border-info/30',
+    tip:'Ciclo dispone/paga en cada periodo (vueltas). Se acerca al límite sin rebasarlo.',
+    vals:[72,88,74,90,76,91,78,89], xs:xs8,
+    left:'Ago · 72%', right:'Mar · 89%',
+    icon:'ph-arrows-clockwise', iconCls:'text-info',
+    cap:'Ciclo dispone/paga (<strong class="text-text">"vueltas"</strong>) — toca ~90% y amortiza. Función cíclica que se acerca al límite sin rebasarlo. <strong class="text-text">Patrón normal de revolvente</strong>; no confundir las vueltas con volatilidad de riesgo.'
+  },
+  {
+    key:'arc', color:'#475569',
+    badge:'Amortizando · post-pico', badgeCls:'bg-slate-100 text-text-secondary border border-border-strong',
+    tip:'Una disposición, pico, y amortización descendente. Perfil de término no-revolvente.',
+    vals:[70,85,92,80,64], xs:xs5,
+    left:'Nov · 70%', right:'Mar · 64%',
+    icon:'ph-chart-line-down', iconCls:'text-text-secondary',
+    cap:'Una disposición → <strong class="text-text">pico ~92%</strong> → la amortización jala la utilización hacia abajo. Perfil clásico de término no-revolvente — el "arco" / parábola cóncava. El descenso depende del perfil de amortización (bullet vs. mensualidades).'
+  },
+  {
+    key:'improving', color:'#16A34A',
+    badge:'Mejorando ↓', badgeCls:'bg-success-bg text-success border border-success/30',
+    tip:'Utilización cayendo: pagos superan disposiciones y/o el BB se recupera.',
+    vals:[95,93,88,82,75], xs:xs5,
+    left:'Nov · 95%', right:'Mar · 75%',
+    icon:'ph-trend-down', iconCls:'text-success',
+    cap:'Cae <strong class="text-success">95% → 75%</strong> — pagos superan disposiciones y el borrowing base se recupera. <strong class="text-text">De-risking</strong>: el headroom se reconstruye. Buena señal tras un periodo de watch.'
+  },
+  {
+    key:'watch', color:'#EA580C',
+    badge:'94.9% · Watch', badgeCls:'bg-warning-bg text-warning border border-warning-border',
+    tip:'Sube hacia 90%+ por compresión de colateral. Caso actual de F-2241 en Insights.',
+    vals:[85.7,88.7,91.1,93.1,94.9], xs:xs5,
+    left:'Nov · 85.7%', right:'Mar · 94.9%',
+    icon:'ph-warning', iconCls:'text-warning',
+    cap:'Sube hacia el <strong class="text-text">90%+</strong> — colateral comprimiéndose más que el outstanding. <strong class="text-warning">Caso actual de F-2241</strong> en la página de Insights.'
+  },
+  {
+    key:'breach', color:'#DC2626', shadeBreach:true,
+    badge:'105.3% · Breach', badgeCls:'bg-danger-bg text-danger border border-danger-border',
+    tip:'Cruza 100%: el outstanding supera el borrowing base (over-advance).',
+    vals:[85.7,90.8,96.1,100.9,105.3], xs:xs5,
+    left:'Nov · 85.7%', right:'Mar · 105.3%',
+    icon:'ph-x-circle', iconCls:'text-danger',
+    cap:'Cruza <strong class="text-danger">100% en Feb</strong> — over-advance: el drawn supera el borrowing base. <strong class="text-danger">Caso déficit</strong> del prototipo. Lo domina la compresión del BB, no el nuevo drawing.'
+  },
+];
+
+const y100 = Y(100); // 18.6
+const y90  = Y(90);  // 29.1
+
+const grid = document.getElementById('grid');
+grid.innerHTML = STATES.map(s => {
+  const linePts = pts(s.xs, s.vals);
+  const lastX = s.xs[s.xs.length-1], lastY = Y(s.vals[s.vals.length-1]);
+  const areaPts = `${linePts} ${lastX},96 4,96`;
+  const shade = s.shadeBreach ? `<rect x="0" y="0" width="320" height="${y100}" fill="#DC2626" opacity="0.07"/>` : '';
+  return `
+  <article class="bg-surface border border-border rounded-xl p-5 shadow-card">
+    <div class="flex items-center gap-2 mb-2">
+      <h3 class="text-base font-bold text-text font-primary m-0">Utilization trajectory</h3>
+      <i class="ph ph-info text-text-muted cursor-help text-sm" data-tt="${s.tip}"></i>
+      <span class="ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${s.badgeCls} text-[10px] font-bold font-primary">
+        <i class="ph ${s.icon} text-[10px]"></i> ${s.badge}
+      </span>
+    </div>
+    <svg viewBox="0 0 320 96" class="w-full h-[96px]" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="g_${s.key}" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="${s.color}" stop-opacity=".28"/>
+          <stop offset="100%" stop-color="${s.color}" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      ${shade}
+      <line x1="0" y1="${y90}" x2="320" y2="${y90}" stroke="#B45309" stroke-dasharray="2 3" stroke-width="0.8" opacity=".5"/>
+      <line x1="0" y1="${y100}" x2="320" y2="${y100}" stroke="#DC2626" stroke-dasharray="3 3" stroke-width="1"/>
+      <text x="318" y="${y100-2.5}" text-anchor="end" font-family="Space Mono" font-size="7" fill="#DC2626">100%</text>
+      <text x="318" y="${y90-2.5}" text-anchor="end" font-family="Space Mono" font-size="7" fill="#B45309" opacity=".7">90%</text>
+      <polygon points="${areaPts}" fill="url(#g_${s.key})"/>
+      <polyline points="${linePts}" fill="none" stroke="${s.color}" stroke-width="2.5"/>
+      <circle cx="${lastX}" cy="${lastY}" r="3" fill="${s.color}" stroke="#fff" stroke-width="1.5"/>
+    </svg>
+    <div class="flex justify-between text-[10px] text-text-muted num mt-1">
+      <span>${s.left}</span><span>${s.right}</span>
+    </div>
+    <div class="mt-2.5 flex items-start gap-1.5 text-[11px] text-text-secondary border-t border-border pt-2">
+      <i class="ph ${s.icon} ${s.iconCls} mt-px text-xs"></i>
+      <span>${s.cap}</span>
+    </div>
+  </article>`;
+}).join('');
+</script>
+</body>
+</html>

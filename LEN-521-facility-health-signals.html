@@ -144,7 +144,7 @@
   facility-insights-page, cut-off-header, cut-off-dropdown, reporting-frequency-badge,
   pool-overview, portfolio-balance-card, outstanding-debt-card, total-contracts-card,
   avg-current-balance-card, critical-signals, undrawn-commitment-card,
-  account-balance-status, aging-section, delinquency-card, overcollateralization-section,
+  collection-accounts, aging-section, delinquency-card, overcollateralization-section,
   borrowing-base-section, assets-evolution, assets-kpi-card, delta-chip, kpi-card,
   currency-selector, interest-rate-card, maximum-credit-amount-card { display: block; }
   currency-selector { display: inline-flex; }
@@ -388,11 +388,6 @@
         </div>
       </currency-selector>
 
-      <div class="flex items-center gap-2 text-xs text-text-secondary">
-        <i class="ph ph-clock-clockwise text-text-muted"></i>
-        <span>Prior cut-off: <strong class="text-text font-semibold">February 28, 2026</strong></span>
-      </div>
-
       <!-- <cut-off-dropdown [cutOffs]="cutOffOptions()" [selected]="selected()" (selectionChange)="onChange($event)" /> -->
       <cut-off-dropdown class="ml-auto" data-input-facility-id="FAC-2024-COV-2241">
         <button type="button"
@@ -494,10 +489,13 @@
 
       <!-- <reporting-frequency-badge [frequency]="freq()" [facilityId]="..." /> -->
       <reporting-frequency-badge data-input-frequency="monthly" data-input-median-delta-days="30">
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-info-bg text-info text-xs font-bold font-primary"
-              role="status" aria-label="Reporting frequency: Monthly"
-              data-tt="Inferred from the cut-off history of this facility.">
-          <i class="ph ph-clock-counter-clockwise text-xs"></i> Monthly
+        <span class="flex flex-col items-start gap-0.5">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-info-bg text-info text-xs font-bold font-primary"
+                role="status" aria-label="Reporting frequency: Monthly"
+                data-tt="Inferred from the cut-off history of this facility.">
+            <i class="ph ph-clock-counter-clockwise text-xs"></i> Monthly
+          </span>
+          <span class="text-[10px] text-text-muted pl-1 leading-none">Prior cut-off: Feb 28, 2026</span>
         </span>
       </reporting-frequency-badge>
     </section>
@@ -671,22 +669,37 @@
       <article class="bg-surface border border-border rounded-xl p-5">
         <div class="flex items-center gap-2 mb-2">
           <h3 class="text-base font-bold text-text font-primary m-0">Utilization trajectory</h3>
-          <i class="ph ph-info text-text-muted cursor-help" data-tt="Drawn % of committed across last 5 cut-offs"></i>
+          <i class="ph ph-info text-text-muted cursor-help" data-tt="Outstanding Debt ÷ Borrowing Base at each cut-off. Above 100% = drawn balance exceeds the borrowing base (over-advance). NOT against the $300M ceiling (that ratio is 75.5%)."></i>
+          <span class="ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-danger-bg text-danger border border-danger-border text-[10px] font-bold font-primary"
+                data-tt="Breach: utilization above 100%">
+            <i class="ph ph-gauge text-[10px]"></i> 105.3% · Breach
+          </span>
         </div>
-        <svg viewBox="0 0 320 90" class="w-full h-[90px]" preserveAspectRatio="none">
+        <!-- OD/BB series: 85.7 → 90.8 → 96.1 → 100.9 → 105.3 · scale: y = 8 + (110−pct)·2.467 (80–110% window) -->
+        <svg viewBox="0 0 320 96" class="w-full h-[96px]" preserveAspectRatio="none">
           <defs>
             <linearGradient id="utilGrad" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stop-color="#EA580C" stop-opacity=".35"/>
-              <stop offset="100%" stop-color="#EA580C" stop-opacity="0"/>
+              <stop offset="0%" stop-color="#DC2626" stop-opacity=".30"/>
+              <stop offset="100%" stop-color="#DC2626" stop-opacity="0"/>
             </linearGradient>
           </defs>
-          <polyline points="0,72 64,66 128,60 192,48 256,32 320,18" fill="none" stroke="#EA580C" stroke-width="2.5"/>
-          <polygon points="0,72 64,66 128,60 192,48 256,32 320,18 320,90 0,90" fill="url(#utilGrad)"/>
-          <line x1="0" y1="9" x2="320" y2="9" stroke="#DC2626" stroke-dasharray="3 3" stroke-width="1"/>
-          <text x="318" y="7" text-anchor="end" font-family="Space Mono" font-size="9" fill="#DC2626">90% alert</text>
+          <!-- Breach zone above 100% -->
+          <rect x="0" y="0" width="320" height="33" fill="#DC2626" opacity="0.07"/>
+          <!-- 100% breach line -->
+          <line x1="0" y1="33" x2="320" y2="33" stroke="#DC2626" stroke-dasharray="3 3" stroke-width="1.2"/>
+          <text x="318" y="31" text-anchor="end" font-family="Space Mono" font-size="8" fill="#DC2626">100% breach</text>
+          <!-- Area + line -->
+          <polygon points="4,68 81,55 158,42 235,30 312,20 312,96 4,96" fill="url(#utilGrad)"/>
+          <polyline points="4,68 81,55 158,42 235,30 312,20" fill="none" stroke="#DC2626" stroke-width="2.5"/>
+          <circle cx="312" cy="20" r="3" fill="#DC2626" stroke="#fff" stroke-width="1.5"/>
         </svg>
         <div class="flex justify-between text-[10px] text-text-muted num mt-1">
-          <span>Nov 25</span><span>Dec 25</span><span>Jan 26</span><span>Feb 26</span><span>Mar 26</span>
+          <span>Nov 25 · 85.7%</span><span>Mar 26 · 105.3%</span>
+        </div>
+        <!-- Decomposition caption — the actionable signal: numerator vs denominator -->
+        <div class="mt-2.5 flex items-start gap-1.5 text-[11px] text-text-secondary border-t border-border pt-2">
+          <i class="ph ph-warning text-danger mt-px text-xs"></i>
+          <span>Crossed <strong class="text-danger">100% at Feb 26</strong> — over-advance. Driven mostly by Borrowing Base <strong class="text-danger">−$30.0M</strong> (collateral compression) plus Outstanding <strong class="text-danger">+$16.4M</strong>. The collapsing denominator is the bigger force.</span>
         </div>
       </article>
     </div>
@@ -744,7 +757,7 @@
               <article class="rounded-xl border border-danger-border bg-danger-bg p-4">
                 <div class="flex items-center gap-1.5 mb-2">
                   <h4 class="font-primary text-sm font-semibold text-danger m-0">Delinquent 90+</h4>
-                  <i class="ph ph-info text-text-muted cursor-help" data-tt="Receivables 90+ days past due ÷ outstanding total · Covenant max: 8%"></i>
+                  <i class="ph ph-info text-text-muted cursor-help" data-tt="Receivables 90+ days past due ÷ outstanding total"></i>
                   <span class="ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded bg-danger text-white text-[10px] font-bold font-primary tracking-wider">
                     <i class="ph ph-warning text-[10px]"></i> ALERT
                   </span>
@@ -869,10 +882,6 @@
                 <text id="agingLabel-mar" x="22" y="24" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#DC2626">14.0%</text>
                 <text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#334155">Mar 26</text>
               </g>
-
-              <!-- Covenant line · 8% (90+ threshold) — chart top y=30, 8% = 13.6px below → y=43.6 -->
-              <line x1="40" y1="43.6" x2="390" y2="43.6" stroke="#DC2626" stroke-dasharray="4 3" stroke-width="1.2" opacity=".75"/>
-              <text id="agingCovenantLabel" x="386" y="41" text-anchor="end" font-family="Sofia Sans" font-size="9" font-weight="700" fill="#DC2626">Covenant 8% (90+)</text>
             </svg>
             <div class="flex flex-wrap gap-3 text-xs text-text-secondary mt-1.5">
               <span><span class="inline-block w-2.5 h-2.5 rounded-sm bg-[#1E3A8A] mr-1 align-middle"></span>Current</span>
@@ -897,7 +906,7 @@
               <tr class="bg-bg">
                 <th rowspan="2" class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border align-bottom">Cut-off</th>
                 <th colspan="2" class="text-center p-2.5 font-primary text-[10px] uppercase tracking-wider text-warning font-bold border-b border-l border-border">30+ days past due</th>
-                <th colspan="2" class="text-center p-2.5 font-primary text-[10px] uppercase tracking-wider text-danger font-bold border-b border-l border-border">90+ days past due · covenant 8%</th>
+                <th colspan="2" class="text-center p-2.5 font-primary text-[10px] uppercase tracking-wider text-danger font-bold border-b border-l border-border">90+ days past due</th>
               </tr>
               <tr class="bg-bg">
                 <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-l border-border">%</th>
@@ -1050,27 +1059,27 @@
         <header class="flex items-center gap-2.5 mb-3 flex-wrap">
           <h3 class="font-primary text-base font-bold uppercase tracking-wider text-text m-0">Borrowing Base</h3>
           <!-- Two INDEPENDENT pills · LEN-918 -->
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success-bg text-success text-xs font-bold font-primary"
-                data-tt="Compliant when Borrowing Base ≥ Outstanding Debt">
-            <i class="ph ph-check-circle text-xs"></i> Compliant
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-danger-bg text-danger border border-danger-border text-xs font-bold font-primary"
+                data-tt="Breach: Outstanding Debt exceeds the Borrowing Base">
+            <i class="ph ph-x-circle text-xs"></i> Non-compliant · BB deficit
           </span>
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-warning-bg text-warning text-xs font-bold font-primary"
-                data-tt="Watch zone: utilization between 85% and 95%">
-            <i class="ph ph-gauge text-xs"></i> 94.9% Utilization · Watch
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-danger-bg text-danger border border-danger-border text-xs font-bold font-primary"
+                data-tt="Utilization above 100% — drawn balance exceeds borrowing base">
+            <i class="ph ph-gauge text-xs"></i> 105.3% Utilization · Breach
           </span>
         </header>
 
         <!-- KPI strip · 3 primary numbers -->
         <div class="grid grid-cols-3 gap-3 mb-3 max-[900px]:grid-cols-1">
-          <!-- Availability — primary, with severity color · Watch = amber -->
-          <kpi-card class="block bg-warning-bg border border-warning-border rounded-xl p-4 min-h-[118px]"
-                    data-tt="Borrowing Base − Outstanding Debt = $238.50M − $226.40M">
+          <!-- Excess — primary, breach severity · deficit = danger -->
+          <kpi-card class="block bg-danger-bg border border-danger-border rounded-xl p-4 min-h-[118px]"
+                    data-tt="Outstanding Debt − Borrowing Base = $226.40M − $215.00M = $11.40M over-advance">
             <div class="flex items-center gap-1.5 mb-1">
-              <h4 class="font-primary text-sm font-medium text-warning m-0">Availability</h4>
+              <h4 class="font-primary text-sm font-medium text-danger m-0">Excess</h4>
               <i class="ph ph-info text-text-muted text-sm cursor-help"></i>
             </div>
-            <div class="num text-3xl font-bold text-warning leading-tight">$12.10M</div>
-            <div class="text-xs text-text-secondary mt-1">Headroom before breach</div>
+            <div class="num text-3xl font-bold text-danger leading-tight">−$11.40M</div>
+            <div class="text-xs text-text-secondary mt-1">Drawn beyond borrowing base · over-advance</div>
           </kpi-card>
 
           <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[118px]">
@@ -1079,7 +1088,7 @@
               <i class="ph ph-info text-text-muted text-sm cursor-help"
                  data-tt="Max amount the originator can draw, given the eligible pool"></i>
             </div>
-            <div class="num text-3xl font-bold text-text leading-tight">$238.50M</div>
+            <div class="num text-3xl font-bold text-text leading-tight">$215.00M</div>
           </kpi-card>
 
           <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[118px]">
@@ -1096,16 +1105,16 @@
         <!-- Legend -->
         <div class="flex justify-center gap-4 text-xs text-text-secondary mb-1.5">
           <span class="text-secondary"><span class="inline-block w-4 h-0.5 bg-current mr-1 align-middle"></span>Borrowing Base</span>
-          <span class="text-warning"><span class="inline-block w-4 h-0.5 bg-current mr-1 align-middle" style="background:repeating-linear-gradient(to right,currentColor 0 4px,transparent 4px 7px)"></span>Outstanding Debt</span>
+          <span class="text-danger"><span class="inline-block w-4 h-0.5 bg-current mr-1 align-middle" style="background:repeating-linear-gradient(to right,currentColor 0 4px,transparent 4px 7px)"></span>Outstanding Debt</span>
         </div>
 
-        <!-- Chart: 2 lines with availability gap filled -->
+        <!-- Chart: 2 lines — Borrowing Base vs Outstanding Debt · breach wedge where OD > BB -->
         <div class="bg-bg border border-border rounded-lg p-3.5 mt-2">
           <svg viewBox="0 0 480 200" class="w-full h-[200px]">
             <defs>
               <linearGradient id="bbAvail" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stop-color="#16A34A" stop-opacity=".20"/>
-                <stop offset="100%" stop-color="#B45309" stop-opacity=".15"/>
+                <stop offset="0%" stop-color="#16A34A" stop-opacity=".18"/>
+                <stop offset="100%" stop-color="#16A34A" stop-opacity=".06"/>
               </linearGradient>
             </defs>
             <!-- Grid -->
@@ -1121,24 +1130,29 @@
               <text x="36" y="133" text-anchor="end">$220M</text>
               <text x="36" y="173" text-anchor="end">$200M</text>
             </g>
-            <!-- Availability area (gap between BB and OD — closing over time) -->
-            <!-- Nov: BB=$245M, OD=$210M, avail=$35M (wide) -->
-            <!-- Mar: BB=$238.5M, OD=$226.4M, avail=$12.1M (tight) -->
-            <polygon points="60,55 160,60 260,68 360,76 460,75 460,98 360,108 260,116 160,120 60,125" fill="url(#bbAvail)"/>
-            <!-- OD line (dashed amber) -->
-            <polyline points="60,125 160,120 260,116 360,108 460,98" fill="none" stroke="#B45309" stroke-width="2.5" stroke-dasharray="5 3"/>
-            <g fill="#B45309">
-              <circle cx="60" cy="125" r="3"/><circle cx="160" cy="120" r="3"/>
-              <circle cx="260" cy="116" r="3"/><circle cx="360" cy="108" r="3"/>
-              <circle cx="460" cy="98" r="3.5" stroke="#fff" stroke-width="1.5"/>
+            <!-- Availability wedge (BB above OD) — Nov → crossover ~Feb -->
+            <!-- Nov: BB=$245M OD=$210M (+35) … Jan: BB=$230M OD=$221M (+9) -->
+            <polygon points="60,67.5 160,85 260,105 342,121 260,127.5 160,140 60,155" fill="url(#bbAvail)"/>
+            <!-- Excess / over-advance wedge (OD above BB) — crossover → Mar -->
+            <!-- Feb: BB=$222M OD=$224M (−2) … Mar: BB=$215M OD=$226.4M (−11.4) -->
+            <polygon points="342,121 360,120 460,114 460,142.5 360,125" fill="#DC2626" opacity="0.18"/>
+            <!-- OD line (dashed, danger — now exceeds BB) -->
+            <polyline points="60,155 160,140 260,127.5 360,120 460,114" fill="none" stroke="#DC2626" stroke-width="2.5" stroke-dasharray="5 3"/>
+            <g fill="#DC2626">
+              <circle cx="60" cy="155" r="3"/><circle cx="160" cy="140" r="3"/>
+              <circle cx="260" cy="127.5" r="3"/><circle cx="360" cy="120" r="3"/>
+              <circle cx="460" cy="114" r="3.5" stroke="#fff" stroke-width="1.5"/>
             </g>
             <!-- BB line (solid secondary) -->
-            <polyline points="60,55 160,60 260,68 360,76 460,75" fill="none" stroke="#910057" stroke-width="2.5"/>
+            <polyline points="60,67.5 160,85 260,105 360,125 460,142.5" fill="none" stroke="#910057" stroke-width="2.5"/>
             <g fill="#910057">
-              <circle cx="60" cy="55" r="3"/><circle cx="160" cy="60" r="3"/>
-              <circle cx="260" cy="68" r="3"/><circle cx="360" cy="76" r="3"/>
-              <circle cx="460" cy="75" r="3.5" stroke="#fff" stroke-width="1.5"/>
+              <circle cx="60" cy="67.5" r="3"/><circle cx="160" cy="85" r="3"/>
+              <circle cx="260" cy="105" r="3"/><circle cx="360" cy="125" r="3"/>
+              <circle cx="460" cy="142.5" r="3.5" stroke="#fff" stroke-width="1.5"/>
             </g>
+            <!-- Crossover marker -->
+            <circle cx="342" cy="121" r="3" fill="#fff" stroke="#DC2626" stroke-width="1.5"/>
+            <text x="342" y="112" text-anchor="middle" font-family="Sofia Sans" font-size="8.5" font-weight="700" fill="#DC2626">breach</text>
             <!-- X axis labels -->
             <g font-family="Sofia Sans" font-size="10" fill="#64748B">
               <text x="60" y="190" text-anchor="middle">Nov 25</text>
@@ -1147,9 +1161,9 @@
               <text x="360" y="190" text-anchor="middle">Feb 26</text>
               <text x="460" y="190" text-anchor="middle">Mar 26</text>
             </g>
-            <!-- Annotation on latest point — Availability callout -->
-            <line x1="460" y1="75" x2="460" y2="98" stroke="#B45309" stroke-width="1" stroke-dasharray="2 2"/>
-            <text x="465" y="89" font-family="Space Mono" font-size="9" fill="#B45309" font-weight="bold">$12.1M</text>
+            <!-- Annotation on latest — Excess callout -->
+            <line x1="460" y1="114" x2="460" y2="142.5" stroke="#DC2626" stroke-width="1" stroke-dasharray="2 2"/>
+            <text x="455" y="131" text-anchor="end" font-family="Space Mono" font-size="9" fill="#DC2626" font-weight="bold">−$11.4M</text>
           </svg>
         </div>
 
@@ -1163,16 +1177,16 @@
               <th class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Cut-off</th>
               <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Borrowing Base</th>
               <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Outstanding Debt</th>
-              <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Availability</th>
+              <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Avail. / (Excess)</th>
               <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Utilization</th>
               <th class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Status</th>
             </tr></thead>
             <tbody>
               <tr><td class="p-3 border-b border-border">Nov 30, 2025</td><td class="p-3 border-b border-border text-right num">$245.0M</td><td class="p-3 border-b border-border text-right num">$210.0M</td><td class="p-3 border-b border-border text-right num text-success">$35.0M</td><td class="p-3 border-b border-border text-right num">85.7%</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
-              <tr><td class="p-3 border-b border-border">Dec 31, 2025</td><td class="p-3 border-b border-border text-right num">$243.0M</td><td class="p-3 border-b border-border text-right num">$215.5M</td><td class="p-3 border-b border-border text-right num text-success">$27.5M</td><td class="p-3 border-b border-border text-right num">88.7%</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
-              <tr><td class="p-3 border-b border-border">Jan 31, 2026</td><td class="p-3 border-b border-border text-right num">$241.5M</td><td class="p-3 border-b border-border text-right num">$220.0M</td><td class="p-3 border-b border-border text-right num text-warning">$21.5M</td><td class="p-3 border-b border-border text-right num">91.1%</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
-              <tr><td class="p-3 border-b border-border">Feb 28, 2026</td><td class="p-3 border-b border-border text-right num">$240.0M</td><td class="p-3 border-b border-border text-right num">$223.5M</td><td class="p-3 border-b border-border text-right num text-warning">$16.5M</td><td class="p-3 border-b border-border text-right num">93.1%</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
-              <tr class="bg-bg"><td class="p-3"><strong>Mar 31, 2026 · latest</strong></td><td class="p-3 text-right num font-bold">$238.5M</td><td class="p-3 text-right num font-bold">$226.4M</td><td class="p-3 text-right num font-bold text-warning">$12.1M</td><td class="p-3 text-right num font-bold text-warning">94.9%</td><td class="p-3"><span class="text-success text-xs font-bold">Compliant</span></td></tr>
+              <tr><td class="p-3 border-b border-border">Dec 31, 2025</td><td class="p-3 border-b border-border text-right num">$238.0M</td><td class="p-3 border-b border-border text-right num">$216.0M</td><td class="p-3 border-b border-border text-right num text-success">$22.0M</td><td class="p-3 border-b border-border text-right num">90.8%</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
+              <tr><td class="p-3 border-b border-border">Jan 31, 2026</td><td class="p-3 border-b border-border text-right num">$230.0M</td><td class="p-3 border-b border-border text-right num">$221.0M</td><td class="p-3 border-b border-border text-right num text-warning">$9.0M</td><td class="p-3 border-b border-border text-right num">96.1%</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
+              <tr><td class="p-3 border-b border-border">Feb 28, 2026</td><td class="p-3 border-b border-border text-right num">$222.0M</td><td class="p-3 border-b border-border text-right num">$224.0M</td><td class="p-3 border-b border-border text-right num text-danger font-semibold">−$2.0M</td><td class="p-3 border-b border-border text-right num text-danger">100.9%</td><td class="p-3 border-b border-border"><span class="text-danger text-xs font-semibold">Breach</span></td></tr>
+              <tr class="bg-bg"><td class="p-3"><strong>Mar 31, 2026 · latest</strong></td><td class="p-3 text-right num font-bold">$215.0M</td><td class="p-3 text-right num font-bold">$226.4M</td><td class="p-3 text-right num font-bold text-danger">−$11.4M</td><td class="p-3 text-right num font-bold text-danger">105.3%</td><td class="p-3"><span class="text-danger text-xs font-bold">Breach</span></td></tr>
             </tbody>
           </table>
         </details>
@@ -1299,102 +1313,44 @@
       </article>
     </assets-evolution>
 
-    <!-- <account-balance-status [data]="accBal()" /> LEN-570 — order 5 -->
-    <account-balance-status class="order-5 block">
+    <!-- <collection-accounts [data]="..." /> · promovido a Insights desde Account Balance (resto vive en Cash flow) -->
+    <collection-accounts class="order-5 block">
       <article class="bg-surface border border-border rounded-xl p-4">
         <header class="flex items-center justify-between gap-3 flex-wrap mb-2">
           <h3 class="font-primary text-base font-bold uppercase tracking-wider m-0 flex items-center gap-2">
-            <i class="ph ph-shield-check text-danger"></i> Account Balance
-            <span class="inline-block px-2 py-0.5 rounded bg-border text-primary text-[10px] font-bold tracking-wider font-primary">STATUS</span>
+            <i class="ph ph-wallet text-success"></i> Collection Accounts
+            <span class="inline-block px-2 py-0.5 rounded bg-border text-primary text-[10px] font-bold tracking-wider font-primary">CASH IN</span>
           </h3>
-          <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-danger-bg text-danger text-xs font-bold font-primary">
-            <i class="ph ph-x-circle"></i> ✗ 2 account(s) in breach
+          <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-success-bg text-success text-xs font-bold font-primary">
+            <i class="ph ph-check-circle"></i> Both compliant
           </span>
         </header>
-        <p class="num text-sm text-text font-semibold mb-3"><strong class="text-primary">$86.57M</strong> total in trust accounts</p>
+        <p class="num text-sm text-text font-semibold mb-3"><strong class="text-primary">$61.52M</strong> in collection accounts at cut-off</p>
 
-        <table class="w-full border-collapse text-sm">
-          <thead>
-            <tr class="bg-bg">
-              <th class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">#</th>
-              <th class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Account</th>
-              <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Required</th>
-              <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Actual</th>
-              <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Deficit</th>
-              <th class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="p-3 border-b border-border num">1</td>
-              <td class="p-3 border-b border-border">Collection Account A</td>
-              <td class="p-3 border-b border-border text-right num">$42.50M</td>
-              <td class="p-3 border-b border-border text-right num">$48.12M</td>
-              <td class="p-3 border-b border-border text-right num">—</td>
-              <td class="p-3 border-b border-border">
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success-bg text-success text-xs font-bold font-primary">
-                  <span class="w-1.5 h-1.5 rounded-full bg-current"></span> Compliant
-                </span>
-              </td>
-            </tr>
-            <tr class="bg-danger-bg/40">
-              <td class="p-3 border-b border-border num">2</td>
-              <td class="p-3 border-b border-border">Payment Reserve Fund</td>
-              <td class="p-3 border-b border-border text-right num">$28.00M</td>
-              <td class="p-3 border-b border-border text-right num">$22.14M</td>
-              <td class="p-3 border-b border-border text-right num text-danger font-bold">−$5.86M</td>
-              <td class="p-3 border-b border-border">
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-danger-bg text-danger text-xs font-bold font-primary">
-                  <span class="w-1.5 h-1.5 rounded-full bg-current"></span> Non-Compliant
-                </span>
-              </td>
-            </tr>
-            <tr>
-              <td class="p-3 border-b border-border num">3</td>
-              <td class="p-3 border-b border-border">Collection Account B</td>
-              <td class="p-3 border-b border-border text-right num">$12.80M</td>
-              <td class="p-3 border-b border-border text-right num">$13.40M</td>
-              <td class="p-3 border-b border-border text-right num">—</td>
-              <td class="p-3 border-b border-border">
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success-bg text-success text-xs font-bold font-primary">
-                  <span class="w-1.5 h-1.5 rounded-full bg-current"></span> Compliant
-                </span>
-              </td>
-            </tr>
-            <tr class="bg-danger-bg/40">
-              <td class="p-3 border-b border-border num">4</td>
-              <td class="p-3 border-b border-border">Liquidity Fund</td>
-              <td class="p-3 border-b border-border text-right num">$8.50M</td>
-              <td class="p-3 border-b border-border text-right num">$6.93M</td>
-              <td class="p-3 border-b border-border text-right num text-danger font-bold">−$1.57M</td>
-              <td class="p-3 border-b border-border">
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-danger-bg text-danger text-xs font-bold font-primary">
-                  <span class="w-1.5 h-1.5 rounded-full bg-current"></span> Non-Compliant
-                </span>
-              </td>
-            </tr>
-            <tr>
-              <td class="p-3 num">5</td>
-              <td class="p-3">Expense Account</td>
-              <td class="p-3 text-right num">—</td>
-              <td class="p-3 text-right num">$2.65M</td>
-              <td class="p-3 text-right num">—</td>
-              <td class="p-3 text-text-muted text-xs">—</td>
-            </tr>
-          </tbody>
-          <tfoot>
-            <tr class="bg-bg border-t-2 border-border-strong">
-              <td class="p-3"></td>
-              <td class="p-3 font-primary font-bold uppercase tracking-wider text-[10px] text-text-secondary">Total</td>
-              <td class="p-3 text-right num font-bold text-text">$91.80M</td>
-              <td class="p-3 text-right num font-bold text-text">$93.24M</td>
-              <td class="p-3 text-right num font-bold text-danger">−$7.43M</td>
-              <td class="p-3"></td>
-            </tr>
-          </tfoot>
-        </table>
+        <div class="grid grid-cols-2 gap-4 max-[900px]:grid-cols-1">
+          <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[112px]">
+            <div class="flex items-center justify-between gap-2 mb-1">
+              <h4 class="font-primary text-sm font-medium text-text-secondary m-0">Collection Account A</h4>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-success-bg text-success text-[10px] font-bold font-primary"><span class="w-1.5 h-1.5 rounded-full bg-current"></span> Compliant</span>
+            </div>
+            <div class="num text-2xl font-bold text-text leading-tight">$48.12M</div>
+            <div class="text-xs text-text-secondary mt-1">Actual · required <span class="num">$42.50M</span> · <span class="num text-success">+$5.62M</span> cushion</div>
+          </kpi-card>
+          <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[112px]">
+            <div class="flex items-center justify-between gap-2 mb-1">
+              <h4 class="font-primary text-sm font-medium text-text-secondary m-0">Collection Account B</h4>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-success-bg text-success text-[10px] font-bold font-primary"><span class="w-1.5 h-1.5 rounded-full bg-current"></span> Compliant</span>
+            </div>
+            <div class="num text-2xl font-bold text-text leading-tight">$13.40M</div>
+            <div class="text-xs text-text-secondary mt-1">Actual · required <span class="num">$12.80M</span> · <span class="num text-success">+$0.60M</span> cushion</div>
+          </kpi-card>
+        </div>
+
+        <a href="./cash-flow/index.html" class="mt-3 inline-flex items-center gap-1.5 text-secondary text-xs font-semibold font-primary hover:underline">
+          <i class="ph ph-arrow-square-out"></i> Ver Account Balance completo (Reserve, Liquidity, Expense) en Cash flow
+        </a>
       </article>
-    </account-balance-status>
+    </collection-accounts>
   </section>
 
   <p class="text-xs text-text-muted mt-6 font-mono">
@@ -1832,7 +1788,7 @@
   const SELECTABLE_QUERIES = [
     'kpi-card',                       // Pool context cards + various
     'undrawn-commitment-card > article',
-    'account-balance-status > article',
+    'collection-accounts > article',
     'aging-section > article',
     'overcollateralization-section > article',
     'borrowing-base-section > article',
@@ -1842,7 +1798,7 @@
   function getSelectableElements() {
     const els = new Set();
     document.querySelectorAll('kpi-card').forEach(el => els.add(el));
-    document.querySelectorAll('undrawn-commitment-card > article, account-balance-status > article, aging-section > article, overcollateralization-section > article, borrowing-base-section > article, assets-evolution > article').forEach(el => els.add(el));
+    document.querySelectorAll('undrawn-commitment-card > article, collection-accounts > article, aging-section > article, overcollateralization-section > article, borrowing-base-section > article, assets-evolution > article').forEach(el => els.add(el));
     return Array.from(els);
   }
 
@@ -1992,7 +1948,6 @@
     const btnPct = document.getElementById('agingBtnPct');
     const btnAmt = document.getElementById('agingBtnAmt');
     const subtitle = document.getElementById('agingSubtitle');
-    const covenant = document.getElementById('agingCovenantLabel');
 
     // Toggle button states
     if (mode === 'pct'){
@@ -2013,13 +1968,11 @@
       if (el) el.textContent = mode === 'pct' ? v.pct : v.amt;
     });
 
-    // Update subtitle, footer, covenant label
+    // Update subtitle
     if (mode === 'pct'){
       subtitle.textContent = 'Distribution by bucket — last 5 cuts (% of portfolio)';
-      covenant.textContent = 'Covenant 8% (90+)';
     } else {
       subtitle.textContent = 'Distribution by bucket — last 5 cuts ($ USD amounts)';
-      covenant.textContent = 'Covenant 8% threshold';
     }
   }
 </script>

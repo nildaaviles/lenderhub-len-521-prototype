@@ -295,7 +295,7 @@ body {
             <th style="text-align:right;padding:10px 18px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0;border-top:1px solid #E2E8F0">Principal</th>
             <th style="text-align:right;padding:10px 18px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0;border-top:1px solid #E2E8F0">Interest</th>
             <th style="text-align:right;padding:10px 18px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0;border-top:1px solid #E2E8F0">Total</th>
-            <th style="text-align:right;padding:10px 18px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0;border-top:1px solid #E2E8F0">Principal %</th>
+            <th style="text-align:right;padding:10px 18px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0;border-top:1px solid #E2E8F0" title="Principal pagado ÷ adeudo total (outstanding)">Principal % <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#94A3B8">of debt</span></th>
           </tr>
         </thead>
         <tbody id="paymentTableBody"></tbody>
@@ -318,6 +318,8 @@ const labels = ['Dec 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026'];
 /* Real-ish data: principal + interest per month */
 const principal = [3.2, 5.8, 6.1, 4.5, 15.8];
 const interest  = [8.3, 15.1, 13.7, 22.8, 4.8];
+/* Adeudo total (outstanding debt) al inicio de cada periodo — denominador del % */
+const outstanding = [216.0, 221.0, 224.0, 226.4, 230.0];
 
 const fmtM = v => `$${v.toFixed(2)}M`;
 
@@ -414,7 +416,8 @@ new Chart(ctx, {
   const rows = labels.map((label, i) => {
     const p = principal[i], it = interest[i];
     const total = p + it;
-    const pct = total > 0 ? Math.round((p/total)*100) : 0;
+    const debt = outstanding[i];
+    const pct = debt > 0 ? (p/debt*100).toFixed(1) : '0.0';  // principal ÷ adeudo total
     totalP += p; totalI += it;
     return `<tr>
       <td style="padding:10px;border-bottom:1px solid #E2E8F0">${label}</td>
@@ -425,7 +428,8 @@ new Chart(ctx, {
     </tr>`;
   }).join('');
   const grand = totalP + totalI;
-  const grandPct = grand > 0 ? Math.round((totalP/grand)*100) : 0;
+  // Total: principal acumulado ÷ adeudo total de apertura del periodo
+  const grandPct = outstanding[0] > 0 ? (totalP/outstanding[0]*100).toFixed(1) : '0.0';
   tbody.innerHTML = rows + `<tr style="background:#F8FAFC;border-top:2px solid #CBD5E1">
     <td style="padding:10px;font-weight:700;font-family:'Sofia Sans',sans-serif;text-transform:uppercase;letter-spacing:.06em;font-size:10px;color:#64748B">Total · ${labels.length} cuts</td>
     <td style="padding:10px;text-align:right;font-family:'Space Mono',monospace;font-weight:700;color:#C92693">$${totalP.toFixed(2)}M</td>
