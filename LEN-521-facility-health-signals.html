@@ -144,7 +144,7 @@
   facility-insights-page, cut-off-header, cut-off-dropdown, reporting-frequency-badge,
   pool-overview, portfolio-balance-card, outstanding-debt-card, total-contracts-card,
   avg-current-balance-card, critical-signals, undrawn-commitment-card,
-  collection-accounts, aging-section, delinquency-card, overcollateralization-section,
+  aging-section, delinquency-card, overcollateralization-section,
   borrowing-base-section, assets-evolution, assets-kpi-card, delta-chip, kpi-card,
   currency-selector, interest-rate-card, maximum-credit-amount-card { display: block; }
   currency-selector { display: inline-flex; }
@@ -296,7 +296,7 @@
       </button>
       <div>
         <h1 class="font-primary text-3xl font-bold text-text m-0">F-2241 Covalto · Facility Insights</h1>
-        <p class="text-text-secondary text-sm m-0 mt-1">Originator: LeaseMD · Facility ID <span class="num">FAC-2024-COV-2241</span> · Currency MXN</p>
+        <p class="text-text-secondary text-sm m-0 mt-1">Originator: LeaseMD · Facility ID <span class="num">FAC-2024-COV-2241</span></p>
       </div>
     </div>
     <div class="flex gap-2">
@@ -581,7 +581,6 @@
             <i class="ph ph-info text-text-muted text-sm cursor-help" data-tt="Drawn principal outstanding"></i>
           </div>
           <div class="num text-3xl font-bold text-text leading-tight">$226.40M</div>
-          <div class="text-xs text-text-secondary mb-1">Drawn principal outstanding</div>
           <div>
             <!-- <delta-chip [delta]="delta" colorScheme="inverted" /> -->
             <delta-chip data-input-color-scheme="inverted" data-input-format="currency"
@@ -708,17 +707,16 @@
           <polygon id="utilArea" points="4,49.4 65.6,44 127.2,36.4 188.8,28.6 250.4,21.5 312,15 312,96 4,96" fill="url(#utilGrad)"/>
           <polyline id="utilLine" points="4,49.4 65.6,44 127.2,36.4 188.8,28.6 250.4,21.5 312,15" fill="none" stroke="#DC2626" stroke-width="2.5"/>
           <circle id="utilDot" cx="312" cy="15" r="3" fill="#DC2626" stroke="#fff" stroke-width="1.5"/>
+          <!-- Estado sin historial suficiente -->
+          <text id="utilNoData" x="160" y="52" text-anchor="middle" font-family="Sofia Sans" font-size="11" fill="#94A3B8" style="display:none">Sin historial de tendencia</text>
         </svg>
         <div class="flex justify-between items-baseline text-[10px] text-text-muted num mt-1">
           <span id="utilLabelLeft">Oct 25 · 82.0%</span>
           <span id="utilCount" class="text-text-muted/70">6 cut-offs</span>
           <span id="utilLabelRight">Mar 26 · 105.3%</span>
         </div>
-        <!-- Decomposition caption — the actionable signal: numerator vs denominator -->
-        <div class="mt-2.5 flex items-start gap-1.5 text-[11px] text-text-secondary border-t border-border pt-2">
-          <i class="ph ph-warning text-danger mt-px text-xs"></i>
-          <span>Crossed <strong class="text-danger">100% at Feb 26</strong> — over-advance. Driven mostly by Borrowing Base <strong class="text-danger">−$30.0M</strong> (collateral compression) plus Outstanding <strong class="text-danger">+$16.4M</strong>. The collapsing denominator is the bigger force.</span>
-        </div>
+        <!-- Nota de degradación (preliminar / sin historial) -->
+        <div id="utilNote" class="hidden mt-1.5 text-[10px] font-primary font-semibold"></div>
       </article>
     </div>
 
@@ -1331,44 +1329,6 @@
       </article>
     </assets-evolution>
 
-    <!-- <collection-accounts [data]="..." /> · promovido a Insights desde Account Balance (resto vive en Cash flow) -->
-    <collection-accounts class="order-5 block">
-      <article class="bg-surface border border-border rounded-xl p-4">
-        <header class="flex items-center justify-between gap-3 flex-wrap mb-2">
-          <h3 class="font-primary text-base font-bold uppercase tracking-wider m-0 flex items-center gap-2">
-            <i class="ph ph-wallet text-success"></i> Collection Accounts
-            <span class="inline-block px-2 py-0.5 rounded bg-border text-primary text-[10px] font-bold tracking-wider font-primary">CASH IN</span>
-          </h3>
-          <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-success-bg text-success text-xs font-bold font-primary">
-            <i class="ph ph-check-circle"></i> Both compliant
-          </span>
-        </header>
-        <p class="num text-sm text-text font-semibold mb-3"><strong class="text-primary">$61.52M</strong> in collection accounts at cut-off</p>
-
-        <div class="grid grid-cols-2 gap-4 max-[900px]:grid-cols-1">
-          <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[112px]">
-            <div class="flex items-center justify-between gap-2 mb-1">
-              <h4 class="font-primary text-sm font-medium text-text-secondary m-0">Collection Account A</h4>
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-success-bg text-success text-[10px] font-bold font-primary"><span class="w-1.5 h-1.5 rounded-full bg-current"></span> Compliant</span>
-            </div>
-            <div class="num text-2xl font-bold text-text leading-tight">$48.12M</div>
-            <div class="text-xs text-text-secondary mt-1">Actual · required <span class="num">$42.50M</span> · <span class="num text-success">+$5.62M</span> cushion</div>
-          </kpi-card>
-          <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[112px]">
-            <div class="flex items-center justify-between gap-2 mb-1">
-              <h4 class="font-primary text-sm font-medium text-text-secondary m-0">Collection Account B</h4>
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-success-bg text-success text-[10px] font-bold font-primary"><span class="w-1.5 h-1.5 rounded-full bg-current"></span> Compliant</span>
-            </div>
-            <div class="num text-2xl font-bold text-text leading-tight">$13.40M</div>
-            <div class="text-xs text-text-secondary mt-1">Actual · required <span class="num">$12.80M</span> · <span class="num text-success">+$0.60M</span> cushion</div>
-          </kpi-card>
-        </div>
-
-        <a href="./cash-flow/index.html" class="mt-3 inline-flex items-center gap-1.5 text-secondary text-xs font-semibold font-primary hover:underline">
-          <i class="ph ph-arrow-square-out"></i> Ver Account Balance completo (Reserve, Liquidity, Expense) en Cash flow
-        </a>
-      </article>
-    </collection-accounts>
   </section>
 
   <p class="text-xs text-text-muted mt-6 font-mono">
@@ -1806,7 +1766,6 @@
   const SELECTABLE_QUERIES = [
     'kpi-card',                       // Pool context cards + various
     'undrawn-commitment-card > article',
-    'collection-accounts > article',
     'aging-section > article',
     'overcollateralization-section > article',
     'borrowing-base-section > article',
@@ -1816,7 +1775,7 @@
   function getSelectableElements() {
     const els = new Set();
     document.querySelectorAll('kpi-card').forEach(el => els.add(el));
-    document.querySelectorAll('undrawn-commitment-card > article, collection-accounts > article, aging-section > article, overcollateralization-section > article, borrowing-base-section > article, assets-evolution > article').forEach(el => els.add(el));
+    document.querySelectorAll('undrawn-commitment-card > article, aging-section > article, overcollateralization-section > article, borrowing-base-section > article, assets-evolution > article').forEach(el => els.add(el));
     return Array.from(els);
   }
 
@@ -1996,49 +1955,102 @@
 </script>
 <script>
 /* ════════ Trend range selector → Utilization trajectory (LEN-521) ════════
-   Demo de control global de ventana temporal. En Angular esto sería un signal
-   compartido (trendRange) consumido por cada chart de serie temporal. */
+   Control global de ventana temporal + degradación con pocos cortes.
+   En Angular: trendRange sería un signal compartido; availableCutOffs vendría del
+   historial real de la facility. Demo: override ?cuts=N simula una facility nueva. */
 (function(){
   // OD/BB por cut-off mensual · as-of Mar 31 2026 · 12 meses de historia
-  const SERIES = [
+  const FULL = [
     {m:'Apr 25',u:68.0},{m:'May 25',u:70.0},{m:'Jun 25',u:72.0},
     {m:'Jul 25',u:71.0},{m:'Aug 25',u:74.0},{m:'Sep 25',u:78.0},
     {m:'Oct 25',u:82.0},{m:'Nov 25',u:85.7},{m:'Dec 25',u:90.8},
     {m:'Jan 26',u:96.1},{m:'Feb 26',u:100.9},{m:'Mar 26',u:105.3},
   ];
-  const RANGES = { '3M':3, '6M':6, '12M':12, 'YTD':3 }; // YTD 2026 = ene–mar = 3 cortes
+  // ── Demo: ?cuts=N simula una facility con menos historial (BOUS/CIM) ──
+  const qp = new URLSearchParams(location.search);
+  const cap = Math.max(0, Math.min(parseInt(qp.get('cuts'), 10) || FULL.length, FULL.length));
+  const SERIES = FULL.slice(FULL.length - cap);          // cortes realmente disponibles
+  const AVAILABLE = SERIES.length;
+  const YTD_CUTS = SERIES.filter(d => d.m.endsWith(' 26')).length; // cortes del año en curso
+
+  const RANGES = { '3M':3, '6M':6, '12M':12, 'YTD': YTD_CUTS };
   const yScale = u => +(8 + (110 - u) * 1.48).toFixed(1); // ventana 60–110%
   const X0 = 4, X1 = 312;
+  const $ = id => document.getElementById(id);
+
+  // Un rango está habilitado si hay al menos los cortes que pide (YTD: ≥1 corte del año)
+  const enabled = r => r === 'YTD' ? YTD_CUTS >= 1 : AVAILABLE >= RANGES[r];
+
+  function showLine(on){
+    ['utilArea','utilLine','utilDot'].forEach(id => $(id).style.display = on ? '' : 'none');
+    $('utilNoData').style.display = on ? 'none' : '';
+  }
 
   function render(range){
-    const n = Math.min(RANGES[range] || 6, SERIES.length);
-    const data = SERIES.slice(SERIES.length - n);
-    const step = data.length > 1 ? (X1 - X0) / (data.length - 1) : 0;
+    const want = RANGES[range] || AVAILABLE;
+    const data = SERIES.slice(SERIES.length - Math.min(want, AVAILABLE));
+
+    // Piso: 1 corte → no hay trayectoria
+    if (data.length <= 1){
+      showLine(false);
+      $('utilNoData').textContent = 'Sin historial de tendencia';
+      $('utilLabelLeft').textContent = data[0] ? `${data[0].m} · ${data[0].u}%` : '—';
+      $('utilLabelRight').textContent = '';
+      $('utilCount').textContent = `${data.length} corte`;
+      const note = $('utilNote');
+      note.className = 'mt-1.5 text-[10px] font-primary font-semibold text-text-muted';
+      note.textContent = '○ 1 corte disponible — se requieren ≥2 para una tendencia';
+      return;
+    }
+
+    showLine(true);
+    const step = (X1 - X0) / (data.length - 1);
     const pts = data.map((d,i)=>`${(X0 + i*step).toFixed(1)},${yScale(d.u)}`);
     const line = pts.join(' ');
     const lastX = (X0 + (data.length-1)*step).toFixed(1);
-    const lastY = yScale(data[data.length-1].u);
-    document.getElementById('utilLine').setAttribute('points', line);
-    document.getElementById('utilArea').setAttribute('points', `${line} ${lastX},96 ${X0},96`);
-    const dot = document.getElementById('utilDot');
-    dot.setAttribute('cx', lastX); dot.setAttribute('cy', lastY);
-    document.getElementById('utilLabelLeft').textContent  = `${data[0].m} · ${data[0].u}%`;
-    document.getElementById('utilLabelRight').textContent = `${data[data.length-1].m} · ${data[data.length-1].u}%`;
-    document.getElementById('utilCount').textContent = `${data.length} cut-offs`;
+    $('utilLine').setAttribute('points', line);
+    $('utilArea').setAttribute('points', `${line} ${lastX},96 ${X0},96`);
+    $('utilDot').setAttribute('cx', lastX);
+    $('utilDot').setAttribute('cy', yScale(data[data.length-1].u));
+    $('utilLabelLeft').textContent  = `${data[0].m} · ${data[0].u}%`;
+    $('utilLabelRight').textContent = `${data[data.length-1].m} · ${data[data.length-1].u}%`;
+    $('utilCount').textContent = `${data.length} cut-offs`;
+
+    // Nota: tendencia preliminar con solo 2 cortes
+    const note = $('utilNote');
+    if (data.length === 2){
+      note.className = 'mt-1.5 text-[10px] font-primary font-semibold text-warning';
+      note.textContent = '△ Tendencia preliminar — solo 2 cortes';
+    } else {
+      note.className = 'hidden';
+    }
   }
 
   window.setTrendRange = function(range){
+    if (!enabled(range)) return;                         // botón deshabilitado: no-op
     document.querySelectorAll('.trend-btn').forEach(b=>{
       const on = b.dataset.range === range;
       b.classList.toggle('bg-secondary', on);
       b.classList.toggle('text-white', on);
       b.classList.toggle('shadow-sm', on);
-      b.classList.toggle('text-text-secondary', !on);
+      b.classList.toggle('text-text-secondary', !on && !b.disabled);
     });
     render(range);
   };
 
-  render('6M'); // default — espejo de la captura
+  // Estado inicial de botones: deshabilita rangos imposibles, default = mayor disponible
+  document.querySelectorAll('.trend-btn').forEach(b=>{
+    const r = b.dataset.range;
+    if (!enabled(r)){
+      b.disabled = true;
+      b.classList.add('opacity-40','cursor-not-allowed');
+      b.classList.remove('bg-secondary','text-white','shadow-sm');
+      b.classList.add('text-text-secondary');
+      b.setAttribute('data-tt', `Requiere ${RANGES[r]} cortes · esta facility tiene ${AVAILABLE}`);
+    }
+  });
+  const defaultRange = ['6M','12M','3M','YTD'].find(enabled) || '3M';
+  window.setTrendRange(defaultRange);
 })();
 </script>
 </body>
