@@ -682,32 +682,27 @@
       <article id="utilCard" onclick="cycleUtilScenario(event)" class="bg-surface border border-border rounded-xl p-5 cursor-pointer hover:border-border-strong transition-colors" title="Click para ciclar entre casos de uso">
         <div class="flex items-center gap-2 mb-2">
           <h3 class="text-base font-bold text-text font-primary m-0">Utilization trajectory</h3>
-          <i class="ph ph-info text-text-muted cursor-help" data-tt="Outstanding Debt ÷ Borrowing Base at each cut-off. Above 100% = drawn balance exceeds the borrowing base (over-advance). NOT against the $300M ceiling (that ratio is 75.5%)."></i>
-          <span id="utilScenarioTag" class="text-[10px] font-primary font-semibold text-text-muted inline-flex items-center gap-1"><i class="ph ph-cursor-click"></i> Breach (1/6)</span>
-          <span id="utilBadge" class="ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-danger-bg text-danger border border-danger-border text-[10px] font-bold font-primary"
-                data-tt="Breach: utilization above 100%">
-            <i class="ph ph-gauge text-[10px]"></i> 105.3% · Breach
+          <i class="ph ph-info text-text-muted cursor-help" data-tt="Outstanding Debt ÷ Borrowing Base por cut-off. Gráfico de comportamiento — sin juicio de valor; aplica a cualquier perfil de facility."></i>
+          <span id="utilScenarioTag" class="text-[10px] font-primary font-semibold text-text-muted inline-flex items-center gap-1"><i class="ph ph-cursor-click"></i> 1/6</span>
+          <span id="utilBadge" class="ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 text-text-secondary border border-border-strong text-[10px] font-bold font-primary">
+            105.3%
           </span>
         </div>
         <!-- OD/BB series · render dinámico por Trend range · scale: y = 8 + (110−pct)·1.48 (60–110% window) -->
         <svg viewBox="0 0 320 96" class="w-full h-[96px]" preserveAspectRatio="none">
           <defs>
             <linearGradient id="utilGrad" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stop-color="#DC2626" stop-opacity=".30"/>
-              <stop offset="100%" stop-color="#DC2626" stop-opacity="0"/>
+              <stop offset="0%" stop-color="#475569" stop-opacity=".22"/>
+              <stop offset="100%" stop-color="#475569" stop-opacity="0"/>
             </linearGradient>
           </defs>
-          <!-- Breach zone above 100% -->
-          <rect x="0" y="0" width="320" height="22.8" fill="#DC2626" opacity="0.07"/>
-          <!-- 90% watch line -->
-          <line x1="0" y1="37.6" x2="320" y2="37.6" stroke="#B45309" stroke-dasharray="2 3" stroke-width="0.8" opacity=".5"/>
-          <!-- 100% breach line -->
-          <line x1="0" y1="22.8" x2="320" y2="22.8" stroke="#DC2626" stroke-dasharray="3 3" stroke-width="1.2"/>
-          <text x="318" y="20.5" text-anchor="end" font-family="Space Mono" font-size="8" fill="#DC2626">100%</text>
-          <!-- Area + line (dynamic — actualizado por setTrendRange) -->
+          <!-- 100% · línea de referencia neutral (límite del borrowing base) -->
+          <line x1="0" y1="22.8" x2="320" y2="22.8" stroke="#CBD5E1" stroke-dasharray="3 3" stroke-width="1"/>
+          <text x="318" y="20.5" text-anchor="end" font-family="Space Mono" font-size="8" fill="#94A3B8">100%</text>
+          <!-- Area + line (dynamic — actualizado por el Trend Range) -->
           <polygon id="utilArea" points="4,49.4 65.6,44 127.2,36.4 188.8,28.6 250.4,21.5 312,15 312,96 4,96" fill="url(#utilGrad)"/>
-          <polyline id="utilLine" points="4,49.4 65.6,44 127.2,36.4 188.8,28.6 250.4,21.5 312,15" fill="none" stroke="#DC2626" stroke-width="2.5"/>
-          <circle id="utilDot" cx="312" cy="15" r="3" fill="#DC2626" stroke="#fff" stroke-width="1.5"/>
+          <polyline id="utilLine" points="4,49.4 65.6,44 127.2,36.4 188.8,28.6 250.4,21.5 312,15" fill="none" stroke="#475569" stroke-width="2.5"/>
+          <circle id="utilDot" cx="312" cy="15" r="3" fill="#475569" stroke="#fff" stroke-width="1.5"/>
           <!-- Estado sin historial suficiente -->
           <text id="utilNoData" x="160" y="52" text-anchor="middle" font-family="Sofia Sans" font-size="11" fill="#94A3B8" style="display:none">Sin historial de tendencia</text>
         </svg>
@@ -2061,11 +2056,13 @@
     document.querySelectorAll('#utilGrad stop').forEach(s => s.setAttribute('stop-color', c));
     $('utilLine').setAttribute('stroke', c); $('utilDot').setAttribute('fill', c);
   }
+  const NEUTRAL = '#475569';
   function setBadge(){
-    const s = sc();
-    $('utilBadge').className = badgeBase + s.badgeCls;
-    $('utilBadge').innerHTML = `<i class="ph ${s.icon} text-[10px]"></i> ${s.badge}`;
-    $('utilScenarioTag').innerHTML = `<i class="ph ph-cursor-click"></i> ${s.name} (${idx+1}/${SCENARIOS.length})`;
+    // Neutral: solo el último valor de utilización, sin juicio (bueno/malo) ni nombre de caso
+    const last = sc().series[sc().series.length - 1];
+    $('utilBadge').className = badgeBase + 'bg-slate-100 text-text-secondary border border-border-strong';
+    $('utilBadge').innerHTML = `${last.u}%`;
+    $('utilScenarioTag').innerHTML = `<i class="ph ph-cursor-click"></i> ${idx+1}/${SCENARIOS.length}`;
   }
   function renderUtil(n){
     const s = sc();
@@ -2099,10 +2096,10 @@
 
   window.cycleUtilScenario = function(){
     idx = (idx + 1) % SCENARIOS.length;
-    applyColor(sc().color); setBadge(); renderUtil(window.TR.n());
+    applyColor(NEUTRAL); setBadge(); renderUtil(window.TR.n());
   };
 
-  applyColor(sc().color); setBadge();
+  applyColor(NEUTRAL); setBadge();
   window.TR.register(renderUtil);
 })();
 </script>
