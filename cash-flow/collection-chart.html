@@ -454,8 +454,10 @@
   });
 
   function updateKpis() {
-    const exp = sum(expectedArr);
-    const col = sum(collectedArr);
+    // KPIs fijas = total del histórico completo (12M); el filtro solo mueve el gráfico + tabla
+    const full = datasets['12M'] || datasets[current];
+    const exp = sum(full.expected);
+    const col = sum(full.collected);
     const gap = col - exp;
     const rate = (col / exp) * 100;
 

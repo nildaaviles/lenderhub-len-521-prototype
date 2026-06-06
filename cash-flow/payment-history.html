@@ -454,40 +454,43 @@ function renderPaymentTable(){
   </tr>`;
 }
 
-/* ─── Trend range → toda la vista de Payment History ─── */
+/* ─── Trend range → SOLO el gráfico + tabla. Las KPIs quedan fijas (total a la fecha). ─── */
 const fmt1 = v => `$${v.toFixed(1)}M`;
-function renderPayments(n){
-  const len = FULL_LABELS.length, k = Math.min(n, len);
-  labels = FULL_LABELS.slice(len - k); principal = FULL_PRIN.slice(len - k);
-  interest = FULL_INT.slice(len - k); outstanding = FULL_OUT.slice(len - k);
-  // chart
-  payChart.data.labels = labels;
-  payChart.data.datasets[0].data = principal;
-  payChart.data.datasets[1].data = interest;
-  payChart.update();
-  // KPIs
-  const sP = principal.reduce((a,b)=>a+b,0), sI = interest.reduce((a,b)=>a+b,0), tot = sP + sI, li = labels.length - 1;
+
+// KPIs fijas = total acumulado del histórico completo (12M) · no cambian con el filtro
+function setFixedKpis(){
+  const sP = FULL_PRIN.reduce((a,b)=>a+b,0), sI = FULL_INT.reduce((a,b)=>a+b,0), tot = sP + sI, li = FULL_LABELS.length - 1;
   document.getElementById('kpiTotalPaid').textContent = fmt1(tot);
-  document.getElementById('kpiPeriod').textContent = labels[0] + ' – ' + labels[li];
+  document.getElementById('kpiPeriod').textContent = FULL_LABELS[0] + ' – ' + FULL_LABELS[li];
   document.getElementById('kpiPrin').textContent = fmt1(sP);
   document.getElementById('kpiPrinPct').textContent = (sP/tot*100).toFixed(1) + '%';
   document.getElementById('kpiInt').textContent = fmt1(sI);
   document.getElementById('kpiIntPct').textContent = (sI/tot*100).toFixed(1) + '%';
-  document.getElementById('kpiLast').textContent = fmt1(principal[li] + interest[li]);
-  document.getElementById('kpiLastMonth').textContent = labels[li];
-  // cumulative split
+  document.getElementById('kpiLast').textContent = fmt1(FULL_PRIN[li] + FULL_INT[li]);
+  document.getElementById('kpiLastMonth').textContent = FULL_LABELS[li];
   const pPct = sP/tot*100;
   document.getElementById('splitBar').style.width = pPct.toFixed(1) + '%';
   document.getElementById('splitP').textContent = `Principal · ${fmt1(sP)} · ${pPct.toFixed(1)}%`;
   document.getElementById('splitI').textContent = `Interest · ${fmt1(sI)} · ${(100-pPct).toFixed(1)}%`;
-  // table
+}
+
+// El filtro solo mueve el gráfico + tabla
+function renderPayments(n){
+  const len = FULL_LABELS.length, k = Math.min(n, len);
+  labels = FULL_LABELS.slice(len - k); principal = FULL_PRIN.slice(len - k);
+  interest = FULL_INT.slice(len - k); outstanding = FULL_OUT.slice(len - k);
+  payChart.data.labels = labels;
+  payChart.data.datasets[0].data = principal;
+  payChart.data.datasets[1].data = interest;
+  payChart.update();
   renderPaymentTable();
 }
 window.setPayRange = function(r){
   document.querySelectorAll('.trend-range button').forEach(b => b.classList.toggle('active', b.dataset.r === r));
   renderPayments(PAY_RANGES[r]);
 };
-renderPayments(6); // default 6M
+setFixedKpis();        // una vez
+renderPayments(6);     // default 6M (solo gráfico + tabla)
 </script>
 </body>
 </html>
