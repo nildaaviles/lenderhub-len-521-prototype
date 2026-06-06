@@ -706,11 +706,7 @@
           <!-- Estado sin historial suficiente -->
           <text id="utilNoData" x="160" y="52" text-anchor="middle" font-family="Sofia Sans" font-size="11" fill="#94A3B8" style="display:none">Sin historial de tendencia</text>
         </svg>
-        <div class="flex justify-between items-baseline text-[10px] text-text-muted num mt-1">
-          <span id="utilLabelLeft">Oct 25 · 82.0%</span>
-          <span id="utilCount" class="text-text-muted/70">6 cut-offs</span>
-          <span id="utilLabelRight">Mar 26 · 105.3%</span>
-        </div>
+        <div id="utilMonths" class="flex justify-between text-text-muted num mt-1"></div>
         <!-- Nota de degradación (preliminar / sin historial) -->
         <div id="utilNote" class="hidden mt-1.5 text-[10px] font-primary font-semibold"></div>
       </article>
@@ -2067,11 +2063,12 @@
     const s = sc();
     const data = s.series.slice(s.series.length - Math.min(n, s.series.length));
     const note = $('utilNote');
+    const months = $('utilMonths');
+    months.style.fontSize = data.length > 7 ? '7.5px' : '9.5px';
     if (data.length <= 1){
       showLine(false);
       $('utilNoData').textContent = 'Sin historial de tendencia';
-      $('utilLabelLeft').textContent = data[0] ? `${data[0].m} · ${data[0].u}%` : '—';
-      $('utilLabelRight').textContent = ''; $('utilCount').textContent = `${data.length} corte`;
+      months.innerHTML = data[0] ? `<span>${data[0].m}</span>` : '';
       note.className = 'mt-1.5 text-[10px] font-primary font-semibold text-text-muted';
       note.textContent = '○ 1 corte disponible — se requieren ≥2 para una tendencia';
       return;
@@ -2084,9 +2081,7 @@
     $('utilArea').setAttribute('points', `${line} ${lastX},96 ${X0},96`);
     $('utilDot').setAttribute('cx', lastX);
     $('utilDot').setAttribute('cy', yScale(data[data.length-1].u));
-    $('utilLabelLeft').textContent  = `${data[0].m} · ${data[0].u}%`;
-    $('utilLabelRight').textContent = `${data[data.length-1].m} · ${data[data.length-1].u}%`;
-    $('utilCount').textContent = `${data.length} cut-offs`;
+    months.innerHTML = data.map(d => `<span>${d.m}</span>`).join('');
     if (data.length === 2){
       note.className = 'mt-1.5 text-[10px] font-primary font-semibold text-warning';
       note.textContent = '△ Tendencia preliminar — solo 2 cortes';
