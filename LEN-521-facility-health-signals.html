@@ -730,64 +730,50 @@
           </div>
         </header>
 
-        <div class="grid grid-cols-2 gap-4 max-[900px]:grid-cols-1">
+        <div class="grid grid-cols-[240px_1fr] gap-4 max-[900px]:grid-cols-1">
           <div class="flex flex-col gap-3">
-            <!-- <delinquency-card [variant]="30" /> -->
+            <!-- <delinquency-card [variant]="30" /> · compacto -->
             <delinquency-card data-input-variant="30">
-              <article class="rounded-xl border border-warning-border bg-warning-bg p-4">
-                <div class="flex items-center gap-1.5 mb-2">
-                  <h4 class="font-primary text-sm font-semibold text-warning m-0">Delinquent 30+</h4>
-                  <i class="ph ph-info text-text-muted cursor-help" data-tt="Receivables 30+ days past due ÷ outstanding total"></i>
+              <article class="rounded-xl border border-warning-border bg-warning-bg p-3">
+                <div class="flex items-center gap-1.5 mb-1">
+                  <h4 class="font-primary text-xs font-semibold text-warning m-0">Delinquent 30+</h4>
+                  <i class="ph ph-info text-text-muted cursor-help text-xs" data-tt="Receivables 30+ days past due ÷ outstanding total"></i>
                 </div>
-                <div class="flex items-end gap-3 justify-between">
-                  <div>
-                    <div class="text-2xl font-bold num">13.96%</div>
-                    <div class="text-xs text-text-secondary num">$41.79M USD</div>
-                  </div>
-                  <svg viewBox="0 0 100 32" width="90" height="32">
-                    <polyline points="0,24 25,22 50,18 75,14 100,8" fill="none" stroke="#B45309" stroke-width="1.8"/>
-                    <circle cx="100" cy="8" r="2.5" fill="#B45309"/>
-                  </svg>
+                <div class="flex items-baseline gap-2 flex-wrap">
+                  <span class="text-xl font-bold num leading-none">13.96%</span>
+                  <span class="text-[11px] text-text-secondary num">$41.79M</span>
                 </div>
-                <div class="flex flex-wrap gap-2 mt-2">
-                  <delta-chip data-input-format="pp" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning-bg text-warning border border-warning-border text-[10px] font-semibold font-primary">
+                <div class="flex flex-wrap items-center gap-1.5 mt-2">
+                  <delta-chip data-input-format="pp" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-warning-bg text-warning border border-warning-border text-[10px] font-semibold font-primary">
                     <i class="ph ph-arrow-line-up text-[10px]"></i> +1.22 pp
                   </delta-chip>
-                  <delta-chip data-input-format="currency" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning-bg text-warning border border-warning-border text-[10px] font-semibold font-primary">
+                  <delta-chip data-input-format="currency" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-warning-bg text-warning border border-warning-border text-[10px] font-semibold font-primary">
                     <i class="ph ph-arrow-line-up text-[10px]"></i> +$3.20M
                   </delta-chip>
-                  <span class="text-[10px] text-text-secondary">vs. prior month</span>
                 </div>
               </article>
             </delinquency-card>
 
             <delinquency-card data-input-variant="90">
-              <article class="rounded-xl border border-danger-border bg-danger-bg p-4">
-                <div class="flex items-center gap-1.5 mb-2">
-                  <h4 class="font-primary text-sm font-semibold text-danger m-0">Delinquent 90+</h4>
-                  <i class="ph ph-info text-text-muted cursor-help" data-tt="Receivables 90+ days past due ÷ outstanding total"></i>
-                  <span class="ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded bg-danger text-white text-[10px] font-bold font-primary tracking-wider">
-                    <i class="ph ph-warning text-[10px]"></i> ALERT
+              <article class="rounded-xl border border-danger-border bg-danger-bg p-3">
+                <div class="flex items-center gap-1.5 mb-1">
+                  <h4 class="font-primary text-xs font-semibold text-danger m-0">Delinquent 90+</h4>
+                  <i class="ph ph-info text-text-muted cursor-help text-xs" data-tt="Receivables 90+ days past due ÷ outstanding total"></i>
+                  <span class="ml-auto inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-danger text-white text-[9px] font-bold font-primary tracking-wider">
+                    <i class="ph ph-warning text-[9px]"></i> ALERT
                   </span>
                 </div>
-                <div class="flex items-end gap-3 justify-between">
-                  <div>
-                    <div class="text-2xl font-bold num text-danger">9.18%</div>
-                    <div class="text-xs text-text-secondary num">$27.48M USD</div>
-                  </div>
-                  <svg viewBox="0 0 100 32" width="90" height="32">
-                    <polyline points="0,26 25,22 50,18 75,12 100,4" fill="none" stroke="#DC2626" stroke-width="1.8"/>
-                    <circle cx="100" cy="4" r="2.5" fill="#DC2626"/>
-                  </svg>
+                <div class="flex items-baseline gap-2 flex-wrap">
+                  <span class="text-xl font-bold num text-danger leading-none">9.18%</span>
+                  <span class="text-[11px] text-text-secondary num">$27.48M</span>
                 </div>
-                <div class="flex flex-wrap gap-2 mt-2">
-                  <delta-chip data-input-format="pp" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-danger-bg text-danger border border-danger-border text-[10px] font-semibold font-primary">
+                <div class="flex flex-wrap items-center gap-1.5 mt-2">
+                  <delta-chip data-input-format="pp" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-danger-bg text-danger border border-danger-border text-[10px] font-semibold font-primary">
                     <i class="ph ph-arrow-line-up text-[10px]"></i> +1.22 pp
                   </delta-chip>
-                  <delta-chip data-input-format="currency" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-danger-bg text-danger border border-danger-border text-[10px] font-semibold font-primary">
+                  <delta-chip data-input-format="currency" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-danger-bg text-danger border border-danger-border text-[10px] font-semibold font-primary">
                     <i class="ph ph-arrow-line-up text-[10px]"></i> +$5.60M
                   </delta-chip>
-                  <span class="text-[10px] text-text-secondary">vs. prior month</span>
                 </div>
               </article>
             </delinquency-card>
@@ -803,7 +789,7 @@
               </div>
             </div>
             <!-- Stacked-100% chart · chart area y=30 (top, 100%) → y=200 (bottom, 0%) · 170px = 100% · each bar sums exactly 170px -->
-            <svg viewBox="0 0 400 220" class="w-full h-[220px]" preserveAspectRatio="xMidYMid meet">
+            <svg viewBox="0 0 400 220" class="w-full h-[280px]" preserveAspectRatio="xMidYMid meet">
               <!-- Gridlines -->
               <g stroke="#E2E8F0" stroke-width="1">
                 <line x1="40" y1="30" x2="390" y2="30"/>
