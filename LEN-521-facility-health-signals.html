@@ -830,6 +830,7 @@
                 <text x="36" y="203" text-anchor="end">0%</text>
               </g>
 
+              <g id="agingDynamic">
               <!-- Nov 25 · 30+=10.5% · 90+=5.5% -->
               <g transform="translate(60,0)">
                 <rect x="0" y="60"  width="44" height="140" fill="#1E3A8A"/>
@@ -898,6 +899,7 @@
                 <rect x="0" y="30"  width="44" height="4"   fill="#7F1D1D"/>
                 <text id="agingLabel-mar" x="22" y="24" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#DC2626">14.0%</text>
                 <text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#334155">Mar 26</text>
+              </g>
               </g>
             </svg>
             <div class="flex flex-wrap gap-3 text-xs text-text-secondary mt-1.5">
@@ -1035,12 +1037,14 @@
             </defs>
             <g stroke="#E2E8F0"><line x1="40" y1="30" x2="470" y2="30"/><line x1="40" y1="80" x2="470" y2="80"/><line x1="40" y1="130" x2="470" y2="130"/><line x1="40" y1="170" x2="470" y2="170" stroke="#CBD5E1"/></g>
             <g font-family="Space Mono" font-size="9" fill="#64748B"><text x="36" y="33" text-anchor="end">1.45</text><text x="36" y="83" text-anchor="end">1.40</text><text x="36" y="133" text-anchor="end">1.35</text><text x="36" y="173" text-anchor="end">1.28</text></g>
+            <g id="ocDynamic">
             <polygon points="60,140 160,120 260,120 360,140 360,130 260,130 160,130 60,130" fill="url(#ocGreen)"/>
             <polygon points="360,140 460,170 460,130 360,130" fill="url(#ocAmber)"/>
             <line x1="60" y1="130" x2="460" y2="130" stroke="#94A3B8" stroke-width="2" stroke-dasharray="5 3"/>
             <polyline points="60,140 160,120 260,120 360,140 460,170" stroke="#910057" stroke-width="2.5" fill="none"/>
             <g fill="#910057"><circle cx="60" cy="140" r="3"/><circle cx="160" cy="120" r="3"/><circle cx="260" cy="120" r="3"/><circle cx="360" cy="140" r="3"/><circle cx="460" cy="170" r="3.5" stroke="#fff" stroke-width="1.5"/></g>
             <g font-family="Sofia Sans" font-size="10" fill="#64748B"><text x="60" y="190" text-anchor="middle">Nov 25</text><text x="160" y="190" text-anchor="middle">Dec 25</text><text x="260" y="190" text-anchor="middle">Jan 26</text><text x="360" y="190" text-anchor="middle">Feb 26</text><text x="460" y="190" text-anchor="middle">Mar 26</text></g>
+            </g>
           </svg>
         </div>
 
@@ -1299,6 +1303,7 @@
             </defs>
             <g stroke="#E2E8F0"><line x1="40" y1="30" x2="510" y2="30"/><line x1="40" y1="80" x2="510" y2="80"/><line x1="40" y1="130" x2="510" y2="130"/><line x1="40" y1="170" x2="510" y2="170" stroke="#CBD5E1"/></g>
             <g font-family="Space Mono" font-size="9" fill="#64748B"><text x="36" y="33" text-anchor="end">$340M</text><text x="36" y="83" text-anchor="end">$260M</text><text x="36" y="133" text-anchor="end">$180M</text><text x="36" y="173" text-anchor="end">$100M</text></g>
+            <g id="assetsDynamic">
             <polygon points="70,90 170,84 270,78 370,72 470,55 470,80 370,90 270,100 170,110 70,120" fill="url(#evoBreach)"/>
             <polygon points="70,120 170,110 270,100 370,90 470,80 470,170 70,170" fill="url(#evoOk)"/>
             <polyline points="70,90 170,84 270,78 370,72 470,55" fill="none" stroke="#1E3A8A" stroke-width="2.5"/>
@@ -1306,6 +1311,7 @@
             <polyline points="70,120 170,110 270,100 370,90 470,80" fill="none" stroke="#16A34A" stroke-width="2.5"/>
             <g fill="#16A34A"><circle cx="70" cy="120" r="3"/><circle cx="170" cy="110" r="3"/><circle cx="270" cy="100" r="3"/><circle cx="370" cy="90" r="3"/><circle cx="470" cy="80" r="3.5" stroke="#fff" stroke-width="2"/></g>
             <g font-family="Sofia Sans" font-size="10" fill="#64748B"><text x="70" y="190" text-anchor="middle">Nov 30</text><text x="170" y="190" text-anchor="middle">Dec 31</text><text x="270" y="190" text-anchor="middle">Jan 31</text><text x="370" y="190" text-anchor="middle">Feb 28</text><text x="470" y="190" text-anchor="middle">Mar 31</text></g>
+            </g>
           </svg>
 
           <div class="flex justify-center gap-3.5 text-xs text-text-secondary mt-1.5">
@@ -1975,74 +1981,28 @@
    - Click en el card: cicla los 6 casos de uso del componente (demo).
    En Angular: trendRange = signal compartido; el cycling es solo afordance de prototipo. */
 (function(){
-  // Caso base (Breach) · 12 meses · as-of Mar 31 2026. ?cuts=N simula facility nueva (BOUS/CIM).
-  const FULL = [
-    {m:'Apr 25',u:68.0},{m:'May 25',u:70.0},{m:'Jun 25',u:72.0},
-    {m:'Jul 25',u:71.0},{m:'Aug 25',u:74.0},{m:'Sep 25',u:78.0},
-    {m:'Oct 25',u:82.0},{m:'Nov 25',u:85.7},{m:'Dec 25',u:90.8},
-    {m:'Jan 26',u:96.1},{m:'Feb 26',u:100.9},{m:'Mar 26',u:105.3},
-  ];
-  const qp = new URLSearchParams(location.search);
-  const cap = Math.max(0, Math.min(parseInt(qp.get('cuts'), 10) || FULL.length, FULL.length));
-
-  const badgeBase = 'ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold font-primary ';
-  // Los 6 casos de uso del componente (mismos de la galería de estados)
-  const SCENARIOS = [
-    { key:'breach', name:'Breach', color:'#DC2626', icon:'ph-gauge', badge:'105.3% · Breach',
-      badgeCls:'bg-danger-bg text-danger border border-danger-border', series: FULL.slice(FULL.length - cap) },
-    { key:'watch', name:'Watch', color:'#EA580C', icon:'ph-warning', badge:'94.9% · Watch',
-      badgeCls:'bg-warning-bg text-warning border border-warning-border',
-      series:[{m:'Nov 25',u:85.7},{m:'Dec 25',u:88.7},{m:'Jan 26',u:91.1},{m:'Feb 26',u:93.1},{m:'Mar 26',u:94.9}] },
-    { key:'sano', name:'Sano', color:'#16A34A', icon:'ph-check-circle', badge:'60% · Sano',
-      badgeCls:'bg-success-bg text-success border border-success/30',
-      series:[{m:'Nov 25',u:58},{m:'Dec 25',u:60},{m:'Jan 26',u:59},{m:'Feb 26',u:61},{m:'Mar 26',u:60}] },
-    { key:'revolvente', name:'Revolvente', color:'#0284C7', icon:'ph-arrows-clockwise', badge:'Revolvente · ~90%',
-      badgeCls:'bg-info-bg text-info border border-info/30',
-      series:[{m:'Aug 25',u:72},{m:'Sep 25',u:88},{m:'Oct 25',u:74},{m:'Nov 25',u:90},{m:'Dec 25',u:76},{m:'Jan 26',u:91},{m:'Feb 26',u:78},{m:'Mar 26',u:89}] },
-    { key:'arco', name:'Arco amortizante', color:'#475569', icon:'ph-chart-line-down', badge:'Amortizando',
-      badgeCls:'bg-slate-100 text-text-secondary border border-border-strong',
-      series:[{m:'Nov 25',u:70},{m:'Dec 25',u:85},{m:'Jan 26',u:92},{m:'Feb 26',u:80},{m:'Mar 26',u:64}] },
-    { key:'mejorando', name:'Mejorando', color:'#16A34A', icon:'ph-trend-down', badge:'Mejorando ↓',
-      badgeCls:'bg-success-bg text-success border border-success/30',
-      series:[{m:'Nov 25',u:95},{m:'Dec 25',u:93},{m:'Jan 26',u:88},{m:'Feb 26',u:82},{m:'Mar 26',u:75}] },
-  ];
-
-  const RANGES = { '3M':3, '6M':6, '12M':12, 'YTD':3 }; // YTD ≈ últimos 3 (ene–mar del año en curso)
-  const yScale = u => +(8 + (110 - u) * 1.48).toFixed(1); // ventana 60–110%
-  const X0 = 4, X1 = 312;
   const $ = id => document.getElementById(id);
+  const qp = new URLSearchParams(location.search);
 
-  let idx = 0;          // escenario actual
-  let range = '6M';     // ventana actual
-  const sc = () => SCENARIOS[idx];
-  const avail = () => sc().series.length;
-  const enabled = r => r === 'YTD' ? avail() >= 1 : avail() >= RANGES[r];
-
-  function showLine(on){
-    ['utilArea','utilLine','utilDot'].forEach(id => $(id).style.display = on ? '' : 'none');
-    $('utilNoData').style.display = on ? 'none' : '';
-  }
-
-  function applyColor(c){
-    document.querySelectorAll('#utilGrad stop').forEach(s => s.setAttribute('stop-color', c));
-    $('utilLine').setAttribute('stroke', c);
-    $('utilDot').setAttribute('fill', c);
-  }
-
-  function setBadge(){
-    const s = sc();
-    $('utilBadge').className = badgeBase + s.badgeCls;
-    $('utilBadge').innerHTML = `<i class="ph ${s.icon} text-[10px]"></i> ${s.badge}`;
-    $('utilScenarioTag').innerHTML = `<i class="ph ph-cursor-click"></i> ${s.name} (${idx+1}/${SCENARIOS.length})`;
-  }
+  /* ───────── Bus global de Trend Range ─────────
+     Único dueño de los botones 3M/6M/12M/YTD. Cada chart de serie temporal se
+     suscribe con TR.register(fn); fn(n) recibe cuántos cut-offs mostrar.
+     AVAIL = historial de la facility (12), o ?cuts=N para simular facility nueva. */
+  const RANGES = { '3M':3, '6M':6, '12M':12, 'YTD':3 };
+  const FAC_CUTS = 12;
+  const AVAIL = Math.max(1, Math.min(parseInt(qp.get('cuts'), 10) || FAC_CUTS, FAC_CUTS));
+  let range = '6M';
+  const subs = [];
+  const nFor = r => Math.min(RANGES[r], AVAIL);
+  const enabledR = r => AVAIL >= (r === 'YTD' ? 1 : RANGES[r]);
 
   function syncButtons(){
     document.querySelectorAll('.trend-btn').forEach(b=>{
-      const r = b.dataset.range, ok = enabled(r);
+      const r = b.dataset.range, ok = enabledR(r);
       b.disabled = !ok;
       b.classList.toggle('opacity-40', !ok);
       b.classList.toggle('cursor-not-allowed', !ok);
-      if (!ok) b.setAttribute('data-tt', `Requiere ${RANGES[r]} cortes · este caso tiene ${avail()}`);
+      if (!ok) b.setAttribute('data-tt', `Requiere ${RANGES[r]} cortes · la facility tiene ${AVAIL}`);
       else b.removeAttribute('data-tt');
       const on = ok && r === range;
       b.classList.toggle('bg-secondary', on);
@@ -2051,23 +2011,75 @@
       b.classList.toggle('text-text-secondary', !on);
     });
   }
+  window.TR = {
+    nFor, get range(){ return range; }, get avail(){ return AVAIL; },
+    n(){ return nFor(range); },
+    register(fn){ subs.push(fn); try { fn(nFor(range)); } catch(e){} },
+    set(r){ if (!enabledR(r)) return; range = r; syncButtons(); subs.forEach(fn=>{ try { fn(nFor(range)); } catch(e){} }); },
+  };
+  window.setTrendRange = r => window.TR.set(r);
+  if (!enabledR(range)) range = ['6M','12M','3M','YTD'].find(enabledR) || '3M';
+  syncButtons();
 
-  function render(){
-    const want = range === 'YTD' ? Math.min(3, avail()) : RANGES[range];
-    const data = sc().series.slice(sc().series.length - Math.min(want, avail()));
+  /* ───────── Utilization trajectory (suscrito al bus) ───────── */
+  const FULL = [
+    {m:'Apr 25',u:68.0},{m:'May 25',u:70.0},{m:'Jun 25',u:72.0},
+    {m:'Jul 25',u:71.0},{m:'Aug 25',u:74.0},{m:'Sep 25',u:78.0},
+    {m:'Oct 25',u:82.0},{m:'Nov 25',u:85.7},{m:'Dec 25',u:90.8},
+    {m:'Jan 26',u:96.1},{m:'Feb 26',u:100.9},{m:'Mar 26',u:105.3},
+  ];
+  const badgeBase = 'ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold font-primary ';
+  const SCENARIOS = [
+    { name:'Breach', color:'#DC2626', icon:'ph-gauge', badge:'105.3% · Breach',
+      badgeCls:'bg-danger-bg text-danger border border-danger-border', series: FULL },
+    { name:'Watch', color:'#EA580C', icon:'ph-warning', badge:'94.9% · Watch',
+      badgeCls:'bg-warning-bg text-warning border border-warning-border',
+      series:[{m:'Nov 25',u:85.7},{m:'Dec 25',u:88.7},{m:'Jan 26',u:91.1},{m:'Feb 26',u:93.1},{m:'Mar 26',u:94.9}] },
+    { name:'Sano', color:'#16A34A', icon:'ph-check-circle', badge:'60% · Sano',
+      badgeCls:'bg-success-bg text-success border border-success/30',
+      series:[{m:'Nov 25',u:58},{m:'Dec 25',u:60},{m:'Jan 26',u:59},{m:'Feb 26',u:61},{m:'Mar 26',u:60}] },
+    { name:'Revolvente', color:'#0284C7', icon:'ph-arrows-clockwise', badge:'Revolvente · ~90%',
+      badgeCls:'bg-info-bg text-info border border-info/30',
+      series:[{m:'Aug 25',u:72},{m:'Sep 25',u:88},{m:'Oct 25',u:74},{m:'Nov 25',u:90},{m:'Dec 25',u:76},{m:'Jan 26',u:91},{m:'Feb 26',u:78},{m:'Mar 26',u:89}] },
+    { name:'Arco amortizante', color:'#475569', icon:'ph-chart-line-down', badge:'Amortizando',
+      badgeCls:'bg-slate-100 text-text-secondary border border-border-strong',
+      series:[{m:'Nov 25',u:70},{m:'Dec 25',u:85},{m:'Jan 26',u:92},{m:'Feb 26',u:80},{m:'Mar 26',u:64}] },
+    { name:'Mejorando', color:'#16A34A', icon:'ph-trend-down', badge:'Mejorando ↓',
+      badgeCls:'bg-success-bg text-success border border-success/30',
+      series:[{m:'Nov 25',u:95},{m:'Dec 25',u:93},{m:'Jan 26',u:88},{m:'Feb 26',u:82},{m:'Mar 26',u:75}] },
+  ];
+  const yScale = u => +(8 + (110 - u) * 1.48).toFixed(1);
+  const X0 = 4, X1 = 312;
+  let idx = 0;
+  const sc = () => SCENARIOS[idx];
+
+  function showLine(on){
+    ['utilArea','utilLine','utilDot'].forEach(id => $(id).style.display = on ? '' : 'none');
+    $('utilNoData').style.display = on ? 'none' : '';
+  }
+  function applyColor(c){
+    document.querySelectorAll('#utilGrad stop').forEach(s => s.setAttribute('stop-color', c));
+    $('utilLine').setAttribute('stroke', c); $('utilDot').setAttribute('fill', c);
+  }
+  function setBadge(){
+    const s = sc();
+    $('utilBadge').className = badgeBase + s.badgeCls;
+    $('utilBadge').innerHTML = `<i class="ph ${s.icon} text-[10px]"></i> ${s.badge}`;
+    $('utilScenarioTag').innerHTML = `<i class="ph ph-cursor-click"></i> ${s.name} (${idx+1}/${SCENARIOS.length})`;
+  }
+  function renderUtil(n){
+    const s = sc();
+    const data = s.series.slice(s.series.length - Math.min(n, s.series.length));
     const note = $('utilNote');
-
     if (data.length <= 1){
       showLine(false);
       $('utilNoData').textContent = 'Sin historial de tendencia';
       $('utilLabelLeft').textContent = data[0] ? `${data[0].m} · ${data[0].u}%` : '—';
-      $('utilLabelRight').textContent = '';
-      $('utilCount').textContent = `${data.length} corte`;
+      $('utilLabelRight').textContent = ''; $('utilCount').textContent = `${data.length} corte`;
       note.className = 'mt-1.5 text-[10px] font-primary font-semibold text-text-muted';
       note.textContent = '○ 1 corte disponible — se requieren ≥2 para una tendencia';
       return;
     }
-
     showLine(true);
     const step = (X1 - X0) / (data.length - 1);
     const line = data.map((d,i)=>`${(X0 + i*step).toFixed(1)},${yScale(d.u)}`).join(' ');
@@ -2079,33 +2091,19 @@
     $('utilLabelLeft').textContent  = `${data[0].m} · ${data[0].u}%`;
     $('utilLabelRight').textContent = `${data[data.length-1].m} · ${data[data.length-1].u}%`;
     $('utilCount').textContent = `${data.length} cut-offs`;
-
     if (data.length === 2){
       note.className = 'mt-1.5 text-[10px] font-primary font-semibold text-warning';
       note.textContent = '△ Tendencia preliminar — solo 2 cortes';
     } else { note.className = 'hidden'; }
   }
 
-  function refresh(){
-    applyColor(sc().color);
-    setBadge();
-    if (!enabled(range)) range = ['6M','12M','3M','YTD'].find(enabled) || '3M';
-    syncButtons();
-    render();
-  }
-
-  window.setTrendRange = function(r){
-    if (!enabled(r)) return;
-    range = r; syncButtons(); render();
-  };
-
-  // Click en el card → ciclar caso de uso (los botones de rango viven fuera del card)
-  window.cycleUtilScenario = function(e){
+  window.cycleUtilScenario = function(){
     idx = (idx + 1) % SCENARIOS.length;
-    refresh();
+    applyColor(sc().color); setBadge(); renderUtil(window.TR.n());
   };
 
-  refresh();
+  applyColor(sc().color); setBadge();
+  window.TR.register(renderUtil);
 })();
 </script>
 <script>
@@ -2114,83 +2112,75 @@
 (function(){
   const $ = id => document.getElementById(id);
   const pillBase = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold font-primary ';
+  const X0 = 60, X1 = 460;
+  const Y = v => +Math.max(30, Math.min(186, 30 + (260 - v) * 2.5)).toFixed(1); // $ scale
+  const fmtAv = v => (v < 0 ? '−$' : '$') + Math.abs(v).toFixed(1) + 'M';
 
-  const rows = data => data.map((r,i)=>{
-    const last = i === data.length - 1;
-    const tr = last ? '<tr class="bg-bg">' : '<tr>';
-    const c1 = last ? '<td class="p-3"><strong>'+r.d+' · latest</strong></td>'
-                    : '<td class="p-3 border-b border-border">'+r.d+'</td>';
-    const bcl = last ? '' : ' border-b border-border';
-    const fb = last ? ' font-bold' : '';
-    const avCls = r.av < 0 ? 'text-danger' : 'text-success';
-    const utCls = r.ut > 100 ? 'text-danger' : '';
-    const stCls = r.av < 0 ? 'text-danger' : 'text-success';
-    const st = r.av < 0 ? 'Breach' : 'Compliant';
-    const fmt = v => (v<0?'−$':'$') + Math.abs(v).toFixed(1) + 'M';
-    return tr + c1
-      + '<td class="p-3'+bcl+' text-right num'+fb+'">$'+r.bb.toFixed(1)+'M</td>'
-      + '<td class="p-3'+bcl+' text-right num'+fb+'">$'+r.od.toFixed(1)+'M</td>'
-      + '<td class="p-3'+bcl+' text-right num'+fb+' '+avCls+'">'+fmt(r.av)+'</td>'
-      + '<td class="p-3'+bcl+' text-right num'+fb+' '+utCls+'">'+r.ut.toFixed(1)+'%</td>'
-      + '<td class="p-3'+bcl+'"><span class="'+stCls+' text-xs font-'+(last?'bold':'semibold')+'">'+st+'</span></td></tr>';
-  }).join('');
-
+  // 12 meses de BB & OD por caso. La fila más reciente (Mar 26) es fija; el rango sólo cambia
+  // cuántos cortes hacia atrás se muestran. util = OD/BB; av = BB−OD.
   const CASES = {
     excess: {
+      odColor:'#DC2626', legendOD:'text-danger',
       tag:'<i class="ph ph-cursor-click"></i> Excess (déficit)',
       pill1:{cls:'bg-danger-bg text-danger border border-danger-border', html:'<i class="ph ph-x-circle text-xs"></i> Non-compliant · BB deficit'},
       pill2:{cls:'bg-danger-bg text-danger border border-danger-border', html:'<i class="ph ph-gauge text-xs"></i> 105.3% Utilization · Breach'},
       card:{cls:'block bg-danger-bg border border-danger-border rounded-xl p-4 min-h-[118px]',
             tt:'Outstanding Debt − Borrowing Base = $226.40M − $215.00M = $11.40M over-advance',
             title:'Excess', tcls:'text-danger', val:'−$11.40M', vcls:'text-danger', sub:'Drawn beyond borrowing base · over-advance'},
-      bbVal:'$215.00M', legendOD:'text-danger',
-      dynamic:
-        '<polygon points="60,67.5 160,85 260,105 342,121 260,127.5 160,140 60,155" fill="url(#bbAvail)"/>'+
-        '<polygon points="342,121 360,120 460,114 460,142.5 360,125" fill="#DC2626" opacity="0.18"/>'+
-        '<polyline points="60,155 160,140 260,127.5 360,120 460,114" fill="none" stroke="#DC2626" stroke-width="2.5" stroke-dasharray="5 3"/>'+
-        '<g fill="#DC2626"><circle cx="60" cy="155" r="3"/><circle cx="160" cy="140" r="3"/><circle cx="260" cy="127.5" r="3"/><circle cx="360" cy="120" r="3"/><circle cx="460" cy="114" r="3.5" stroke="#fff" stroke-width="1.5"/></g>'+
-        '<polyline points="60,67.5 160,85 260,105 360,125 460,142.5" fill="none" stroke="#910057" stroke-width="2.5"/>'+
-        '<g fill="#910057"><circle cx="60" cy="67.5" r="3"/><circle cx="160" cy="85" r="3"/><circle cx="260" cy="105" r="3"/><circle cx="360" cy="125" r="3"/><circle cx="460" cy="142.5" r="3.5" stroke="#fff" stroke-width="1.5"/></g>'+
-        '<circle cx="342" cy="121" r="3" fill="#fff" stroke="#DC2626" stroke-width="1.5"/><text x="342" y="112" text-anchor="middle" font-family="Sofia Sans" font-size="8.5" font-weight="700" fill="#DC2626">breach</text>'+
-        '<g font-family="Sofia Sans" font-size="10" fill="#64748B"><text x="60" y="190" text-anchor="middle">Nov 25</text><text x="160" y="190" text-anchor="middle">Dec 25</text><text x="260" y="190" text-anchor="middle">Jan 26</text><text x="360" y="190" text-anchor="middle">Feb 26</text><text x="460" y="190" text-anchor="middle">Mar 26</text></g>'+
-        '<line x1="460" y1="114" x2="460" y2="142.5" stroke="#DC2626" stroke-width="1" stroke-dasharray="2 2"/><text x="455" y="131" text-anchor="end" font-family="Space Mono" font-size="9" fill="#DC2626" font-weight="bold">−$11.4M</text>',
-      table: rows([
-        {d:'Nov 30, 2025',bb:245,od:210,av:35,ut:85.7},
-        {d:'Dec 31, 2025',bb:238,od:216,av:22,ut:90.8},
-        {d:'Jan 31, 2026',bb:230,od:221,av:9,ut:96.1},
-        {d:'Feb 28, 2026',bb:222,od:224,av:-2,ut:100.9},
-        {d:'Mar 31, 2026',bb:215,od:226.4,av:-11.4,ut:105.3},
-      ]),
+      bbVal:'$215.00M',
+      data:[{m:'Apr 25',bb:252,od:200},{m:'May 25',bb:251,od:202},{m:'Jun 25',bb:250,od:204},{m:'Jul 25',bb:249,od:206},{m:'Aug 25',bb:248,od:208},{m:'Sep 25',bb:247,od:209},{m:'Oct 25',bb:246,od:209.5},{m:'Nov 25',bb:245,od:210},{m:'Dec 25',bb:238,od:216},{m:'Jan 26',bb:230,od:221},{m:'Feb 26',bb:222,od:224},{m:'Mar 26',bb:215,od:226.4}],
     },
     availability: {
+      odColor:'#B45309', legendOD:'text-warning',
       tag:'<i class="ph ph-cursor-click"></i> Availability (cushion)',
       pill1:{cls:'bg-success-bg text-success border border-success/30', html:'<i class="ph ph-check-circle text-xs"></i> Compliant'},
       pill2:{cls:'bg-warning-bg text-warning border border-warning-border', html:'<i class="ph ph-gauge text-xs"></i> 94.9% Utilization · Watch'},
       card:{cls:'block bg-warning-bg border border-warning-border rounded-xl p-4 min-h-[118px]',
             tt:'Borrowing Base − Outstanding Debt = $238.50M − $226.40M = $12.10M headroom',
             title:'Availability', tcls:'text-warning', val:'$12.10M', vcls:'text-warning', sub:'Headroom before breach'},
-      bbVal:'$238.50M', legendOD:'text-warning',
-      dynamic:
-        '<polygon points="60,67.5 160,72.5 260,76.25 360,80 460,83.75 460,114 360,121.25 260,130 160,141.25 60,155" fill="url(#bbAvail)"/>'+
-        '<polyline points="60,155 160,141.25 260,130 360,121.25 460,114" fill="none" stroke="#B45309" stroke-width="2.5" stroke-dasharray="5 3"/>'+
-        '<g fill="#B45309"><circle cx="60" cy="155" r="3"/><circle cx="160" cy="141.25" r="3"/><circle cx="260" cy="130" r="3"/><circle cx="360" cy="121.25" r="3"/><circle cx="460" cy="114" r="3.5" stroke="#fff" stroke-width="1.5"/></g>'+
-        '<polyline points="60,67.5 160,72.5 260,76.25 360,80 460,83.75" fill="none" stroke="#910057" stroke-width="2.5"/>'+
-        '<g fill="#910057"><circle cx="60" cy="67.5" r="3"/><circle cx="160" cy="72.5" r="3"/><circle cx="260" cy="76.25" r="3"/><circle cx="360" cy="80" r="3"/><circle cx="460" cy="83.75" r="3.5" stroke="#fff" stroke-width="1.5"/></g>'+
-        '<g font-family="Sofia Sans" font-size="10" fill="#64748B"><text x="60" y="190" text-anchor="middle">Nov 25</text><text x="160" y="190" text-anchor="middle">Dec 25</text><text x="260" y="190" text-anchor="middle">Jan 26</text><text x="360" y="190" text-anchor="middle">Feb 26</text><text x="460" y="190" text-anchor="middle">Mar 26</text></g>'+
-        '<line x1="460" y1="83.75" x2="460" y2="114" stroke="#B45309" stroke-width="1" stroke-dasharray="2 2"/><text x="455" y="102" text-anchor="end" font-family="Space Mono" font-size="9" fill="#B45309" font-weight="bold">$12.1M</text>',
-      table: rows([
-        {d:'Nov 30, 2025',bb:245,od:210,av:35,ut:85.7},
-        {d:'Dec 31, 2025',bb:243,od:215.5,av:27.5,ut:88.7},
-        {d:'Jan 31, 2026',bb:241.5,od:220,av:21.5,ut:91.1},
-        {d:'Feb 28, 2026',bb:240,od:223.5,av:16.5,ut:93.1},
-        {d:'Mar 31, 2026',bb:238.5,od:226.4,av:12.1,ut:94.9},
-      ]),
+      bbVal:'$238.50M',
+      data:[{m:'Apr 25',bb:250,od:198},{m:'May 25',bb:249,od:200},{m:'Jun 25',bb:248,od:202},{m:'Jul 25',bb:247,od:204},{m:'Aug 25',bb:246.5,od:206},{m:'Sep 25',bb:246,od:207},{m:'Oct 25',bb:245.5,od:208},{m:'Nov 25',bb:245,od:210},{m:'Dec 25',bb:243,od:215.5},{m:'Jan 26',bb:241.5,od:220},{m:'Feb 26',bb:240,od:223.5},{m:'Mar 26',bb:238.5,od:226.4}],
     },
   };
 
+  function buildChart(data, odColor, key){
+    const n = data.length, step = n > 1 ? (X1 - X0) / (n - 1) : 0;
+    const xb = i => +(X0 + i * step).toFixed(1);
+    const bbPts = data.map((d,i)=>`${xb(i)},${Y(d.bb)}`);
+    const odPts = data.map((d,i)=>`${xb(i)},${Y(d.od)}`);
+    const band = bbPts.join(' ') + ' ' + odPts.slice().reverse().join(' ');
+    const bandFill = key === 'excess' ? '#DC2626' : '#16A34A';
+    const dots = (pts, fill) => '<g fill="'+fill+'">' + pts.map((p,i)=>`<circle cx="${p.split(',')[0]}" cy="${p.split(',')[1]}" r="${i===n-1?3.5:3}"${i===n-1?' stroke="#fff" stroke-width="1.5"':''}/>`).join('') + '</g>';
+    const labels = '<g font-family="Sofia Sans" font-size="'+(n>7?'8':'9.5')+'" fill="#64748B">' + data.map((d,i)=>`<text x="${xb(i)}" y="190" text-anchor="middle">${d.m}</text>`).join('') + '</g>';
+    const last = data[n-1], av = +(last.bb - last.od).toFixed(1);
+    const anno = `<line x1="${xb(n-1)}" y1="${Y(last.od)}" x2="${xb(n-1)}" y2="${Y(last.bb)}" stroke="${odColor}" stroke-width="1" stroke-dasharray="2 2"/>`
+      + `<text x="${xb(n-1)-5}" y="${(Math.min(Y(last.od),Y(last.bb))+Math.abs(Y(last.od)-Y(last.bb))/2+3).toFixed(1)}" text-anchor="end" font-family="Space Mono" font-size="9" fill="${odColor}" font-weight="bold">${fmtAv(av)}</text>`;
+    return `<polygon points="${band}" fill="${bandFill}" opacity="0.13"/>`
+      + `<polyline points="${odPts.join(' ')}" fill="none" stroke="${odColor}" stroke-width="2.5" stroke-dasharray="5 3"/>` + dots(odPts, odColor)
+      + `<polyline points="${bbPts.join(' ')}" fill="none" stroke="#910057" stroke-width="2.5"/>` + dots(bbPts, '#910057')
+      + labels + anno;
+  }
+
+  function buildRows(data){
+    const n = data.length;
+    return data.map((r,i)=>{
+      const last = i === n-1, av = +(r.bb-r.od).toFixed(1), ut = r.od/r.bb*100;
+      const bcl = last ? '' : ' border-b border-border', fb = last ? ' font-bold' : '';
+      const c1 = last ? '<td class="p-3"><strong>'+r.m+' · latest</strong></td>' : '<td class="p-3 border-b border-border">'+r.m+'</td>';
+      const avCls = av<0?'text-danger':'text-success', utCls = ut>100?'text-danger':'', st = av<0?'Breach':'Compliant', stCls = av<0?'text-danger':'text-success';
+      return (last?'<tr class="bg-bg">':'<tr>') + c1
+        + '<td class="p-3'+bcl+' text-right num'+fb+'">$'+r.bb.toFixed(1)+'M</td>'
+        + '<td class="p-3'+bcl+' text-right num'+fb+'">$'+r.od.toFixed(1)+'M</td>'
+        + '<td class="p-3'+bcl+' text-right num'+fb+' '+avCls+'">'+fmtAv(av)+'</td>'
+        + '<td class="p-3'+bcl+' text-right num'+fb+' '+utCls+'">'+ut.toFixed(1)+'%</td>'
+        + '<td class="p-3'+bcl+'"><span class="'+stCls+' text-xs font-'+(last?'bold':'semibold')+'">'+st+'</span></td></tr>';
+    }).join('');
+  }
+
   let cur = 'excess';
-  function renderBB(){
+  function renderBB(n){
     const c = CASES[cur];
+    const data = c.data.slice(c.data.length - Math.min(n || (window.TR ? window.TR.n() : 6), c.data.length));
     $('bbScenarioTag').innerHTML = c.tag;
     $('bbPill1').className = pillBase + c.pill1.cls; $('bbPill1').innerHTML = c.pill1.html;
     $('bbPill2').className = pillBase + c.pill2.cls; $('bbPill2').innerHTML = c.pill2.html;
@@ -2203,18 +2193,104 @@
       '<div class="text-xs text-text-secondary mt-1">'+c.card.sub+'</div>';
     $('bbValue').textContent = c.bbVal;
     $('bbLegendOD').className = c.legendOD;
-    $('bbDynamic').innerHTML = c.dynamic;
-    $('bbTableBody').innerHTML = c.table;
+    $('bbDynamic').innerHTML = buildChart(data, c.odColor, cur);
+    $('bbTableBody').innerHTML = buildRows(data);
   }
 
   window.toggleBB = function(e){
-    // no alternar el caso al usar el toggle Show Data ni al interactuar con la tabla
-    if (e && e.target.closest('label, .data-switch, #bbDataTable')) return;
+    if (e && e.target.closest('label, .data-switch, #bbDataTable')) return; // no alternar al usar Show Data / tabla
     cur = cur === 'excess' ? 'availability' : 'excess';
-    renderBB();
+    renderBB(window.TR ? window.TR.n() : 6);
   };
 
-  renderBB();
+  if (window.TR) window.TR.register(renderBB); else renderBB(6);
+})();
+</script>
+<script>
+/* ════════ Overcollateralization · Assets · Aging — suscritos al Trend Range bus (LEN-521) ════════ */
+(function(){
+  const $ = id => document.getElementById(id);
+  const MONTHS = ['Apr 25','May 25','Jun 25','Jul 25','Aug 25','Sep 25','Oct 25','Nov 25','Dec 25','Jan 26','Feb 26','Mar 26'];
+  const tail = (arr, n) => arr.slice(arr.length - Math.min(n, arr.length));
+  if (!window.TR) return;
+
+  /* ─── Overcollateralization (dual: Reported vs Required 1.35) ─── */
+  const OC_REP = [1.41,1.40,1.42,1.39,1.41,1.40,1.38,1.34,1.40,1.40,1.34,1.28];
+  const OC_REQ = 1.35;
+  const ocY = r => +Math.max(30, Math.min(195, 30 + (1.45 - r) * 823.5)).toFixed(1);
+  function renderOC(n){
+    const rep = tail(OC_REP, n), ms = tail(MONTHS, n), N = rep.length;
+    const X0 = 60, X1 = 460, step = N > 1 ? (X1 - X0) / (N - 1) : 0, xb = i => +(X0 + i*step).toFixed(1);
+    const pts = rep.map((r,i)=>`${xb(i)},${ocY(r)}`);
+    const area = `${xb(0)},190 ${pts.join(' ')} ${xb(N-1)},190`;
+    const reqY = ocY(OC_REQ);
+    const dots = '<g fill="#910057">' + pts.map((p,i)=>`<circle cx="${p.split(',')[0]}" cy="${p.split(',')[1]}" r="${i===N-1?3.5:3}"${i===N-1?' stroke="#fff" stroke-width="1.5"':''}/>`).join('') + '</g>';
+    const labels = '<g font-family="Sofia Sans" font-size="'+(N>7?'8':'10')+'" fill="#64748B">' + ms.map((m,i)=>`<text x="${xb(i)}" y="190" text-anchor="middle">${m}</text>`).join('') + '</g>';
+    $('ocDynamic').innerHTML =
+      `<polygon points="${area}" fill="url(#ocGreen)"/>`
+      + `<line x1="${X0}" y1="${reqY}" x2="${X1}" y2="${reqY}" stroke="#94A3B8" stroke-width="2" stroke-dasharray="5 3"/>`
+      + `<text x="${X1}" y="${reqY-4}" text-anchor="end" font-family="Space Mono" font-size="8" fill="#94A3B8">Required 1.35</text>`
+      + `<polyline points="${pts.join(' ')}" fill="none" stroke="#910057" stroke-width="2.5"/>` + dots + labels;
+  }
+  window.TR.register(renderOC);
+
+  /* ─── Assets evolution (Total vs Eligible) ─── */
+  const AS_TOT = [210,218,226,233,240,246,250,254.2,263.8,273.5,281.97,299.37];
+  const AS_ELI = [185,192,199,205,212,217,221,224.1,231.6,240.2,246.2,258.13];
+  const asY = v => +Math.max(30, Math.min(185, 30 + (340 - v) * 0.625)).toFixed(1);
+  function renderAssets(n){
+    const tot = tail(AS_TOT, n), eli = tail(AS_ELI, n), ms = tail(MONTHS, n), N = tot.length;
+    const X0 = 70, X1 = 470, step = N > 1 ? (X1 - X0) / (N - 1) : 0, xb = i => +(X0 + i*step).toFixed(1);
+    const tPts = tot.map((v,i)=>`${xb(i)},${asY(v)}`), ePts = eli.map((v,i)=>`${xb(i)},${asY(v)}`);
+    const gap = tPts.join(' ') + ' ' + ePts.slice().reverse().join(' ');
+    const eArea = ePts.join(' ') + ` ${xb(N-1)},185 ${xb(0)},185`;
+    const dots = (pts,f) => '<g fill="'+f+'">' + pts.map((p,i)=>`<circle cx="${p.split(',')[0]}" cy="${p.split(',')[1]}" r="${i===N-1?3.5:3}"${i===N-1?' stroke="#fff" stroke-width="2"':''}/>`).join('') + '</g>';
+    const labels = '<g font-family="Sofia Sans" font-size="'+(N>7?'8':'10')+'" fill="#64748B">' + ms.map((m,i)=>`<text x="${xb(i)}" y="190" text-anchor="middle">${m}</text>`).join('') + '</g>';
+    $('assetsDynamic').innerHTML =
+      `<polygon points="${gap}" fill="url(#evoBreach)"/>`
+      + `<polygon points="${eArea}" fill="url(#evoOk)"/>`
+      + `<polyline points="${tPts.join(' ')}" fill="none" stroke="#1E3A8A" stroke-width="2.5"/>` + dots(tPts,'#1E3A8A')
+      + `<polyline points="${ePts.join(' ')}" fill="none" stroke="#16A34A" stroke-width="2.5"/>` + dots(ePts,'#16A34A')
+      + labels;
+  }
+  window.TR.register(renderAssets);
+
+  /* ─── Aging (stacked 100% bars) + modo %/$ ─── */
+  const COLORS = ['#1E3A8A','#0E7490','#A16207','#C2410C','#DC2626','#B91C1C','#991B1B','#7F1D1D'];
+  const SPLIT = [25,10,8,22,18,12,5]; // reparto del 30+ entre los 7 buckets de mora
+  const THIRTY = [8.5,9,9.3,9.6,9.9,10.1,10.3,10.5,11.4,12.1,12.74,13.96];
+  let agingMode = 'pct';
+  function bucketsFor(i){
+    const tp = THIRTY[i];
+    return [100 - tp].concat(SPLIT.map(s => +(s/100*tp).toFixed(2)));
+  }
+  function renderAging(n){
+    const idxs = []; for (let i = THIRTY.length - Math.min(n, THIRTY.length); i < THIRTY.length; i++) idxs.push(i);
+    const N = idxs.length, ms = idxs.map(i => MONTHS[i]);
+    const AX0 = 48, AXW = 344, slot = AXW / N, barW = Math.min(44, slot * 0.62);
+    let html = '';
+    idxs.forEach((mi, k) => {
+      const b = bucketsFor(mi), x = AX0 + k*slot + (slot - barW)/2;
+      let yBottom = 200, rects = '';
+      b.forEach((pct, bi) => { const h = pct/100*170; yBottom -= h; rects += `<rect x="${x.toFixed(1)}" y="${yBottom.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" fill="${COLORS[bi]}"/>`; });
+      const last = mi === THIRTY.length - 1;
+      const lbl = agingMode === 'pct' ? THIRTY[mi].toFixed(1)+'%' : '$'+(THIRTY[mi]*3).toFixed(1)+'M';
+      html += `<g><g>${rects}</g>`
+        + `<text x="${(x+barW/2).toFixed(1)}" y="24" text-anchor="middle" font-family="Sofia Sans" font-size="${N>7?'8':'10'}" font-weight="700" fill="${last?'#DC2626':'#B45309'}">${lbl}</text>`
+        + `<text x="${(x+barW/2).toFixed(1)}" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="${N>7?'8':'10'}"${last?' font-weight="700"':''} fill="${last?'#334155':'#64748B'}">${ms[k]}</text></g>`;
+    });
+    $('agingDynamic').innerHTML = html;
+  }
+  window.setAgingMode = function(mode){
+    agingMode = mode;
+    const p = $('agingBtnPct'), a = $('agingBtnAmt');
+    p.classList.toggle('bg-surface', mode==='pct'); p.classList.toggle('text-secondary', mode==='pct'); p.classList.toggle('shadow-sm', mode==='pct'); p.classList.toggle('text-text-secondary', mode!=='pct');
+    a.classList.toggle('bg-surface', mode==='amt'); a.classList.toggle('text-secondary', mode==='amt'); a.classList.toggle('shadow-sm', mode==='amt'); a.classList.toggle('text-text-secondary', mode!=='amt');
+    const sub = $('agingSubtitle');
+    if (sub) sub.textContent = mode === 'pct' ? 'Distribución por bucket · % del portafolio' : 'Distribución por bucket · montos $ USD';
+    renderAging(window.TR.n());
+  };
+  window.TR.register(renderAging);
 })();
 </script>
 <script>
