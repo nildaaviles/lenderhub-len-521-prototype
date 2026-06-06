@@ -69,6 +69,11 @@ body {
   justify-content: space-between; margin-bottom: 24px;
 }
 .card-header-left {}
+.trend-range { display:flex; align-items:center; gap:8px; }
+.trend-range .tr-lbl { font-family:var(--font-primary); font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--text-secondary); }
+.trend-range .tr-seg { display:inline-flex; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:2px; }
+.trend-range button { border:0; background:transparent; font-family:var(--font-primary); font-size:12px; font-weight:600; color:var(--text-secondary); padding:5px 11px; border-radius:6px; cursor:pointer; }
+.trend-range button.active { background:var(--secondary); color:#fff; box-shadow:0 1px 2px rgba(0,0,0,.1); }
 .card-title {
   display: flex; align-items: center; gap: 8px;
   font-family: var(--font-primary); font-size: 0.875rem;
@@ -207,29 +212,38 @@ body {
       </div>
       <div class="card-subtitle">Principal and Interest · Monthly breakdown</div>
     </div>
+    <div class="trend-range">
+      <span class="tr-lbl">Trend range</span>
+      <div class="tr-seg">
+        <button data-r="3M" onclick="setPayRange('3M')">3M</button>
+        <button data-r="6M" class="active" onclick="setPayRange('6M')">6M</button>
+        <button data-r="12M" onclick="setPayRange('12M')">12M</button>
+        <button data-r="YTD" onclick="setPayRange('YTD')">YTD</button>
+      </div>
+    </div>
   </div>
 
   <!-- KPI mini strip -->
   <div class="kpi-mini">
     <div class="kpi-mini-card">
       <div class="kpi-mini-label">Total Paid (Period)</div>
-      <div class="kpi-mini-value">$100.1M</div>
-      <div class="kpi-mini-sub">Dec 2025 – Apr 2026</div>
+      <div class="kpi-mini-value" id="kpiTotalPaid">$100.1M</div>
+      <div class="kpi-mini-sub" id="kpiPeriod">Dec 2025 – Apr 2026</div>
     </div>
     <div class="kpi-mini-card">
       <div class="kpi-mini-label">Total Principal</div>
-      <div class="kpi-mini-value magenta">$35.4M</div>
-      <div class="kpi-mini-sub"><span class="pct-pill magenta">35.4%</span> of total paid</div>
+      <div class="kpi-mini-value magenta" id="kpiPrin">$35.4M</div>
+      <div class="kpi-mini-sub"><span class="pct-pill magenta" id="kpiPrinPct">35.4%</span> of total paid</div>
     </div>
     <div class="kpi-mini-card">
       <div class="kpi-mini-label">Total Interest</div>
-      <div class="kpi-mini-value slate">$64.7M</div>
-      <div class="kpi-mini-sub"><span class="pct-pill slate">64.6%</span> of total paid</div>
+      <div class="kpi-mini-value slate" id="kpiInt">$64.7M</div>
+      <div class="kpi-mini-sub"><span class="pct-pill slate" id="kpiIntPct">64.6%</span> of total paid</div>
     </div>
     <div class="kpi-mini-card">
       <div class="kpi-mini-label">Last Payment</div>
-      <div class="kpi-mini-value">$20.6M</div>
-      <div class="kpi-mini-sub">Apr 2026</div>
+      <div class="kpi-mini-value" id="kpiLast">$20.6M</div>
+      <div class="kpi-mini-sub" id="kpiLastMonth">Apr 2026</div>
     </div>
   </div>
 
@@ -270,13 +284,12 @@ body {
   <div class="ratio-section">
     <div class="ratio-label">Cumulative Split</div>
     <div class="ratio-bar-wrap">
-      <!-- Principal 35.4% -->
-      <div class="ratio-principal" style="width:35.4%"></div>
+      <div class="ratio-principal" id="splitBar" style="width:35.4%"></div>
       <div class="ratio-interest"></div>
     </div>
     <div class="ratio-bar-labels">
-      <span class="lbl-p">Principal · $35.4M · 35.4%</span>
-      <span class="lbl-i">Interest · $64.7M · 64.6%</span>
+      <span class="lbl-p" id="splitP">Principal · $35.4M · 35.4%</span>
+      <span class="lbl-i" id="splitI">Interest · $64.7M · 64.6%</span>
     </div>
   </div>
 
@@ -313,19 +326,21 @@ body {
 </div>
 
 <script>
-const labels = ['Dec 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026'];
-
-/* Real-ish data: principal + interest per month */
-const principal = [3.2, 5.8, 6.1, 4.5, 15.8];
-const interest  = [8.3, 15.1, 13.7, 22.8, 4.8];
-/* Adeudo total (outstanding debt) al inicio de cada periodo — denominador del % */
-const outstanding = [216.0, 221.0, 224.0, 226.4, 230.0];
+/* 12 meses · May 2025 – Apr 2026 (as-of). La vista actual = últimos N según Trend range. */
+const FULL_LABELS = ['May 2025','Jun 2025','Jul 2025','Aug 2025','Sep 2025','Oct 2025','Nov 2025','Dec 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026'];
+const FULL_PRIN   = [4.1,3.8,4.5,3.9,5.2,4.0,3.5,3.2,5.8,6.1,4.5,15.8];
+const FULL_INT    = [12.5,11.8,13.0,12.2,14.1,11.5,9.8,8.3,15.1,13.7,22.8,4.8];
+/* Adeudo total (outstanding) al inicio de cada periodo — denominador del % */
+const FULL_OUT    = [200,203,206,208,210,213,215,216,221,224,226.4,230];
+const PAY_RANGES  = { '3M':3, '6M':6, '12M':12, 'YTD':4 }; // YTD 2026 = ene–abr = 4
+/* Vista actual (mutable) — el tooltip y la tabla la consumen por índice */
+let labels = FULL_LABELS.slice(), principal = FULL_PRIN.slice(), interest = FULL_INT.slice(), outstanding = FULL_OUT.slice();
 
 const fmtM = v => `$${v.toFixed(2)}M`;
 
 const ctx = document.getElementById('chart').getContext('2d');
 
-new Chart(ctx, {
+const payChart = new Chart(ctx, {
   type: 'bar',
   data: {
     labels,
@@ -409,7 +424,7 @@ new Chart(ctx, {
 });
 
 // View table render
-(function renderPaymentTable(){
+function renderPaymentTable(){
   const tbody = document.getElementById('paymentTableBody');
   if (!tbody) return;
   let totalP = 0, totalI = 0;
@@ -437,7 +452,42 @@ new Chart(ctx, {
     <td style="padding:10px;text-align:right;font-family:'Space Mono',monospace;font-weight:700">$${grand.toFixed(2)}M</td>
     <td style="padding:10px;text-align:right;font-family:'Space Mono',monospace;font-weight:700">${grandPct}%</td>
   </tr>`;
-})();
+}
+
+/* ─── Trend range → toda la vista de Payment History ─── */
+const fmt1 = v => `$${v.toFixed(1)}M`;
+function renderPayments(n){
+  const len = FULL_LABELS.length, k = Math.min(n, len);
+  labels = FULL_LABELS.slice(len - k); principal = FULL_PRIN.slice(len - k);
+  interest = FULL_INT.slice(len - k); outstanding = FULL_OUT.slice(len - k);
+  // chart
+  payChart.data.labels = labels;
+  payChart.data.datasets[0].data = principal;
+  payChart.data.datasets[1].data = interest;
+  payChart.update();
+  // KPIs
+  const sP = principal.reduce((a,b)=>a+b,0), sI = interest.reduce((a,b)=>a+b,0), tot = sP + sI, li = labels.length - 1;
+  document.getElementById('kpiTotalPaid').textContent = fmt1(tot);
+  document.getElementById('kpiPeriod').textContent = labels[0] + ' – ' + labels[li];
+  document.getElementById('kpiPrin').textContent = fmt1(sP);
+  document.getElementById('kpiPrinPct').textContent = (sP/tot*100).toFixed(1) + '%';
+  document.getElementById('kpiInt').textContent = fmt1(sI);
+  document.getElementById('kpiIntPct').textContent = (sI/tot*100).toFixed(1) + '%';
+  document.getElementById('kpiLast').textContent = fmt1(principal[li] + interest[li]);
+  document.getElementById('kpiLastMonth').textContent = labels[li];
+  // cumulative split
+  const pPct = sP/tot*100;
+  document.getElementById('splitBar').style.width = pPct.toFixed(1) + '%';
+  document.getElementById('splitP').textContent = `Principal · ${fmt1(sP)} · ${pPct.toFixed(1)}%`;
+  document.getElementById('splitI').textContent = `Interest · ${fmt1(sI)} · ${(100-pPct).toFixed(1)}%`;
+  // table
+  renderPaymentTable();
+}
+window.setPayRange = function(r){
+  document.querySelectorAll('.trend-range button').forEach(b => b.classList.toggle('active', b.dataset.r === r));
+  renderPayments(PAY_RANGES[r]);
+};
+renderPayments(6); // default 6M
 </script>
 </body>
 </html>
