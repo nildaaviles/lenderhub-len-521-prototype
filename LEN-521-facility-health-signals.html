@@ -913,11 +913,15 @@
           </div>
         </div>
 
-        <!-- p-accordion · View table -->
-        <details class="mt-3">
-          <summary class="inline-flex items-center gap-1 text-secondary text-xs font-semibold font-primary cursor-pointer hover:underline list-none">
-            <i class="ph ph-caret-right"></i> View table
-          </summary>
+        <!-- Show Data toggle -->
+        <div class="mt-3">
+          <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+            <button type="button" role="switch" aria-checked="false" onclick="toggleData(this,'agingTable')" class="data-switch relative w-9 h-5 rounded-full bg-border-strong transition-colors flex-shrink-0">
+              <span class="knob absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"></span>
+            </button>
+            <span class="text-xs font-primary font-semibold text-text-secondary">Show Data</span>
+          </label>
+          <div id="agingTable" class="hidden mt-2">
           <table class="w-full border-collapse text-sm mt-2">
             <thead>
               <tr class="bg-bg">
@@ -986,7 +990,8 @@
               </tr>
             </tfoot>
           </table>
-        </details>
+          </div>
+        </div>
       </article>
     </aging-section>
 
@@ -1045,11 +1050,15 @@
           <span><strong>Breach: 5.2% below minimum · Deficit −0.07</strong> · Reported <span class="num">1.28</span> / Required <span class="num">1.35</span></span>
         </aside>
 
-        <!-- p-accordion · View table -->
-        <details class="mt-3">
-          <summary class="inline-flex items-center gap-1 text-secondary text-xs font-semibold font-primary cursor-pointer hover:underline list-none">
-            <i class="ph ph-caret-right"></i> View table
-          </summary>
+        <!-- Show Data toggle -->
+        <div class="mt-3">
+          <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+            <button type="button" role="switch" aria-checked="false" onclick="toggleData(this,'ocTable')" class="data-switch relative w-9 h-5 rounded-full bg-border-strong transition-colors flex-shrink-0">
+              <span class="knob absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"></span>
+            </button>
+            <span class="text-xs font-primary font-semibold text-text-secondary">Show Data</span>
+          </label>
+          <div id="ocTable" class="hidden mt-2">
           <table class="w-full border-collapse text-sm mt-2">
             <thead><tr class="bg-bg">
               <th class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Cut-off</th>
@@ -1066,7 +1075,8 @@
               <tr class="bg-bg"><td class="p-3"><strong>Mar 31, 2026 · latest</strong></td><td class="p-3 text-right num font-bold">1.28</td><td class="p-3 text-right num font-bold">1.35</td><td class="p-3 text-right num font-bold text-warning">−0.07</td><td class="p-3"><span class="text-warning text-xs font-bold">Non compliant</span></td></tr>
             </tbody>
           </table>
-        </details>
+          </div>
+        </div>
       </article>
     </overcollateralization-section>
 
@@ -1179,11 +1189,15 @@
           </svg>
         </div>
 
-        <!-- p-accordion · View table -->
-        <details class="mt-3">
-          <summary class="inline-flex items-center gap-1 text-secondary text-xs font-semibold font-primary cursor-pointer hover:underline list-none">
-            <i class="ph ph-caret-right"></i> View table
-          </summary>
+        <!-- Show Data toggle -->
+        <div class="mt-3">
+          <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+            <button type="button" role="switch" aria-checked="false" onclick="toggleData(this,'bbDataTable')" class="data-switch relative w-9 h-5 rounded-full bg-border-strong transition-colors flex-shrink-0">
+              <span class="knob absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"></span>
+            </button>
+            <span class="text-xs font-primary font-semibold text-text-secondary">Show Data</span>
+          </label>
+          <div id="bbDataTable" class="hidden mt-2">
           <table class="w-full border-collapse text-sm mt-2">
             <thead><tr class="bg-bg">
               <th class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Cut-off</th>
@@ -1201,7 +1215,8 @@
               <tr class="bg-bg"><td class="p-3"><strong>Mar 31, 2026 · latest</strong></td><td class="p-3 text-right num font-bold">$215.0M</td><td class="p-3 text-right num font-bold">$226.4M</td><td class="p-3 text-right num font-bold text-danger">−$11.4M</td><td class="p-3 text-right num font-bold text-danger">105.3%</td><td class="p-3"><span class="text-danger text-xs font-bold">Breach</span></td></tr>
             </tbody>
           </table>
-        </details>
+          </div>
+        </div>
       </article>
     </borrowing-base-section>
 
@@ -1299,11 +1314,15 @@
             <span class="text-warning"><span class="inline-block w-2.5 h-2.5 rounded-sm bg-warning/30 mr-1 align-middle"></span>Ineligible (gap)</span>
           </div>
 
-          <!-- p-accordion · View table -->
-          <details class="mt-3">
-            <summary class="inline-flex items-center gap-1 text-secondary text-xs font-semibold font-primary cursor-pointer hover:underline list-none">
-              <i class="ph ph-caret-right"></i> View table
-            </summary>
+          <!-- Show Data toggle -->
+          <div class="mt-3">
+            <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+              <button type="button" role="switch" aria-checked="false" onclick="toggleData(this,'assetsTable')" class="data-switch relative w-9 h-5 rounded-full bg-border-strong transition-colors flex-shrink-0">
+                <span class="knob absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"></span>
+              </button>
+              <span class="text-xs font-primary font-semibold text-text-secondary">Show Data</span>
+            </label>
+            <div id="assetsTable" class="hidden mt-2">
             <table class="w-full border-collapse text-sm mt-2">
               <thead><tr class="bg-bg">
                 <th class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Cut-off</th>
@@ -1320,7 +1339,8 @@
                 <tr class="bg-bg"><td class="p-3"><strong>Mar 31, 2026 · latest</strong></td><td class="p-3 text-right num font-bold">$299.37M</td><td class="p-3 text-right num font-bold">$258.13M</td><td class="p-3 text-right num font-bold">$41.24M</td><td class="p-3 text-right num font-bold text-warning">13.8%</td></tr>
               </tbody>
             </table>
-          </details>
+            </div>
+          </div>
         </div>
       </article>
     </assets-evolution>
@@ -2188,13 +2208,25 @@
   }
 
   window.toggleBB = function(e){
-    if (e && e.target.closest('details')) return; // no togglear al abrir la tabla
+    // no alternar el caso al usar el toggle Show Data ni al interactuar con la tabla
+    if (e && e.target.closest('label, .data-switch, #bbDataTable')) return;
     cur = cur === 'excess' ? 'availability' : 'excess';
     renderBB();
   };
 
   renderBB();
 })();
+</script>
+<script>
+/* Show Data toggle — reemplaza el accordion "View table" (LEN-521) */
+function toggleData(btn, id){
+  const on = btn.getAttribute('aria-checked') !== 'true';
+  btn.setAttribute('aria-checked', on);
+  btn.classList.toggle('bg-secondary', on);
+  btn.classList.toggle('bg-border-strong', !on);
+  btn.querySelector('.knob').classList.toggle('translate-x-4', on);
+  document.getElementById(id).classList.toggle('hidden', !on);
+}
 </script>
 </body>
 </html>
