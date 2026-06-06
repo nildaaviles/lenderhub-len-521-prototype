@@ -994,19 +994,20 @@
 
     <!-- ════════ <overcollateralization-section> · LEN-886 — order 1 ════════ -->
     <overcollateralization-section class="order-1 block">
-      <article class="bg-surface border border-border rounded-xl p-4">
+      <article id="ocCard" onclick="toggleOC(event)" class="bg-surface border border-border rounded-xl p-4 cursor-pointer hover:border-border-strong transition-colors" title="Click para alternar Compliant ⇄ Non compliant">
         <header class="flex items-center gap-2.5 mb-3 flex-wrap">
           <h3 class="font-primary text-base font-bold uppercase tracking-wider text-text m-0">Overcollateralization</h3>
-          <delta-chip class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-warning-bg text-warning text-xs font-semibold font-primary">
+          <delta-chip id="ocDelta" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-warning-bg text-warning text-xs font-semibold font-primary">
             <i class="ph ph-arrow-line-down text-xs"></i> −0.06 <span class="font-normal opacity-90">vs. prior month</span>
           </delta-chip>
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-warning-bg text-warning text-xs font-bold font-primary">
+          <span id="ocPill" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-warning-bg text-warning text-xs font-bold font-primary">
             <i class="ph ph-warning"></i> Non compliant
           </span>
+          <span id="ocScenarioTag" class="ml-auto text-[10px] font-primary font-semibold text-text-muted inline-flex items-center gap-1"><i class="ph ph-cursor-click"></i> Non compliant</span>
         </header>
 
         <div class="grid grid-cols-2 gap-4 mb-3">
-          <kpi-card class="block bg-warning-bg border border-warning-border rounded-xl p-4 min-h-[118px]" data-tt="Reported 1.28 por debajo del mínimo 1.35 — breach">
+          <kpi-card id="ocReportedCard" class="block bg-warning-bg border border-warning-border rounded-xl p-4 min-h-[118px]" data-tt="Reported 1.28 por debajo del mínimo 1.35 — breach">
             <h4 class="font-primary text-sm font-medium text-warning m-0 mb-2">Reported</h4>
             <div class="num text-3xl font-bold leading-tight text-warning">1.28</div>
             <div class="text-xs text-text-secondary mt-1">Actual OC ratio · below minimum</div>
@@ -1019,7 +1020,7 @@
         </div>
 
         <div class="flex justify-center gap-4 text-xs text-text-secondary mb-1.5">
-          <span class="text-secondary"><span class="inline-block w-4 h-0.5 bg-current mr-1 align-middle"></span>Reported</span>
+          <span class="text-success"><span class="inline-block w-4 h-0.5 bg-current mr-1 align-middle"></span>Reported (verde ≥ mín · naranja &lt; mín)</span>
           <span class="text-text-muted"><span class="inline-block w-4 h-0.5 bg-current mr-1 align-middle" style="background:repeating-linear-gradient(to right,currentColor 0 4px,transparent 4px 7px)"></span>Required</span>
         </div>
         <div class="text-xs text-text-secondary text-center">Last 5 report cuts · Overcollateralization ratio vs. contractual minimum</div>
@@ -1043,8 +1044,8 @@
           </svg>
         </div>
 
-        <!-- oc-callout · variant: breach -->
-        <aside class="flex items-center gap-2.5 p-3 px-4 rounded-md border border-warning-border bg-warning-bg text-warning text-sm mt-3">
+        <!-- oc-callout · alternable breach ⇄ compliant -->
+        <aside id="ocCallout" class="flex items-center gap-2.5 p-3 px-4 rounded-md border border-warning-border bg-warning-bg text-warning text-sm mt-3">
           <i class="ph ph-x-circle text-lg"></i>
           <span><strong>Breach: 5.2% below minimum · Deficit −0.07</strong> · Reported <span class="num">1.28</span> / Required <span class="num">1.35</span></span>
         </aside>
@@ -1106,7 +1107,6 @@
               <i class="ph ph-info text-text-muted text-sm cursor-help"></i>
             </div>
             <div class="num text-3xl font-bold text-danger leading-tight">−$11.40M</div>
-            <div class="text-xs text-text-secondary mt-1">Drawn exceeds the borrowing base · over-advance</div>
           </kpi-card>
 
           <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[118px]">
@@ -2123,7 +2123,7 @@
       pill2:{cls:'bg-danger-bg text-danger border border-danger-border', html:'<i class="ph ph-gauge text-xs"></i> 105.3% Utilization · Breach'},
       card:{cls:'block bg-danger-bg border border-danger-border rounded-xl p-4 min-h-[118px]',
             tt:'Outstanding Debt − Borrowing Base = $226.40M − $215.00M = −$11.40M (déficit)',
-            title:'Déficit', tcls:'text-danger', val:'−$11.40M', vcls:'text-danger', sub:'Drawn exceeds the borrowing base · over-advance'},
+            title:'Déficit', tcls:'text-danger', val:'−$11.40M', vcls:'text-danger', sub:''},
       bbVal:'$215.00M',
       data:[{m:'Apr 25',bb:252,od:200},{m:'May 25',bb:251,od:202},{m:'Jun 25',bb:250,od:204},{m:'Jul 25',bb:249,od:206},{m:'Aug 25',bb:248,od:208},{m:'Sep 25',bb:247,od:209},{m:'Oct 25',bb:246,od:209.5},{m:'Nov 25',bb:245,od:210},{m:'Dec 25',bb:238,od:216},{m:'Jan 26',bb:230,od:221},{m:'Feb 26',bb:222,od:224},{m:'Mar 26',bb:215,od:226.4}],
     },
@@ -2134,7 +2134,7 @@
       pill2:{cls:'bg-warning-bg text-warning border border-warning-border', html:'<i class="ph ph-gauge text-xs"></i> 94.9% Utilization · Watch'},
       card:{cls:'block bg-success-bg border border-success/30 rounded-xl p-4 min-h-[118px]',
             tt:'Borrowing Base − Outstanding Debt = $238.50M − $226.40M = +$12.10M (excess)',
-            title:'Excess', tcls:'text-success', val:'$12.10M', vcls:'text-success', sub:'Borrowing base in excess of the draw'},
+            title:'Excess', tcls:'text-success', val:'$12.10M', vcls:'text-success', sub:''},
       bbVal:'$238.50M',
       data:[{m:'Apr 25',bb:250,od:198},{m:'May 25',bb:249,od:200},{m:'Jun 25',bb:248,od:202},{m:'Jul 25',bb:247,od:204},{m:'Aug 25',bb:246.5,od:206},{m:'Sep 25',bb:246,od:207},{m:'Oct 25',bb:245.5,od:208},{m:'Nov 25',bb:245,od:210},{m:'Dec 25',bb:243,od:215.5},{m:'Jan 26',bb:241.5,od:220},{m:'Feb 26',bb:240,od:223.5},{m:'Mar 26',bb:238.5,od:226.4}],
     },
@@ -2187,7 +2187,7 @@
       '<div class="flex items-center gap-1.5 mb-1"><h4 class="font-primary text-sm font-medium '+c.card.tcls+' m-0">'+c.card.title+'</h4>'+
       '<i class="ph ph-info text-text-muted text-sm cursor-help"></i></div>'+
       '<div class="num text-3xl font-bold '+c.card.vcls+' leading-tight">'+c.card.val+'</div>'+
-      '<div class="text-xs text-text-secondary mt-1">'+c.card.sub+'</div>';
+      (c.card.sub ? '<div class="text-xs text-text-secondary mt-1">'+c.card.sub+'</div>' : '');
     $('bbValue').textContent = c.bbVal;
     $('bbLegendOD').className = c.legendOD;
     $('bbDynamic').innerHTML = buildChart(data, c.odColor, cur);
@@ -2211,13 +2211,25 @@
   const tail = (arr, n) => arr.slice(arr.length - Math.min(n, arr.length));
   if (!window.TR) return;
 
-  /* ─── Overcollateralization (dual: Reported vs Required 1.35) ─── */
-  const OC_REP = [1.41,1.40,1.42,1.39,1.41,1.40,1.38,1.34,1.40,1.40,1.34,1.28];
+  /* ─── Overcollateralization · clickeable: Compliant (verde) ⇄ Non compliant (naranja) ─── */
   const OC_REQ = 1.35;
   const ocY = r => +Math.max(30, Math.min(195, 30 + (1.45 - r) * 823.5)).toFixed(1);
-  const OC_UP = '#910057', OC_DN = '#B45309'; // por encima del mínimo (magenta) / por debajo = breach (naranja)
+  const OC_UP = '#16A34A', OC_DN = '#B45309'; // ≥ mínimo = verde (compliant) / < mínimo = naranja (breach)
+  const OC_DATA = {
+    nc: { rep:[1.41,1.40,1.42,1.39,1.41,1.40,1.38,1.34,1.40,1.40,1.34,1.28], tag:'Non compliant',
+      pill:{cls:'bg-warning-bg text-warning', html:'<i class="ph ph-warning"></i> Non compliant'},
+      delta:{cls:'bg-warning-bg text-warning', html:'<i class="ph ph-arrow-line-down text-xs"></i> −0.06 <span class="font-normal opacity-90">vs. prior month</span>'},
+      card:{cls:'block bg-warning-bg border border-warning-border rounded-xl p-4 min-h-[118px]', tcls:'text-warning', vcls:'text-warning', val:'1.28', sub:'Actual OC ratio · below minimum', tt:'Reported 1.28 por debajo del mínimo 1.35 — breach'},
+      aside:{cls:'border-warning-border bg-warning-bg text-warning', html:'<i class="ph ph-x-circle text-lg"></i><span><strong>Breach: 5.2% below minimum · Deficit −0.07</strong> · Reported <span class="num">1.28</span> / Required <span class="num">1.35</span></span>'} },
+    ok: { rep:[1.38,1.39,1.40,1.41,1.40,1.42,1.41,1.43,1.42,1.44,1.43,1.45], tag:'Compliant',
+      pill:{cls:'bg-success-bg text-success', html:'<i class="ph ph-check-circle"></i> Compliant'},
+      delta:{cls:'bg-success-bg text-success', html:'<i class="ph ph-arrow-line-up text-xs"></i> +0.02 <span class="font-normal opacity-90">vs. prior month</span>'},
+      card:{cls:'block bg-success-bg border border-success/30 rounded-xl p-4 min-h-[118px]', tcls:'text-success', vcls:'text-success', val:'1.45', sub:'Actual OC ratio · above minimum', tt:'Reported 1.45 por encima del mínimo 1.35 — compliant'},
+      aside:{cls:'border-success/30 bg-success-bg text-success', html:'<i class="ph ph-check-circle text-lg"></i><span><strong>Compliant: 7.4% above minimum · Cushion +0.10</strong> · Reported <span class="num">1.45</span> / Required <span class="num">1.35</span></span>'} },
+  };
+  let ocCur = 'nc';
   function renderOC(n){
-    const rep = tail(OC_REP, n), ms = tail(MONTHS, n), N = rep.length;
+    const rep = tail(OC_DATA[ocCur].rep, n), ms = tail(MONTHS, n), N = rep.length;
     const X0 = 60, X1 = 460, step = N > 1 ? (X1 - X0) / (N - 1) : 0, xb = i => +(X0 + i*step).toFixed(1);
     const reqY = ocY(OC_REQ);
     const P = i => ({ x: xb(i), y: ocY(rep[i]), below: rep[i] < OC_REQ });
@@ -2241,7 +2253,29 @@
       + `<text x="${X1}" y="${reqY-4}" text-anchor="end" font-family="Space Mono" font-size="8" fill="#94A3B8">Required 1.35</text>`
       + lines + dots + labels;
   }
+  function setOCScenario(){
+    const c = OC_DATA[ocCur];
+    const card = $('ocReportedCard');
+    card.className = c.card.cls; card.setAttribute('data-tt', c.card.tt);
+    card.innerHTML = '<h4 class="font-primary text-sm font-medium '+c.card.tcls+' m-0 mb-2">Reported</h4>'
+      + '<div class="num text-3xl font-bold leading-tight '+c.card.vcls+'">'+c.card.val+'</div>'
+      + '<div class="text-xs text-text-secondary mt-1">'+c.card.sub+'</div>';
+    $('ocPill').className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold font-primary ' + c.pill.cls;
+    $('ocPill').innerHTML = c.pill.html;
+    $('ocDelta').className = 'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold font-primary ' + c.delta.cls;
+    $('ocDelta').innerHTML = c.delta.html;
+    $('ocCallout').className = 'flex items-center gap-2.5 p-3 px-4 rounded-md border text-sm mt-3 ' + c.aside.cls;
+    $('ocCallout').innerHTML = c.aside.html;
+    $('ocScenarioTag').innerHTML = '<i class="ph ph-cursor-click"></i> ' + c.tag;
+    renderOC(window.TR.n());
+  }
+  window.toggleOC = function(e){
+    if (e && e.target.closest('label, .data-switch, #ocTable')) return; // no alternar al usar Show Data / tabla
+    ocCur = ocCur === 'nc' ? 'ok' : 'nc';
+    setOCScenario();
+  };
   window.TR.register(renderOC);
+  setOCScenario();
 
   /* ─── Assets evolution (Total vs Eligible) ─── */
   const AS_TOT = [210,218,226,233,240,246,250,254.2,263.8,273.5,281.97,299.37];
