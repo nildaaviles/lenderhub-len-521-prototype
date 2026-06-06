@@ -1006,10 +1006,10 @@
         </header>
 
         <div class="grid grid-cols-2 gap-4 mb-3">
-          <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[118px]">
-            <h4 class="font-primary text-sm font-medium text-text-secondary m-0 mb-2">Reported</h4>
-            <div class="num text-3xl font-bold leading-tight">1.28</div>
-            <div class="text-xs text-text-secondary mt-1">Actual OC ratio at cut-off</div>
+          <kpi-card class="block bg-warning-bg border border-warning-border rounded-xl p-4 min-h-[118px]" data-tt="Reported 1.28 por debajo del mínimo 1.35 — breach">
+            <h4 class="font-primary text-sm font-medium text-warning m-0 mb-2">Reported</h4>
+            <div class="num text-3xl font-bold leading-tight text-warning">1.28</div>
+            <div class="text-xs text-text-secondary mt-1">Actual OC ratio · below minimum</div>
           </kpi-card>
           <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[118px]">
             <h4 class="font-primary text-sm font-medium text-text-secondary m-0 mb-2">Required</h4>
@@ -2132,9 +2132,9 @@
       tag:'<i class="ph ph-cursor-click"></i> Excess (cushion)',
       pill1:{cls:'bg-success-bg text-success border border-success/30', html:'<i class="ph ph-check-circle text-xs"></i> Compliant'},
       pill2:{cls:'bg-warning-bg text-warning border border-warning-border', html:'<i class="ph ph-gauge text-xs"></i> 94.9% Utilization · Watch'},
-      card:{cls:'block bg-warning-bg border border-warning-border rounded-xl p-4 min-h-[118px]',
+      card:{cls:'block bg-success-bg border border-success/30 rounded-xl p-4 min-h-[118px]',
             tt:'Borrowing Base − Outstanding Debt = $238.50M − $226.40M = +$12.10M (excess)',
-            title:'Excess', tcls:'text-warning', val:'$12.10M', vcls:'text-warning', sub:'Borrowing base in excess of the draw'},
+            title:'Excess', tcls:'text-success', val:'$12.10M', vcls:'text-success', sub:'Borrowing base in excess of the draw'},
       bbVal:'$238.50M',
       data:[{m:'Apr 25',bb:250,od:198},{m:'May 25',bb:249,od:200},{m:'Jun 25',bb:248,od:202},{m:'Jul 25',bb:247,od:204},{m:'Aug 25',bb:246.5,od:206},{m:'Sep 25',bb:246,od:207},{m:'Oct 25',bb:245.5,od:208},{m:'Nov 25',bb:245,od:210},{m:'Dec 25',bb:243,od:215.5},{m:'Jan 26',bb:241.5,od:220},{m:'Feb 26',bb:240,od:223.5},{m:'Mar 26',bb:238.5,od:226.4}],
     },
@@ -2146,7 +2146,7 @@
     const bbPts = data.map((d,i)=>`${xb(i)},${Y(d.bb)}`);
     const odPts = data.map((d,i)=>`${xb(i)},${Y(d.od)}`);
     const band = bbPts.join(' ') + ' ' + odPts.slice().reverse().join(' ');
-    const bandFill = key === 'excess' ? '#DC2626' : '#16A34A';
+    const bandFill = key === 'deficit' ? '#DC2626' : '#16A34A';
     const dots = (pts, fill) => '<g fill="'+fill+'">' + pts.map((p,i)=>`<circle cx="${p.split(',')[0]}" cy="${p.split(',')[1]}" r="${i===n-1?3.5:3}"${i===n-1?' stroke="#fff" stroke-width="1.5"':''}/>`).join('') + '</g>';
     const labels = '<g font-family="Sofia Sans" font-size="'+(n>7?'8':'9.5')+'" fill="#64748B">' + data.map((d,i)=>`<text x="${xb(i)}" y="190" text-anchor="middle">${d.m}</text>`).join('') + '</g>';
     const last = data[n-1], av = +(last.bb - last.od).toFixed(1);
@@ -2215,19 +2215,31 @@
   const OC_REP = [1.41,1.40,1.42,1.39,1.41,1.40,1.38,1.34,1.40,1.40,1.34,1.28];
   const OC_REQ = 1.35;
   const ocY = r => +Math.max(30, Math.min(195, 30 + (1.45 - r) * 823.5)).toFixed(1);
+  const OC_UP = '#910057', OC_DN = '#B45309'; // por encima del mínimo (magenta) / por debajo = breach (naranja)
   function renderOC(n){
     const rep = tail(OC_REP, n), ms = tail(MONTHS, n), N = rep.length;
     const X0 = 60, X1 = 460, step = N > 1 ? (X1 - X0) / (N - 1) : 0, xb = i => +(X0 + i*step).toFixed(1);
-    const pts = rep.map((r,i)=>`${xb(i)},${ocY(r)}`);
-    const area = `${xb(0)},190 ${pts.join(' ')} ${xb(N-1)},190`;
     const reqY = ocY(OC_REQ);
-    const dots = '<g fill="#910057">' + pts.map((p,i)=>`<circle cx="${p.split(',')[0]}" cy="${p.split(',')[1]}" r="${i===N-1?3.5:3}"${i===N-1?' stroke="#fff" stroke-width="1.5"':''}/>`).join('') + '</g>';
+    const P = i => ({ x: xb(i), y: ocY(rep[i]), below: rep[i] < OC_REQ });
+    let bands = '', lines = '';
+    for (let i = 0; i < N - 1; i++){
+      const a = P(i), b = P(i+1), segs = [];
+      if (a.below === b.below) segs.push({x0:a.x,y0:a.y,x1:b.x,y1:b.y,below:a.below});
+      else { const t = (reqY - a.y) / (b.y - a.y), xc = +(a.x + t*(b.x - a.x)).toFixed(1);
+        segs.push({x0:a.x,y0:a.y,x1:xc,y1:reqY,below:a.below}); segs.push({x0:xc,y0:reqY,x1:b.x,y1:b.y,below:b.below}); }
+      segs.forEach(s => {
+        const col = s.below ? OC_DN : OC_UP, bf = s.below ? '#B45309' : '#16A34A', op = s.below ? '0.20' : '0.12';
+        bands += `<polygon points="${s.x0},${s.y0} ${s.x1},${s.y1} ${s.x1},${reqY} ${s.x0},${reqY}" fill="${bf}" opacity="${op}"/>`;
+        lines += `<polyline points="${s.x0},${s.y0} ${s.x1},${s.y1}" fill="none" stroke="${col}" stroke-width="2.5"/>`;
+      });
+    }
+    let dots = '';
+    for (let i = 0; i < N; i++){ const p = P(i); dots += `<circle cx="${p.x}" cy="${p.y}" r="${i===N-1?3.5:3}" fill="${p.below?OC_DN:OC_UP}"${i===N-1?' stroke="#fff" stroke-width="1.5"':''}/>`; }
     const labels = '<g font-family="Sofia Sans" font-size="'+(N>7?'8':'10')+'" fill="#64748B">' + ms.map((m,i)=>`<text x="${xb(i)}" y="190" text-anchor="middle">${m}</text>`).join('') + '</g>';
-    $('ocDynamic').innerHTML =
-      `<polygon points="${area}" fill="url(#ocGreen)"/>`
+    $('ocDynamic').innerHTML = bands
       + `<line x1="${X0}" y1="${reqY}" x2="${X1}" y2="${reqY}" stroke="#94A3B8" stroke-width="2" stroke-dasharray="5 3"/>`
       + `<text x="${X1}" y="${reqY-4}" text-anchor="end" font-family="Space Mono" font-size="8" fill="#94A3B8">Required 1.35</text>`
-      + `<polyline points="${pts.join(' ')}" fill="none" stroke="#910057" stroke-width="2.5"/>` + dots + labels;
+      + lines + dots + labels;
   }
   window.TR.register(renderOC);
 
