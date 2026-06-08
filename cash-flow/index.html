@@ -164,9 +164,6 @@
     <button id="tab-waterfall" onclick="switchTab('waterfall')" class="cf-tab px-4 py-2 text-sm font-medium border-b-2 border-transparent -mb-px font-primary text-text-secondary hover:text-text">
       <i class="ph ph-align-bottom mr-1"></i> Waterfall
     </button>
-    <button id="tab-historical" onclick="switchTab('historical')" class="cf-tab px-4 py-2 text-sm font-medium border-b-2 border-transparent -mb-px font-primary text-text-secondary hover:text-text">
-      <i class="ph ph-chart-line-up mr-1"></i> Histórico
-    </button>
     <a id="openStandalone" href="./collection-chart.html" target="_blank" class="ml-auto inline-flex items-center gap-1 text-xs text-text-secondary hover:text-text" title="Open in new tab">
       <i class="ph ph-arrow-square-out"></i> Open standalone
     </a>
@@ -176,7 +173,6 @@
   <iframe id="frame-collection" class="cf-frame" src="./collection-chart.html" title="Collection Chart"></iframe>
   <iframe id="frame-history" class="cf-frame hidden" src="./payment-history.html" title="Payment History"></iframe>
   <iframe id="frame-waterfall" class="cf-frame hidden" src="./waterfall-chart.html" title="Waterfall"></iframe>
-  <iframe id="frame-historical" class="cf-frame hidden" src="./cash-history.html" title="Histórico de caja"></iframe>
 
   <!-- Account Balance pane (inline, hidden by default) -->
   <div id="frame-account" class="hidden">
@@ -376,7 +372,7 @@
 
 <script>
   function switchTab(tab){
-    const tabs = ['collection','history','account','waterfall','historical'];
+    const tabs = ['collection','history','account','waterfall'];
     tabs.forEach(t => {
       const btn = document.getElementById('tab-'+t);
       const frame = document.getElementById('frame-'+t);
@@ -398,8 +394,7 @@
       openLink.style.display = '';
       openLink.href = tab === 'collection' ? './collection-chart.html'
                     : tab === 'history'    ? './payment-history.html'
-                    : tab === 'waterfall'  ? './waterfall-chart.html'
-                    : './cash-history.html';
+                    : './waterfall-chart.html';
     }
   }
 </script>
