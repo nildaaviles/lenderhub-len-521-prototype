@@ -1062,7 +1062,7 @@
 
     <!-- ════════ <borrowing-base-section> · LEN-918 — order 2 ════════ -->
     <borrowing-base-section class="order-2 block">
-      <article id="bbCard" onclick="toggleBB(event)" class="bg-surface border border-border rounded-xl p-4 cursor-pointer hover:border-border-strong transition-colors" title="Click para alternar Surplus ⇄ Deficiency">
+      <article id="bbCard" onclick="toggleBB(event)" class="bg-surface border border-border rounded-xl p-4 cursor-pointer hover:border-border-strong transition-colors" title="Click para alternar Surplus ⇄ Deficit">
         <header class="flex items-center gap-2.5 mb-3 flex-wrap">
           <h3 class="font-primary text-base font-bold uppercase tracking-wider text-text m-0">Borrowing Base</h3>
           <!-- Two INDEPENDENT pills · LEN-918 · alternables por caso -->
@@ -1079,13 +1079,13 @@
         <!-- KPI strip · 3 primary numbers -->
         <div class="grid grid-cols-3 gap-3 mb-3 max-[900px]:grid-cols-1">
           <!-- Primary KPI · alternable: Déficit (over-advance) ⇄ Excess (cushion) -->
-          <kpi-card id="bbPrimaryCard" class="block bg-danger-bg border border-danger-border rounded-xl p-4 min-h-[118px]"
-                    data-tt="Outstanding Debt − Borrowing Base = $226.40M − $215.00M = −$11.40M (deficiency)">
+          <kpi-card id="bbPrimaryCard" class="block bg-warning-bg border border-warning-border rounded-xl p-4 min-h-[118px]"
+                    data-tt="Outstanding Debt − Borrowing Base = $226.40M − $215.00M = −$11.40M (deficit)">
             <div class="flex items-center gap-1.5 mb-1">
-              <h4 class="font-primary text-sm font-medium text-danger m-0">Deficiency</h4>
+              <h4 class="font-primary text-sm font-medium text-warning m-0">Deficit</h4>
               <i class="ph ph-info text-text-muted text-sm cursor-help"></i>
             </div>
-            <div class="num text-3xl font-bold text-danger leading-tight">−$11.40M</div>
+            <div class="num text-3xl font-bold text-warning leading-tight">−$11.40M</div>
           </kpi-card>
 
           <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[118px]">
@@ -1181,7 +1181,7 @@
               <th class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Cut-off</th>
               <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Borrowing Base</th>
               <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Outstanding Debt</th>
-              <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Surplus / (Deficiency)</th>
+              <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Surplus / (Deficit)</th>
               <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Utilization</th>
               <th class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Status</th>
             </tr></thead>
@@ -2096,12 +2096,12 @@
   const CASES = {
     deficit: {
       odColor:'#DC2626', legendOD:'text-danger',
-      tag:'<i class="ph ph-cursor-click"></i> Deficiency (over-advance)',
+      tag:'<i class="ph ph-cursor-click"></i> Deficit (over-advance)',
       pill1:{cls:'bg-danger-bg text-danger border border-danger-border', html:'<i class="ph ph-x-circle text-xs"></i> Non-compliant · BB deficit'},
       pill2:{cls:'bg-danger-bg text-danger border border-danger-border', html:'<i class="ph ph-gauge text-xs"></i> 105.3% Utilization · Breach'},
-      card:{cls:'block bg-danger-bg border border-danger-border rounded-xl p-4 min-h-[118px]',
-            tt:'Outstanding Debt − Borrowing Base = $226.40M − $215.00M = −$11.40M (deficiency)',
-            title:'Deficiency', tcls:'text-danger', val:'−$11.40M', vcls:'text-danger', sub:''},
+      card:{cls:'block bg-warning-bg border border-warning-border rounded-xl p-4 min-h-[118px]',
+            tt:'Outstanding Debt − Borrowing Base = $226.40M − $215.00M = −$11.40M (deficit)',
+            title:'Deficit', tcls:'text-warning', val:'−$11.40M', vcls:'text-warning', sub:''},
       bbVal:'$215.00M',
       data:[{m:'Apr 25',bb:252,od:200},{m:'May 25',bb:251,od:202},{m:'Jun 25',bb:250,od:204},{m:'Jul 25',bb:249,od:206},{m:'Aug 25',bb:248,od:208},{m:'Sep 25',bb:247,od:209},{m:'Oct 25',bb:246,od:209.5},{m:'Nov 25',bb:245,od:210},{m:'Dec 25',bb:238,od:216},{m:'Jan 26',bb:230,od:221},{m:'Feb 26',bb:222,od:224},{m:'Mar 26',bb:215,od:226.4}],
     },
