@@ -1065,14 +1065,9 @@
       <article id="bbCard" onclick="toggleBB(event)" class="bg-surface border border-border rounded-xl p-4 cursor-pointer hover:border-border-strong transition-colors" title="Click para alternar Surplus ⇄ Deficit">
         <header class="flex items-center gap-2.5 mb-3 flex-wrap">
           <h3 class="font-primary text-base font-bold uppercase tracking-wider text-text m-0">Borrowing Base</h3>
-          <!-- Two INDEPENDENT pills · LEN-918 · alternables por caso -->
           <span id="bbPill1" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-danger-bg text-danger border border-danger-border text-xs font-bold font-primary"
                 data-tt="Breach: Outstanding Debt exceeds the Borrowing Base">
             <i class="ph ph-x-circle text-xs"></i> Non-compliant · BB deficit
-          </span>
-          <span id="bbPill2" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-danger-bg text-danger border border-danger-border text-xs font-bold font-primary"
-                data-tt="Utilization above 100% — drawn balance exceeds borrowing base">
-            <i class="ph ph-gauge text-xs"></i> 105.3% Utilization · Breach
           </span>
         </header>
 
@@ -1111,7 +1106,7 @@
         <!-- Legend -->
         <div class="flex justify-center gap-4 text-xs text-text-secondary mb-1.5">
           <span class="text-secondary"><span class="inline-block w-4 h-0.5 bg-current mr-1 align-middle"></span>Borrowing Base</span>
-          <span id="bbLegendOD" class="text-danger"><span class="inline-block w-4 h-0.5 bg-current mr-1 align-middle" style="background:repeating-linear-gradient(to right,currentColor 0 4px,transparent 4px 7px)"></span>Outstanding Debt</span>
+          <span id="bbLegendOD" class="text-warning"><span class="inline-block w-4 h-0.5 bg-current mr-1 align-middle" style="background:repeating-linear-gradient(to right,currentColor 0 4px,transparent 4px 7px)"></span>Outstanding Debt</span>
         </div>
 
         <!-- Chart: 2 lines — Borrowing Base vs Outstanding Debt · breach wedge where OD > BB -->
@@ -1139,9 +1134,9 @@
             <!-- Capa de datos · reescrita por toggleBB (Availability ⇄ Excess) -->
             <g id="bbDynamic">
               <polygon points="60,67.5 160,85 260,105 342,121 260,127.5 160,140 60,155" fill="url(#bbAvail)"/>
-              <polygon points="342,121 360,120 460,114 460,142.5 360,125" fill="#DC2626" opacity="0.18"/>
-              <polyline points="60,155 160,140 260,127.5 360,120 460,114" fill="none" stroke="#DC2626" stroke-width="2.5" stroke-dasharray="5 3"/>
-              <g fill="#DC2626">
+              <polygon points="342,121 360,120 460,114 460,142.5 360,125" fill="#D97706" opacity="0.18"/>
+              <polyline points="60,155 160,140 260,127.5 360,120 460,114" fill="none" stroke="#B45309" stroke-width="2.5" stroke-dasharray="5 3"/>
+              <g fill="#B45309">
                 <circle cx="60" cy="155" r="3"/><circle cx="160" cy="140" r="3"/>
                 <circle cx="260" cy="127.5" r="3"/><circle cx="360" cy="120" r="3"/>
                 <circle cx="460" cy="114" r="3.5" stroke="#fff" stroke-width="1.5"/>
@@ -1152,8 +1147,8 @@
                 <circle cx="260" cy="105" r="3"/><circle cx="360" cy="125" r="3"/>
                 <circle cx="460" cy="142.5" r="3.5" stroke="#fff" stroke-width="1.5"/>
               </g>
-              <circle cx="342" cy="121" r="3" fill="#fff" stroke="#DC2626" stroke-width="1.5"/>
-              <text x="342" y="112" text-anchor="middle" font-family="Sofia Sans" font-size="8.5" font-weight="700" fill="#DC2626">breach</text>
+              <circle cx="342" cy="121" r="3" fill="#fff" stroke="#B45309" stroke-width="1.5"/>
+              <text x="342" y="112" text-anchor="middle" font-family="Sofia Sans" font-size="8.5" font-weight="700" fill="#B45309">breach</text>
               <g font-family="Sofia Sans" font-size="10" fill="#64748B">
                 <text x="60" y="190" text-anchor="middle">Nov 25</text>
                 <text x="160" y="190" text-anchor="middle">Dec 25</text>
@@ -1161,8 +1156,8 @@
                 <text x="360" y="190" text-anchor="middle">Feb 26</text>
                 <text x="460" y="190" text-anchor="middle">Mar 26</text>
               </g>
-              <line x1="460" y1="114" x2="460" y2="142.5" stroke="#DC2626" stroke-width="1" stroke-dasharray="2 2"/>
-              <text x="455" y="131" text-anchor="end" font-family="Space Mono" font-size="9" fill="#DC2626" font-weight="bold">−$11.4M</text>
+              <line x1="460" y1="114" x2="460" y2="142.5" stroke="#B45309" stroke-width="1" stroke-dasharray="2 2"/>
+              <text x="455" y="131" text-anchor="end" font-family="Space Mono" font-size="9" fill="#B45309" font-weight="bold">−$11.4M</text>
             </g>
           </svg>
         </div>
@@ -1186,11 +1181,11 @@
               <th class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Status</th>
             </tr></thead>
             <tbody id="bbTableBody">
-              <tr><td class="p-3 border-b border-border">Nov 30, 2025</td><td class="p-3 border-b border-border text-right num">$245.0M</td><td class="p-3 border-b border-border text-right num">$210.0M</td><td class="p-3 border-b border-border text-right num text-success">$35.0M</td><td class="p-3 border-b border-border text-right num">85.7%</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
-              <tr><td class="p-3 border-b border-border">Dec 31, 2025</td><td class="p-3 border-b border-border text-right num">$238.0M</td><td class="p-3 border-b border-border text-right num">$216.0M</td><td class="p-3 border-b border-border text-right num text-success">$22.0M</td><td class="p-3 border-b border-border text-right num">90.8%</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
-              <tr><td class="p-3 border-b border-border">Jan 31, 2026</td><td class="p-3 border-b border-border text-right num">$230.0M</td><td class="p-3 border-b border-border text-right num">$221.0M</td><td class="p-3 border-b border-border text-right num text-warning">$9.0M</td><td class="p-3 border-b border-border text-right num">96.1%</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
-              <tr><td class="p-3 border-b border-border">Feb 28, 2026</td><td class="p-3 border-b border-border text-right num">$222.0M</td><td class="p-3 border-b border-border text-right num">$224.0M</td><td class="p-3 border-b border-border text-right num text-danger font-semibold">−$2.0M</td><td class="p-3 border-b border-border text-right num text-danger">100.9%</td><td class="p-3 border-b border-border"><span class="text-danger text-xs font-semibold">Breach</span></td></tr>
-              <tr class="bg-bg"><td class="p-3"><strong>Mar 31, 2026 · latest</strong></td><td class="p-3 text-right num font-bold">$215.0M</td><td class="p-3 text-right num font-bold">$226.4M</td><td class="p-3 text-right num font-bold text-danger">−$11.4M</td><td class="p-3 text-right num font-bold text-danger">105.3%</td><td class="p-3"><span class="text-danger text-xs font-bold">Breach</span></td></tr>
+              <tr><td class="p-3 border-b border-border">Nov 30, 2025</td><td class="p-3 border-b border-border text-right num">$245.0M</td><td class="p-3 border-b border-border text-right num">$210.0M</td><td class="p-3 border-b border-border text-right num text-success">$35.0M</td><td class="p-3 border-b border-border text-right num text-text-secondary">85.7%</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
+              <tr><td class="p-3 border-b border-border">Dec 31, 2025</td><td class="p-3 border-b border-border text-right num">$238.0M</td><td class="p-3 border-b border-border text-right num">$216.0M</td><td class="p-3 border-b border-border text-right num text-success">$22.0M</td><td class="p-3 border-b border-border text-right num text-text-secondary">90.8%</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
+              <tr><td class="p-3 border-b border-border">Jan 31, 2026</td><td class="p-3 border-b border-border text-right num">$230.0M</td><td class="p-3 border-b border-border text-right num">$221.0M</td><td class="p-3 border-b border-border text-right num text-warning">$9.0M</td><td class="p-3 border-b border-border text-right num text-text-secondary">96.1%</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
+              <tr><td class="p-3 border-b border-border">Feb 28, 2026</td><td class="p-3 border-b border-border text-right num">$222.0M</td><td class="p-3 border-b border-border text-right num">$224.0M</td><td class="p-3 border-b border-border text-right num text-danger font-semibold">−$2.0M</td><td class="p-3 border-b border-border text-right num text-text-secondary">100.9%</td><td class="p-3 border-b border-border"><span class="text-danger text-xs font-semibold">Breach</span></td></tr>
+              <tr class="bg-bg"><td class="p-3"><strong>Mar 31, 2026 · latest</strong></td><td class="p-3 text-right num font-bold">$215.0M</td><td class="p-3 text-right num font-bold">$226.4M</td><td class="p-3 text-right num font-bold text-danger">−$11.4M</td><td class="p-3 text-right num font-bold text-text-secondary">105.3%</td><td class="p-3"><span class="text-danger text-xs font-bold">Breach</span></td></tr>
             </tbody>
           </table>
           </div>
@@ -2095,7 +2090,7 @@
   // cuántos cortes hacia atrás se muestran. util = OD/BB; av = BB−OD.
   const CASES = {
     deficit: {
-      odColor:'#DC2626', legendOD:'text-danger',
+      odColor:'#B45309', legendOD:'text-warning',
       tag:'<i class="ph ph-cursor-click"></i> Deficit (over-advance)',
       pill1:{cls:'bg-danger-bg text-danger border border-danger-border', html:'<i class="ph ph-x-circle text-xs"></i> Non-compliant · BB deficit'},
       pill2:{cls:'bg-danger-bg text-danger border border-danger-border', html:'<i class="ph ph-gauge text-xs"></i> 105.3% Utilization · Breach'},
@@ -2118,19 +2113,35 @@
     },
   };
 
-  function buildChart(data, odColor, key){
+  function buildChart(data, odColor){
     const n = data.length, step = n > 1 ? (X1 - X0) / (n - 1) : 0;
     const xb = i => +(X0 + i * step).toFixed(1);
     const bbPts = data.map((d,i)=>`${xb(i)},${Y(d.bb)}`);
     const odPts = data.map((d,i)=>`${xb(i)},${Y(d.od)}`);
-    const band = bbPts.join(' ') + ' ' + odPts.slice().reverse().join(' ');
-    const bandFill = key === 'deficit' ? '#DC2626' : '#16A34A';
+    // Banda partida en el cruce: verde = cushion (BB ≥ OD) · ámbar = deficit (OD > BB), igual que Overcollateralization
+    const GREEN = '#16A34A', AMBER = '#D97706';
+    const poly = (xa,xc,bya,byc,oya,oyc,fill) => `<polygon points="${xa},${bya} ${xc},${byc} ${xc},${oyc} ${xa},${oya}" fill="${fill}" opacity="0.13"/>`;
+    let bands = '';
+    for (let i = 0; i < n - 1; i++){
+      const x0 = xb(i), x1 = xb(i+1);
+      const bb0 = data[i].bb, bb1 = data[i+1].bb, od0 = data[i].od, od1 = data[i+1].od;
+      const a0 = bb0 - od0, a1 = bb1 - od1;
+      if ((a0 >= 0) === (a1 >= 0)){
+        bands += poly(x0, x1, Y(bb0), Y(bb1), Y(od0), Y(od1), a0 >= 0 ? GREEN : AMBER);
+      } else {
+        const t = a0 / (a0 - a1);                       // fracción del segmento donde BB = OD
+        const xc = +(x0 + (x1 - x0) * t).toFixed(1);
+        const yc = Y(bb0 + (bb1 - bb0) * t);            // = Y(od) en el cruce
+        bands += poly(x0, xc, Y(bb0), yc, Y(od0), yc, a0 >= 0 ? GREEN : AMBER);
+        bands += poly(xc, x1, yc, Y(bb1), yc, Y(od1), a1 >= 0 ? GREEN : AMBER);
+      }
+    }
     const dots = (pts, fill) => '<g fill="'+fill+'">' + pts.map((p,i)=>`<circle cx="${p.split(',')[0]}" cy="${p.split(',')[1]}" r="${i===n-1?3.5:3}"${i===n-1?' stroke="#fff" stroke-width="1.5"':''}/>`).join('') + '</g>';
     const labels = '<g font-family="Sofia Sans" font-size="'+(n>7?'8':'9.5')+'" fill="#64748B">' + data.map((d,i)=>`<text x="${xb(i)}" y="190" text-anchor="middle">${d.m}</text>`).join('') + '</g>';
     const last = data[n-1], av = +(last.bb - last.od).toFixed(1);
     const anno = `<line x1="${xb(n-1)}" y1="${Y(last.od)}" x2="${xb(n-1)}" y2="${Y(last.bb)}" stroke="${odColor}" stroke-width="1" stroke-dasharray="2 2"/>`
       + `<text x="${xb(n-1)-5}" y="${(Math.min(Y(last.od),Y(last.bb))+Math.abs(Y(last.od)-Y(last.bb))/2+3).toFixed(1)}" text-anchor="end" font-family="Space Mono" font-size="9" fill="${odColor}" font-weight="bold">${fmtAv(av)}</text>`;
-    return `<polygon points="${band}" fill="${bandFill}" opacity="0.13"/>`
+    return bands
       + `<polyline points="${odPts.join(' ')}" fill="none" stroke="${odColor}" stroke-width="2.5" stroke-dasharray="5 3"/>` + dots(odPts, odColor)
       + `<polyline points="${bbPts.join(' ')}" fill="none" stroke="#910057" stroke-width="2.5"/>` + dots(bbPts, '#910057')
       + labels + anno;
@@ -2142,7 +2153,7 @@
       const last = i === n-1, av = +(r.bb-r.od).toFixed(1), ut = r.od/r.bb*100;
       const bcl = last ? '' : ' border-b border-border', fb = last ? ' font-bold' : '';
       const c1 = last ? '<td class="p-3"><strong>'+r.m+' · latest</strong></td>' : '<td class="p-3 border-b border-border">'+r.m+'</td>';
-      const avCls = av<0?'text-danger':'text-success', utCls = ut>100?'text-danger':'', st = av<0?'Breach':'Compliant', stCls = av<0?'text-danger':'text-success';
+      const avCls = av<0?'text-danger':'text-success', utCls = 'text-text-secondary', st = av<0?'Breach':'Compliant', stCls = av<0?'text-danger':'text-success';
       return (last?'<tr class="bg-bg">':'<tr>') + c1
         + '<td class="p-3'+bcl+' text-right num'+fb+'">$'+r.bb.toFixed(1)+'M</td>'
         + '<td class="p-3'+bcl+' text-right num'+fb+'">$'+r.od.toFixed(1)+'M</td>'
@@ -2157,7 +2168,6 @@
     const c = CASES[cur];
     const data = c.data.slice(c.data.length - Math.min(n || (window.TR ? window.TR.n() : 6), c.data.length));
     $('bbPill1').className = pillBase + c.pill1.cls; $('bbPill1').innerHTML = c.pill1.html;
-    $('bbPill2').className = pillBase + c.pill2.cls; $('bbPill2').innerHTML = c.pill2.html;
     const card = $('bbPrimaryCard');
     card.className = c.card.cls; card.setAttribute('data-tt', c.card.tt);
     card.innerHTML =
@@ -2167,7 +2177,7 @@
       (c.card.sub ? '<div class="text-xs text-text-secondary mt-1">'+c.card.sub+'</div>' : '');
     $('bbValue').textContent = c.bbVal;
     $('bbLegendOD').className = c.legendOD;
-    $('bbDynamic').innerHTML = buildChart(data, c.odColor, cur);
+    $('bbDynamic').innerHTML = buildChart(data, c.odColor);
     $('bbTableBody').innerHTML = buildRows(data);
   }
 
