@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Capa de Mapeo · Flujo de Efectivo · LenderHub</title>
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web" />
+<style>
+  :root {
+    --vino:#4A1942; --vino-soft:#7A3470; --rosa:#F4D4E8; --bg:#FAFAFC; --card:#FFFFFF;
+    --text:#1A1A2E; --muted:#6B7280; --border:#E5E7EB; --green:#10B981; --amber:#F59E0B; --red:#EF4444; --blue:#0284C7;
+  }
+  * { box-sizing:border-box; font-family:-apple-system, BlinkMacSystemFont, "Inter", sans-serif; }
+  body { background:var(--bg); margin:0; padding:40px; color:var(--text); }
+  .wrapper { max-width:1180px; margin:0 auto; }
+  .card { background:var(--card); border-radius:16px; padding:28px 32px; box-shadow:0 1px 3px rgba(0,0,0,.04),0 1px 2px rgba(0,0,0,.06); border:1px solid var(--border); }
+  .header { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:22px; }
+  .title-block { display:flex; align-items:center; gap:12px; }
+  .icon-bg { width:36px; height:36px; background:var(--rosa); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+  .title { font-size:16px; font-weight:700; letter-spacing:.5px; color:var(--vino); }
+  .subtitle { font-size:12px; color:var(--muted); margin-top:2px; }
+  .toggle { display:inline-flex; background:#F3F4F6; border-radius:9px; padding:3px; gap:2px; flex-wrap:wrap; }
+  .toggle button { border:0; background:transparent; padding:7px 14px; border-radius:7px; font-size:12px; font-weight:600; color:var(--muted); cursor:pointer; }
+  .toggle button.active { background:var(--vino); color:#fff; }
+
+  .flow { display:grid; grid-template-columns:1fr 56px 1fr; gap:0; align-items:stretch; margin-top:8px; }
+  .col-head { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:10px; }
+  .panel { background:#FBFBFD; border:1px solid var(--border); border-radius:12px; padding:14px 16px; }
+  .panel.canon { background:#FBF6FA; border-color:#EAD7E4; }
+  .arrow-col { display:flex; align-items:center; justify-content:center; color:var(--vino-soft); font-size:20px; }
+
+  .row { display:flex; justify-content:space-between; align-items:baseline; gap:8px; padding:7px 0; border-bottom:1px dashed #ECECF1; font-size:12.5px; }
+  .row:last-child { border-bottom:0; }
+  .row .lbl { color:var(--text); }
+  .row .val { font-family:"SF Mono",Menlo,monospace; font-size:11.5px; color:var(--muted); white-space:nowrap; }
+  .sec { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--vino-soft); margin:10px 0 2px; }
+  .src-sub { font-size:10.5px; color:var(--muted); font-style:italic; margin-top:1px; }
+  .chip { display:inline-block; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; padding:1px 6px; border-radius:6px; margin-left:6px; vertical-align:middle; }
+  .c-exacto { background:#F0FDF4; color:var(--green); }
+  .c-aprox { background:#FFFBEB; color:var(--amber); }
+  .c-rollup { background:#F0F9FF; color:var(--blue); }
+  .c-falta { background:#F3F4F6; color:var(--muted); }
+
+  .recon { display:flex; gap:0; margin:22px 0 6px; padding:16px 20px; background:linear-gradient(135deg,#FBF6FA,#F7EDF4); border-radius:12px; flex-wrap:wrap; }
+  .recon .k { padding-right:20px; margin-right:20px; border-right:1px solid #EADCE5; }
+  .recon .k:last-child { border-right:0; }
+  .recon .kl { font-size:10px; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); }
+  .recon .kv { font-size:18px; font-weight:700; color:var(--vino); font-family:"SF Mono",Menlo,monospace; }
+  .recon-ok { font-size:12px; font-weight:600; color:var(--green); margin-top:10px; display:flex; align-items:center; gap:6px; }
+
+  table.matrix { width:100%; border-collapse:collapse; font-size:12px; margin-top:14px; }
+  table.matrix th, table.matrix td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--border); vertical-align:top; }
+  table.matrix th { font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); background:#F8FAFC; }
+  table.matrix td.canon { font-weight:600; color:var(--vino); white-space:nowrap; }
+  table.matrix td.miss { color:#B9B9C2; font-style:italic; }
+  .legend { display:flex; gap:18px; flex-wrap:wrap; font-size:11px; color:var(--muted); margin-top:14px; }
+  .note { font-size:11px; color:var(--muted); margin-top:18px; line-height:1.6; }
+  h3.section { font-size:13px; color:var(--vino); font-weight:700; margin:28px 0 4px; text-transform:uppercase; letter-spacing:.04em; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="card">
+    <div class="header">
+      <div class="title-block">
+        <div class="icon-bg">🔀</div>
+        <div>
+          <div class="title">CAPA DE MAPEO · FLUJO DE EFECTIVO</div>
+          <div class="subtitle">Normaliza el dialecto de cada reporte al modelo canónico de LenderHub · datos reales abr 2026</div>
+        </div>
+      </div>
+      <div class="toggle" id="facToggle"></div>
+    </div>
+
+    <!-- Reporte (dialecto) → Modelo canónico -->
+    <div class="flow">
+      <div>
+        <div class="col-head">Reporte recibido · <span id="facName"></span></div>
+        <div class="panel" id="srcPanel"></div>
+      </div>
+      <div class="arrow-col"><i class="ph ph-arrow-right"></i></div>
+      <div>
+        <div class="col-head">Modelo canónico · LenderHub</div>
+        <div class="panel canon" id="canonPanel"></div>
+      </div>
+    </div>
+
+    <!-- Reconciliación -->
+    <div class="recon" id="recon"></div>
+    <div class="recon-ok" id="reconOk"></div>
+
+    <div class="legend">
+      <span><span class="chip c-exacto">exacto</span> etiqueta coincide</span>
+      <span><span class="chip c-aprox">aproximado</span> mapeo por criterio</span>
+      <span><span class="chip c-rollup">agregado</span> varias líneas → 1 concepto</span>
+      <span><span class="chip c-falta">no incluido</span> el reporte no trae esa línea</span>
+    </div>
+
+    <!-- Matriz cross-facility -->
+    <h3 class="section">Mismo modelo, 3 dialectos</h3>
+    <table class="matrix" id="matrix"></table>
+
+    <p class="note">
+      <strong>Hallazgo:</strong> de 13 reportes, solo F-1600, F-1551 y F-1483 traen el estado de movimientos del fideicomiso — y con etiquetas distintas. Hasta los subtotales difieren: <strong>F-1483 calcula "Total Ingresos" sin el saldo inicial</strong>, F-1600/F-1551 lo incluyen. Por eso la capa mapea <strong>líneas atómicas, no subtotales</strong>, y recalcula los totales desde el modelo canónico. Líneas sin equivalente caen en "Otros"; reportes sin la hoja muestran estado vacío (nunca un cero inventado).
+    </p>
+  </div>
+</div>
+
+<script>
+  // ── Modelo canónico (fijo) ──
+  const CANON = [
+    { key:'disposicion', grp:'in',  label:'Disposición de crédito' },
+    { key:'cobranza',    grp:'in',  label:'Cobranza de cartera' },
+    { key:'cobranza_nc', grp:'in',  label:'Cobranza no cedida' },
+    { key:'cesion_inv',  grp:'in',  label:'Traspaso / cesión inversa' },
+    { key:'int_ganados', grp:'in',  label:'Intereses ganados' },
+    { key:'otros_ing',   grp:'in',  label:'Otros ingresos' },
+    { key:'fondos_fid',  grp:'out', label:'Fondos al fideicomitente' },
+    { key:'principal',   grp:'out', label:'Pago de principal / amort.' },
+    { key:'gastos_emi',  grp:'out', label:'Gastos / comisión de disposición' },
+    { key:'int_pagados', grp:'out', label:'Intereses pagados' },
+    { key:'honorarios',  grp:'out', label:'Honorarios' },
+    { key:'impuestos',   grp:'out', label:'Impuestos' },
+    { key:'comisiones',  grp:'out', label:'Comisiones bancarias' },
+    { key:'otros_egr',   grp:'out', label:'Otros egresos' },
+  ];
+  const CK = Object.fromEntries(CANON.map(c => [c.key, c]));
+
+  // ── Datos reales (abr 2026). Cada línea: etiqueta del reporte → key canónico + confianza ──
+  const FAC = {
+    'F-1600': { name:'F-1600 · LEASE MD', inicial:22201071.08, final:29071676.61, lines:[
+      { raw:'Ingresos por monto de la Emisión/Disposición del Crédito', key:'disposicion', val:6276478.87, conf:'exacto' },
+      { raw:'Ingresos por Cobranza de Cartera',                          key:'cobranza',    val:10172473.04, conf:'exacto' },
+      { raw:'Ingresos por Cobranza de Cartera no Cedida al Fideicomiso', key:'cobranza_nc', val:0, conf:'exacto' },
+      { raw:'Traspaso Fideicomitente por Cesión Inversa',               key:'cesion_inv',  val:0, conf:'exacto' },
+      { raw:'Intereses Ganados',                                         key:'int_ganados', val:49987.51, conf:'exacto' },
+      { raw:'Otros Ingresos',                                            key:'otros_ing',   val:20951.87, conf:'exacto' },
+      { raw:'Fondos para el Fideicomitente',                            key:'fondos_fid',  val:6276478.87, conf:'exacto' },
+      { raw:'Pago de Amortización Parcial/Objetivo/ Pago de Principal',  key:'principal',   val:0, conf:'exacto' },
+      { raw:'Gastos de Emisión y Colocación/Disposición del Crédito',    key:'gastos_emi',  val:0, conf:'exacto' },
+      { raw:'Intereses Pagados',                                         key:'int_pagados', val:3354421.82, conf:'exacto' },
+      { raw:'Honorarios',                                                key:'honorarios',  val:18002.27, conf:'exacto' },
+      { raw:'Impuestos Pagados',                                         key:'impuestos',   val:0, conf:'exacto' },
+      { raw:'Comisiones Bancarias',                                      key:'comisiones',  val:0, conf:'exacto' },
+      { raw:'Otros Egresos',                                             key:'otros_egr',   val:382.80, conf:'exacto' },
+    ]},
+    'F-1551': { name:'F-1551', inicial:3148177.56, final:3145561.19, lines:[
+      { raw:'Ingresos por monto Disposición del Crédito',               key:'disposicion', val:0, conf:'exacto' },
+      { raw:'Ingresos por Cobranza de Cartera',                          key:'cobranza',    val:66348037.99, conf:'exacto' },
+      { raw:'Ingresos por Cobranza de Cartera no Cedida al Fideicomiso', key:'cobranza_nc', val:0, conf:'exacto' },
+      { raw:'Traspaso Fideicomitente por Cesión Inversa',               key:'cesion_inv',  val:0, conf:'exacto' },
+      { raw:'Intereses Ganados',                                         key:'int_ganados', val:17559.23, conf:'exacto' },
+      { raw:'Otros Ingresos',                                            key:'otros_ing',   val:0, conf:'exacto' },
+      { raw:'Fondos para el Fideicomitente',                            key:'fondos_fid',  val:64743595.85, conf:'exacto' },
+      { raw:'Pago de Amortización Parcial/Objetivo/ Pago de Principal',  key:'principal',   val:0, conf:'exacto' },
+      { raw:'Comisión por Disposición del Crédito',                     key:'gastos_emi',  val:0, conf:'aproximado' },
+      { raw:'Intereses Pagados',                                         key:'int_pagados', val:1583333.34, conf:'exacto' },
+      { raw:'Honorarios',                                                key:'honorarios',  val:41214.80, conf:'exacto' },
+      { raw:'Impuestos Pagados',                                         key:'impuestos',   val:0, conf:'exacto' },
+      { raw:'Comisiones Bancarias',                                      key:'comisiones',  val:69.60, conf:'exacto' },
+      { raw:'Otros Egresos',                                             key:'otros_egr',   val:0, conf:'exacto' },
+    ]},
+    'F-1483': { name:'F-1483', inicial:278967.18, final:392754.21, lines:[
+      { raw:'Ingresos por monto de la Emisión/Disposición del Crédito', key:'disposicion', val:0, conf:'exacto' },
+      { raw:'Ingresos por Cobranza de Cartera',                          key:'cobranza',    val:8369261.52, conf:'exacto' },
+      { raw:'Traspaso Fideicomitente Saldos Mínimos',                   key:'cesion_inv',  val:0, conf:'aproximado' },
+      { raw:'Intereses Ganados',                                         key:'int_ganados', val:951.14, conf:'exacto' },
+      { raw:'Intereses sobre inversiones permitidas',                   key:'int_ganados', val:0, conf:'agregado' },
+      { raw:'Fondos para el Fideicomitente',                            key:'fondos_fid',  val:7969088.28, conf:'exacto' },
+      { raw:'Pago de Amortización Parcial/Objetivo',                    key:'principal',   val:0, conf:'exacto' },
+      { raw:'Gastos de Emisión y Colocación/Disposición del Crédito',    key:'gastos_emi',  val:0, conf:'exacto' },
+      { raw:'Intereses Pagados',                                         key:'int_pagados', val:143403.05, conf:'exacto' },
+      { raw:'Honorarios',                                                key:'honorarios',  val:6141.04, conf:'exacto' },
+      { raw:'Impuestos Pagados',                                         key:'impuestos',   val:438.09, conf:'exacto' },
+      { raw:'Comisiones Bancarias',                                      key:'comisiones',  val:765.60, conf:'exacto' },
+      { raw:'Otros Egresos',                                             key:'otros_egr',   val:136589.57, conf:'exacto' },
+    ]},
+  };
+
+  const fmt = (n) => '$' + Math.abs(n).toLocaleString('es-MX', { minimumFractionDigits:2, maximumFractionDigits:2 });
+  const confChip = (c) => `<span class="chip c-${c==='exacto'?'exacto':c==='aproximado'?'aprox':'rollup'}">${c}</span>`;
+
+  let current = 'F-1600';
+
+  function render(facKey) {
+    current = facKey;
+    const fac = FAC[facKey];
+    document.getElementById('facName').textContent = fac.name;
+    [...document.querySelectorAll('#facToggle button')].forEach(b => b.classList.toggle('active', b.dataset.f === facKey));
+
+    // Panel izquierdo: reporte original (orden tal cual llega)
+    let html = `<div class="row"><span class="lbl"><strong>Saldo inicial</strong></span><span class="val">${fmt(fac.inicial)}</span></div>`;
+    html += `<div class="sec">Ingresos</div>`;
+    fac.lines.filter(l => CK[l.key].grp === 'in').forEach(l => {
+      html += `<div class="row"><span class="lbl">${l.raw}${confChip(l.conf)}</span><span class="val">${fmt(l.val)}</span></div>`;
+    });
+    html += `<div class="sec">Egresos</div>`;
+    fac.lines.filter(l => CK[l.key].grp === 'out').forEach(l => {
+      html += `<div class="row"><span class="lbl">${l.raw}${confChip(l.conf)}</span><span class="val">${fmt(l.val)}</span></div>`;
+    });
+    html += `<div class="row"><span class="lbl"><strong>Saldo final</strong></span><span class="val">${fmt(fac.final)}</span></div>`;
+    document.getElementById('srcPanel').innerHTML = html;
+
+    // Agregar por key canónico (many-to-one)
+    const byKey = {};
+    fac.lines.forEach(l => { byKey[l.key] = byKey[l.key] || { val:0, srcs:[] }; byKey[l.key].val += l.val; byKey[l.key].srcs.push(l); });
+
+    // Panel derecho: modelo canónico (todos los conceptos, siempre)
+    let ch = `<div class="row"><span class="lbl"><strong>Saldo inicial</strong></span><span class="val">${fmt(fac.inicial)}</span></div>`;
+    const renderGrp = (grp, title) => {
+      ch += `<div class="sec">${title}</div>`;
+      CANON.filter(c => c.grp === grp).forEach(c => {
+        const hit = byKey[c.key];
+        if (hit) {
+          const srcTxt = hit.srcs.map(s => s.raw).join(' + ');
+          ch += `<div class="row"><span class="lbl">${c.label}<div class="src-sub">← ${srcTxt}</div></span><span class="val">${fmt(hit.val)}</span></div>`;
+        } else {
+          ch += `<div class="row"><span class="lbl" style="color:#B9B9C2">${c.label}<span class="chip c-falta">no incluido</span></span><span class="val" style="color:#B9B9C2">$0.00</span></div>`;
+        }
+      });
+    };
+    renderGrp('in', 'Ingresos');
+    renderGrp('out', 'Egresos');
+    ch += `<div class="row"><span class="lbl"><strong>Saldo final</strong></span><span class="val">${fmt(fac.final)}</span></div>`;
+    document.getElementById('canonPanel').innerHTML = ch;
+
+    // Reconciliación: totales recalculados desde el modelo canónico
+    const tIng = CANON.filter(c=>c.grp==='in').reduce((s,c)=>s+(byKey[c.key]?.val||0),0);
+    const tEgr = CANON.filter(c=>c.grp==='out').reduce((s,c)=>s+(byKey[c.key]?.val||0),0);
+    const calc = fac.inicial + tIng - tEgr;
+    document.getElementById('recon').innerHTML = `
+      <div class="k"><div class="kl">Saldo inicial</div><div class="kv">${fmt(fac.inicial)}</div></div>
+      <div class="k"><div class="kl">Σ Ingresos</div><div class="kv" style="color:var(--green)">${fmt(tIng)}</div></div>
+      <div class="k"><div class="kl">Σ Egresos</div><div class="kv" style="color:var(--red)">${fmt(tEgr)}</div></div>
+      <div class="k"><div class="kl">Saldo final (calculado)</div><div class="kv">${fmt(calc)}</div></div>`;
+    const ok = Math.abs(calc - fac.final) < 0.5;
+    document.getElementById('reconOk').innerHTML = ok
+      ? `<i class="ph ph-check-circle"></i> El modelo canónico cuadra con el saldo final del reporte (${fmt(fac.final)}) — mapeo sin pérdida.`
+      : `<span style="color:var(--red)"><i class="ph ph-x-circle"></i> Descuadre vs reporte: ${fmt(fac.final)} — revisar mapeo.</span>`;
+  }
+
+  // Toggle de facility
+  document.getElementById('facToggle').innerHTML = Object.keys(FAC).map((k,i)=>`<button data-f="${k}" class="${i===0?'active':''}">${k}</button>`).join('');
+  document.getElementById('facToggle').addEventListener('click', e => { const b=e.target.closest('button'); if(b) render(b.dataset.f); });
+
+  // Matriz cross-facility
+  function buildMatrix() {
+    const facs = Object.keys(FAC);
+    let h = `<thead><tr><th>Concepto canónico</th>${facs.map(f=>`<th>${f}</th>`).join('')}</tr></thead><tbody>`;
+    CANON.forEach(c => {
+      h += `<tr><td class="canon">${c.label}</td>`;
+      facs.forEach(f => {
+        const ls = FAC[f].lines.filter(l => l.key === c.key);
+        if (!ls.length) h += `<td class="miss">— no en reporte</td>`;
+        else h += `<td>${ls.map(l => l.raw + (l.conf!=='exacto'?` ${confChip(l.conf)}`:'')).join('<br>')}</td>`;
+      });
+      h += `</tr>`;
+    });
+    h += `</tbody>`;
+    document.getElementById('matrix').innerHTML = h;
+  }
+
+  buildMatrix();
+  render('F-1600');
+</script>
+</body>
+</html>

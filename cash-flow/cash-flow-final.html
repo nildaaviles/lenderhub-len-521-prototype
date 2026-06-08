@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Flujo de Efectivo · Waterfall por facility · LenderHub</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web" />
+<style>
+  :root{ --vino:#4A1942; --vino-soft:#7A3470; --rosa:#F4D4E8; --bg:#FAFAFC; --card:#FFFFFF;
+    --text:#1A1A2E; --muted:#6B7280; --border:#E5E7EB; --green:#10B981; --amber:#F59E0B; --red:#EF4444; --blue:#0284C7; }
+  *{ box-sizing:border-box; font-family:-apple-system,BlinkMacSystemFont,"Inter",sans-serif; }
+  body{ background:var(--bg); margin:0; padding:40px; color:var(--text); }
+  .wrapper{ max-width:1120px; margin:0 auto; }
+  .card{ background:var(--card); border-radius:16px; padding:28px 32px; box-shadow:0 1px 3px rgba(0,0,0,.04),0 1px 2px rgba(0,0,0,.06); border:1px solid var(--border); }
+  .header{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:20px; }
+  .title-block{ display:flex; align-items:center; gap:12px; }
+  .icon-bg{ width:36px; height:36px; background:var(--rosa); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+  .title{ font-size:16px; font-weight:700; letter-spacing:.5px; color:var(--vino); }
+  .subtitle{ font-size:12px; color:var(--muted); margin-top:2px; }
+  .controls{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .controls label{ font-size:12px; color:var(--muted); display:inline-flex; align-items:center; gap:7px; }
+  select{ font-size:13px; font-weight:600; color:var(--vino); border:1px solid var(--border); border-radius:8px; padding:7px 10px; background:#fff; cursor:pointer; }
+  .toggle{ display:inline-flex; background:#F3F4F6; border-radius:9px; padding:3px; gap:2px; }
+  .toggle button{ border:0; background:transparent; padding:6px 12px; border-radius:7px; font-size:12px; font-weight:600; color:var(--muted); cursor:pointer; }
+  .toggle button.active{ background:var(--vino); color:#fff; }
+
+  .kpis{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px; padding:18px 20px; background:linear-gradient(135deg,#FBF6FA,#F7EDF4); border-radius:12px; }
+  .kpi{ border-right:1px solid #EADCE5; padding-right:16px; } .kpi:last-child{ border-right:0; }
+  .kpi-label{ font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+  .kpi-value{ font-size:21px; font-weight:700; color:var(--vino); font-family:"SF Mono",Menlo,monospace; }
+  .kpi-sub{ font-size:12px; margin-top:4px; font-weight:600; }
+  .pos{ color:var(--green); } .neg{ color:var(--red); }
+
+  .legend{ display:flex; gap:20px; justify-content:center; margin-bottom:12px; font-size:12px; color:var(--muted); flex-wrap:wrap; }
+  .legend-item{ display:flex; align-items:center; gap:6px; }
+  .legend-dot{ width:10px; height:10px; border-radius:3px; }
+  .chart-wrap{ position:relative; height:430px; }
+
+  .recon{ font-size:12.5px; font-weight:600; margin:16px 0 4px; display:flex; align-items:center; gap:7px; }
+  details.tbl{ margin-top:18px; border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+  details.tbl summary{ display:flex; align-items:center; gap:8px; padding:13px 16px; cursor:pointer; background:#F8FAFC; list-style:none; font-size:13px; font-weight:700; color:var(--text); text-transform:uppercase; letter-spacing:.04em; }
+  details.tbl summary::-webkit-details-marker{ display:none; }
+  table{ width:100%; border-collapse:collapse; font-size:13px; }
+  th{ text-align:left; padding:9px 16px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); background:#F8FAFC; border-top:1px solid var(--border); }
+  td{ padding:8px 16px; border-bottom:1px solid #F1F5F9; }
+  td.num{ text-align:right; font-family:"SF Mono",Menlo,monospace; }
+  tr.sec td{ font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--vino-soft); background:#FBF6FA; }
+  tr.tot td{ font-weight:700; color:var(--vino); background:#FBF6FA; }
+
+  .compare{ margin-top:26px; }
+  .compare h3{ font-size:13px; color:var(--vino); text-transform:uppercase; letter-spacing:.04em; margin:0 0 8px; }
+  .compare table td.num, .compare table th{ text-align:right; }
+  .compare table td:first-child, .compare table th:first-child{ text-align:left; }
+
+  .empty{ padding:46px 24px; text-align:center; background:#F9FAFB; border:1px dashed #CBD5E1; border-radius:12px; }
+  .empty i{ font-size:34px; color:#94A3B8; } .empty .t{ font-weight:700; color:var(--vino); margin:10px 0 2px; }
+  .empty .d{ font-size:13px; color:var(--muted); }
+
+  .note{ font-size:11px; color:var(--muted); margin-top:18px; line-height:1.6; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="card">
+    <div class="header">
+      <div class="title-block">
+        <div class="icon-bg">🌊</div>
+        <div>
+          <div class="title">FLUJO DE EFECTIVO · WATERFALL</div>
+          <div class="subtitle" id="subtitle"></div>
+        </div>
+      </div>
+      <div class="controls">
+        <label>Facility <select id="fac"></select></label>
+        <div class="toggle" id="viewToggle">
+          <button data-v="grouped" class="active">Agrupado</button>
+          <button data-v="detail">Detallado</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="content">
+      <div class="kpis">
+        <div class="kpi"><div class="kpi-label">Saldo inicial</div><div class="kpi-value" id="k-ini">—</div><div class="kpi-sub" style="color:var(--muted)" id="k-ini-d"></div></div>
+        <div class="kpi"><div class="kpi-label">Σ Ingresos</div><div class="kpi-value" id="k-ing">—</div><div class="kpi-sub pos" id="k-ing-n"></div></div>
+        <div class="kpi"><div class="kpi-label">Σ Egresos</div><div class="kpi-value" id="k-egr">—</div><div class="kpi-sub neg" id="k-egr-n"></div></div>
+        <div class="kpi"><div class="kpi-label">Saldo final</div><div class="kpi-value" id="k-fin">—</div><div class="kpi-sub" id="k-neto"></div></div>
+      </div>
+
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background:var(--vino)"></span>Saldo (inicial / final)</span>
+        <span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>Ingreso</span>
+        <span class="legend-item"><span class="legend-dot" style="background:var(--red)"></span>Egreso</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#E5E7EB"></span>Sin dato</span>
+      </div>
+      <div class="chart-wrap"><canvas id="chart"></canvas></div>
+
+      <div class="recon" id="recon"></div>
+
+      <details class="tbl" id="tblWrap">
+        <summary><i class="ph ph-table" style="color:#910057;font-size:16px"></i> Ver tabla · conceptos de esta facility <i class="ph ph-caret-down" style="margin-left:auto;color:var(--muted)"></i></summary>
+        <table><thead><tr><th>Concepto (según el reporte)</th><th style="text-align:right">Monto</th><th style="text-align:right">Saldo acumulado</th></tr></thead><tbody id="tbody"></tbody></table>
+      </details>
+    </div>
+
+    <div id="empty" class="empty" style="display:none">
+      <i class="ph ph-file-dashed"></i>
+      <div class="t" id="empty-t"></div>
+      <div class="d" id="empty-d"></div>
+    </div>
+
+    <!-- Comparación: SOLO por naturaleza (lo único universal) -->
+    <div class="compare">
+      <h3>Comparable entre facilities: solo la naturaleza, no el concepto</h3>
+      <table><thead><tr><th>Facility</th><th>Saldo inicial</th><th>Σ Ingresos</th><th>Σ Egresos</th><th>Neto</th><th>Saldo final</th></tr></thead><tbody id="cmp"></tbody></table>
+    </div>
+
+    <p class="note" id="footnote"></p>
+  </div>
+</div>
+
+<script>
+  // ════════════════════════════════════════════════════════════════════
+  //  Cada facility define SUS PROPIOS conceptos. No hay lista universal.
+  //  Lo único universal es `nature`: 'in' (ingreso) | 'out' (egreso).
+  //  value: número (incluido 0 real) | null (sin dato, no reportado).
+  //  El waterfall se construye genéricamente desde estas líneas.
+  //  Datos reales · reporte mensual abr 2026 (Assetview).
+  // ════════════════════════════════════════════════════════════════════
+  const FACILITIES = {
+    'F-1600': { name:'F-1600 · LEASE MD', period:'Abr 2026', available:true, inicial:22201071.08, final:29071676.61, lines:[
+      { label:'Disposición / Emisión del Crédito',         nature:'in',  value:6276478.87 },
+      { label:'Cobranza de Cartera',                       nature:'in',  value:10172473.04 },
+      { label:'Cobranza no Cedida al Fideicomiso',         nature:'in',  value:0 },
+      { label:'Traspaso por Cesión Inversa',               nature:'in',  value:0 },
+      { label:'Intereses Ganados',                         nature:'in',  value:49987.51 },
+      { label:'Otros Ingresos',                            nature:'in',  value:20951.87 },
+      { label:'Fondos para el Fideicomitente',             nature:'out', value:6276478.87 },
+      { label:'Amortización / Pago de Principal',          nature:'out', value:0 },
+      { label:'Gastos de Emisión y Colocación',            nature:'out', value:0 },
+      { label:'Intereses Pagados',                         nature:'out', value:3354421.82 },
+      { label:'Honorarios',                                nature:'out', value:18002.27 },
+      { label:'Impuestos Pagados',                         nature:'out', value:0 },
+      { label:'Comisiones Bancarias',                      nature:'out', value:0 },
+      { label:'Otros Egresos',                             nature:'out', value:382.80 },
+    ]},
+    'F-1551': { name:'F-1551', period:'Abr 2026', available:true, inicial:3148177.56, final:3145561.19, lines:[
+      { label:'Disposición del Crédito',                   nature:'in',  value:0 },
+      { label:'Cobranza de Cartera',                       nature:'in',  value:66348037.99 },
+      { label:'Cobranza no Cedida al Fideicomiso',         nature:'in',  value:0 },
+      { label:'Traspaso por Cesión Inversa',               nature:'in',  value:0 },
+      { label:'Intereses Ganados',                         nature:'in',  value:17559.23 },
+      { label:'Otros Ingresos',                            nature:'in',  value:0 },
+      { label:'Fondos para el Fideicomitente',             nature:'out', value:64743595.85 },
+      { label:'Amortización / Pago de Principal',          nature:'out', value:0 },
+      { label:'Comisión por Disposición del Crédito',      nature:'out', value:0 },
+      { label:'Intereses Pagados',                         nature:'out', value:1583333.34 },
+      { label:'Honorarios',                                nature:'out', value:41214.80 },
+      { label:'Impuestos Pagados',                         nature:'out', value:0 },
+      { label:'Comisiones Bancarias',                      nature:'out', value:69.60 },
+      { label:'Otros Egresos',                             nature:'out', value:0 },
+    ]},
+    'F-1483': { name:'F-1483', period:'Abr 2026', available:true, inicial:278967.18, final:392754.21, lines:[
+      // Esta facility tiene SUS PROPIOS conceptos: no trae "Cobranza no cedida"
+      // ni "Otros ingresos", y agrega "Intereses sobre inversiones permitidas".
+      { label:'Emisión / Disposición del Crédito',         nature:'in',  value:0 },
+      { label:'Cobranza de Cartera',                       nature:'in',  value:8369261.52 },
+      { label:'Traspaso Fideicomitente Saldos Mínimos',    nature:'in',  value:0 },
+      { label:'Intereses Ganados',                         nature:'in',  value:951.14 },
+      { label:'Intereses sobre inversiones permitidas',    nature:'in',  value:0 },
+      { label:'Fondos para el Fideicomitente',             nature:'out', value:7969088.28 },
+      { label:'Amortización Parcial / Objetivo',           nature:'out', value:0 },
+      { label:'Gastos de Emisión y Colocación',            nature:'out', value:0 },
+      { label:'Intereses Pagados',                         nature:'out', value:143403.05 },
+      { label:'Honorarios',                                nature:'out', value:6141.04 },
+      { label:'Impuestos Pagados',                         nature:'out', value:438.09 },
+      { label:'Comisiones Bancarias',                      nature:'out', value:765.60 },
+      { label:'Otros Egresos',                             nature:'out', value:136589.57 },
+    ]},
+    // Tier C: el reporte no trae estado de movimientos → degradación segura.
+    'F-1143': { name:'F-1143', period:'Abr 2026', available:false,
+      reason:'El reporte de esta facility no incluye el estado de Movimientos de Cuentas y Fondos del Fideicomiso. No se inventan valores.' },
+  };
+
+  const fmt  = (n) => (n<0?'−$':'$') + Math.abs(n).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const fmtM = (n) => (n<0?'−$':'$') + Math.abs(n/1e6).toFixed(2) + 'M';
+  const M = (n) => n/1e6;
+  const THR_PCT = 0.005; // agrupa conceptos < 0.5% del flujo bruto
+
+  let steps=[], bars=[], cum=[], bgColors=[];
+  const colorFor = (t,v) => v===null ? '#E5E7EB' : t==='total' ? '#4A1942' : t==='in' ? '#10B981' : '#EF4444';
+
+  // Construye los pasos del waterfall genéricamente desde las líneas de la facility
+  function buildSteps(fac, grouped){
+    const gross = fac.lines.reduce((s,l)=> s + Math.abs(l.value||0), 0);
+    const thr = gross * THR_PCT;
+    const shape = (arr, nature) => {
+      if (!grouped) return arr.map(l => ({ label:l.label, value:l.value, nature }));
+      const major = arr.filter(l => l.value!==null && Math.abs(l.value) >= thr).sort((a,b)=>Math.abs(b.value)-Math.abs(a.value));
+      const out = major.map(l => ({ label:l.label, value:l.value, nature }));
+      const minorNull = arr.filter(l => l.value===null);
+      minorNull.forEach(l => out.push({ label:l.label, value:null, nature }));
+      const minorNum = arr.filter(l => l.value!==null && Math.abs(l.value) < thr);
+      if (minorNum.length){
+        const sum = minorNum.reduce((s,l)=>s+l.value,0);
+        out.push({ label:`Otros ${nature==='in'?'ingresos':'egresos'} · ${minorNum.length}`, value:sum, nature, detail:minorNum.map(l=>l.label) });
+      }
+      return out;
+    };
+    const ins  = shape(fac.lines.filter(l=>l.nature==='in'),  'in');
+    const outs = shape(fac.lines.filter(l=>l.nature==='out'), 'out');
+    steps = [{ type:'total', label:'Saldo inicial', value:fac.inicial }];
+    ins.forEach(x  => steps.push({ type:'in',  label:x.label, value:x.value, detail:x.detail }));
+    outs.forEach(x => steps.push({ type:'out', label:x.label, value:(x.value===null?null:-x.value), detail:x.detail }));
+    steps.push({ type:'total', label:'Saldo final', value:fac.final });
+
+    let run=0; bars=[]; cum=[];
+    steps.forEach(s=>{
+      if (s.type==='total'){ run=s.value; bars.push([0,M(run)]); cum.push(run); }
+      else if (s.value===null){ bars.push([M(run),M(run)]); cum.push(run); }
+      else { const a=run; run+=s.value; bars.push([M(a),M(run)]); cum.push(run); }
+    });
+    bgColors = steps.map(s=> colorFor(s.type, s.value));
+  }
+
+  const connector = { id:'connector', afterDatasetsDraw(c){ const {ctx,scales:{x,y}}=c; ctx.save(); ctx.strokeStyle='#CBD5E1'; ctx.setLineDash([4,3]); ctx.lineWidth=1.5;
+    for(let i=0;i<steps.length-1;i++){ const yp=y.getPixelForValue(M(cum[i])); const xa=x.getPixelForValue(i),xb=x.getPixelForValue(i+1),h=(xb-xa)*0.30; ctx.beginPath(); ctx.moveTo(xa+h,yp); ctx.lineTo(xb-h,yp); ctx.stroke(); } ctx.restore(); } };
+  const labels = { id:'labels', afterDatasetsDraw(c){ const {ctx,scales:{x,y}}=c; ctx.save(); ctx.font='bold 10.5px -apple-system,sans-serif'; ctx.textAlign='center';
+    steps.forEach((s,i)=>{ const [a,b]=bars[i]; const yp=y.getPixelForValue(Math.max(a,b))-7; const xp=x.getPixelForValue(i); let t,col;
+      if(s.value===null){t='sin dato';col='#94A3B8';} else if(s.type==='total'){t=fmtM(s.value);col='#4A1942';} else if(s.value===0){t='$0.00M';col='#94A3B8';}
+      else {t=(s.value>=0?'+':'−')+'$'+Math.abs(M(s.value)).toFixed(2)+'M';col=s.type==='in'?'#10B981':'#EF4444';} ctx.fillStyle=col; ctx.fillText(t,xp,yp); }); ctx.restore(); } };
+
+  const ctx = document.getElementById('chart');
+  const chart = new Chart(ctx,{ type:'bar',
+    data:{ labels:[], datasets:[{ data:[], backgroundColor:[], borderRadius:4, barPercentage:0.72, categoryPercentage:0.82 }] },
+    options:{ responsive:true, maintainAspectRatio:false, layout:{padding:{top:26}},
+      plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'#1A1A2E', padding:12, callbacks:{
+        label:(c)=>{ const s=steps[c.dataIndex]; if(!s) return '';
+          if(s.value===null) return `${s.label}: sin dato`;
+          if(s.type==='total') return `${s.label}: ${fmt(s.value)}`;
+          return `${s.value>=0?'+':'−'}${fmt(Math.abs(s.value))}`; },
+        afterBody:(items)=>{ const s=steps[items[0].dataIndex]; return s&&s.detail? 'Incluye: '+s.detail.join(', ') : ''; } } } },
+      scales:{ x:{ grid:{display:false}, ticks:{ color:'#6B7280', font:{size:10}, maxRotation:38, autoSkip:false } },
+        y:{ beginAtZero:true, title:{display:true,text:'Monto (MXN)',color:'#6B7280',font:{size:11}}, ticks:{ color:'#6B7280', font:{size:11}, callback:v=>'$'+v+'M' }, grid:{color:'#F3F4F6'} } } },
+    plugins:[connector,labels] });
+
+  // Tabla = conceptos propios de la facility (verbatim), 0 vs sin dato
+  function renderTable(fac){
+    const tb=document.getElementById('tbody'); tb.innerHTML='';
+    const row=(html,cls)=>{ const tr=document.createElement('tr'); if(cls)tr.className=cls; tr.innerHTML=html; tb.appendChild(tr); };
+    const moneyCell=(nature,v,run)=>{ let m,c; if(v===null){m='sin dato';c='#94A3B8';} else if(v===0){m='$0.00';c='#94A3B8';} else {m=(nature==='in'?'+':'−')+fmt(Math.abs(v));c=nature==='in'?'var(--green)':'var(--red)';}
+      const s = run===null?'<span style="color:#94A3B8">—</span>':fmt(run); return `<td class="num" style="color:${c}">${m}</td><td class="num" style="color:var(--muted)">${s}</td>`; };
+    let run=fac.inicial;
+    row(`<td>Saldo inicial · ${fac.period}</td><td class="num">${fmt(fac.inicial)}</td><td></td>`,'tot');
+    row(`<td colspan="3">Ingresos</td>`,'sec');
+    fac.lines.filter(l=>l.nature==='in').forEach(l=>{ if(l.value!==null) run+=l.value; row(`<td>${l.label}</td>${moneyCell('in',l.value,l.value===null?null:run)}`); });
+    row(`<td colspan="3">Egresos</td>`,'sec');
+    fac.lines.filter(l=>l.nature==='out').forEach(l=>{ if(l.value!==null) run-=l.value; row(`<td>${l.label}</td>${moneyCell('out',l.value,l.value===null?null:run)}`); });
+    row(`<td>Saldo final · ${fac.period}</td><td class="num">${fmt(fac.final)}</td><td></td>`,'tot');
+  }
+
+  function natureTotals(fac){
+    const ing=fac.lines.filter(l=>l.nature==='in').reduce((s,l)=>s+(l.value||0),0);
+    const egr=fac.lines.filter(l=>l.nature==='out').reduce((s,l)=>s+(l.value||0),0);
+    return { ing, egr, neto:ing-egr };
+  }
+
+  let currentView='grouped';
+  function render(facKey){
+    const fac=FACILITIES[facKey];
+    document.getElementById('fac').value=facKey;
+    document.getElementById('subtitle').textContent=`Movimientos de cuentas y fondos del fideicomiso · ${fac.period} · ${fac.name}`;
+
+    if(!fac.available){
+      document.getElementById('content').style.display='none';
+      document.getElementById('empty').style.display='';
+      document.getElementById('empty-t').textContent=`Sin estado de flujo · ${fac.name}`;
+      document.getElementById('empty-d').textContent=fac.reason;
+      return;
+    }
+    document.getElementById('content').style.display='';
+    document.getElementById('empty').style.display='none';
+
+    const {ing,egr,neto}=natureTotals(fac);
+    document.getElementById('k-ini').textContent=fmtM(fac.inicial);
+    document.getElementById('k-ini-d').textContent=`01 ${fac.period.toLowerCase()}`;
+    document.getElementById('k-ing').textContent=fmtM(ing);
+    document.getElementById('k-egr').textContent=fmtM(egr);
+    document.getElementById('k-fin').textContent=fmtM(fac.final);
+    const netoEl=document.getElementById('k-neto'); netoEl.textContent=(neto>=0?'+':'−')+'$'+Math.abs(neto/1e6).toFixed(2)+'M neto'; netoEl.className='kpi-sub '+(neto>=0?'pos':'neg');
+
+    buildSteps(fac,currentView==='grouped');
+    chart.data.labels=steps.map(s=>s.label);
+    chart.data.datasets[0].data=bars;
+    chart.data.datasets[0].backgroundColor=bgColors;
+    chart.update();
+    renderTable(fac);
+
+    const calc=fac.inicial+ing-egr;
+    const ok=Math.abs(calc-fac.final)<0.5;
+    document.getElementById('recon').innerHTML = ok
+      ? `<i class="ph ph-check-circle" style="color:var(--green)"></i> <span style="color:var(--green)">Cuadra: saldo inicial + Σingresos − Σegresos = ${fmt(calc)} = saldo final del reporte.</span>`
+      : `<i class="ph ph-x-circle" style="color:var(--red)"></i> <span style="color:var(--red)">Descuadre — no se publica.</span>`;
+  }
+
+  // Comparación cross-facility (solo naturaleza)
+  function renderCompare(){
+    const tb=document.getElementById('cmp'); tb.innerHTML='';
+    Object.entries(FACILITIES).forEach(([k,f])=>{
+      const tr=document.createElement('tr');
+      if(!f.available){ tr.innerHTML=`<td>${f.name}</td><td colspan="5" style="color:#B9B9C2;font-style:italic">sin estado de flujo</td>`; }
+      else { const {ing,egr,neto}=natureTotals(f);
+        tr.innerHTML=`<td>${f.name}</td><td class="num">${fmtM(f.inicial)}</td><td class="num" style="color:var(--green)">${fmtM(ing)}</td><td class="num" style="color:var(--red)">${fmtM(egr)}</td><td class="num" style="color:${neto>=0?'var(--green)':'var(--red)'}">${(neto>=0?'+':'−')+'$'+Math.abs(neto/1e6).toFixed(2)+'M'}</td><td class="num">${fmtM(f.final)}</td>`; }
+      tb.appendChild(tr);
+    });
+  }
+
+  // Init
+  document.getElementById('fac').innerHTML=Object.entries(FACILITIES).map(([k,f])=>`<option value="${k}">${f.name}${f.available?'':' · sin flujo'}</option>`).join('');
+  document.getElementById('fac').addEventListener('change',e=>render(e.target.value));
+  document.getElementById('viewToggle').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return; currentView=b.dataset.v;
+    [...e.currentTarget.children].forEach(x=>x.classList.toggle('active',x===b)); render(document.getElementById('fac').value); });
+  document.getElementById('footnote').innerHTML=`Cada facility define sus propios conceptos — no hay lista universal. Lo único universal es la <strong>naturaleza</strong> (ingreso / egreso / saldo), y por eso es lo único comparable entre facilities. El modo <strong>Agrupado</strong> colapsa los conceptos &lt; 0.5% del flujo bruto en "Otros" (por facility, no por catálogo fijo); <strong>Detallado</strong> muestra cada línea. Los totales se recalculan desde las líneas y deben cuadrar con el saldo final del reporte. <strong>$0.00</strong> (valió cero) ≠ <strong>sin dato</strong> (no reportado). Reportes sin la hoja → estado vacío, nunca un cero inventado.`;
+
+  renderCompare();
+  render('F-1600');
+</script>
+</body>
+</html>

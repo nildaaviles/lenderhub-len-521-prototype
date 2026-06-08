@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Waterfall — Flujo de Efectivo · LenderHub</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web" />
+<style>
+  :root {
+    --vino: #4A1942;
+    --vino-soft: #7A3470;
+    --rosa: #F4D4E8;
+    --rosa-strong: #E89AC7;
+    --bg: #FAFAFC;
+    --card: #FFFFFF;
+    --text: #1A1A2E;
+    --muted: #6B7280;
+    --border: #E5E7EB;
+    --green: #10B981;
+    --green-soft: #A7F3D0;
+    --amber: #F59E0B;
+    --red: #EF4444;
+    --red-soft: #FCA5A5;
+  }
+  * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif; }
+  body { background: var(--bg); margin: 0; padding: 40px; color: var(--text); }
+  .wrapper { max-width: 1100px; margin: 0 auto; }
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 28px 32px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+  }
+  .title-block { display: flex; align-items: center; gap: 12px; }
+  .icon-bg {
+    width: 36px; height: 36px;
+    background: var(--rosa);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .title { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; color: var(--vino); }
+  .subtitle { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* KPI strip */
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+    padding: 20px;
+    background: linear-gradient(135deg, #FBF6FA 0%, #F7EDF4 100%);
+    border-radius: 12px;
+  }
+  .kpi { border-right: 1px solid #EADCE5; padding-right: 16px; }
+  .kpi:last-child { border-right: none; }
+  .kpi-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .kpi-value { font-size: 22px; font-weight: 700; color: var(--vino); }
+  .kpi-delta { font-size: 12px; margin-top: 4px; font-weight: 600; }
+  .delta-pos { color: var(--green); }
+  .delta-neg { color: var(--red); }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    margin-bottom: 16px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+  .chart-wrap { position: relative; height: 420px; margin-top: 12px; }
+
+  /* Insight banner */
+  .insight {
+    margin-top: 20px;
+    padding: 14px 16px;
+    background: #F0FDF4;
+    border-left: 3px solid var(--green);
+    border-radius: 8px;
+    font-size: 13px;
+    color: #14532D;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .insight strong { color: #052E16; }
+
+  /* View table disclosure */
+  .view-table-card[open] .view-table-summary { border-bottom-color: #E2E8F0 !important; }
+  .view-table-card[open] .view-table-summary .ph-caret-down { transform: rotate(180deg); }
+  .view-table-summary::-webkit-details-marker { display: none; }
+  .view-table-summary { list-style: none; }
+  #wfTableBody td { padding: 9px 18px; border-bottom: 1px solid #F1F5F9; }
+  #wfTableBody td.num { text-align: right; font-family: "SF Mono", Menlo, monospace; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="card">
+    <div class="header" style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
+      <div class="title-block">
+        <div class="icon-bg">🌊</div>
+        <div>
+          <div class="title">WATERFALL · FLUJO DE EFECTIVO</div>
+          <div class="subtitle" id="wf-subtitle">Movimientos de cuentas y fondos del fideicomiso · Abr 2026 · LEASE MD F/1600</div>
+        </div>
+      </div>
+      <label style="display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)">
+        Periodo
+        <select id="wf-period" style="font-size:13px;font-weight:600;color:var(--vino);border:1px solid var(--border);border-radius:8px;padding:7px 10px;background:#fff;cursor:pointer"></select>
+      </label>
+    </div>
+
+    <!-- KPI Strip -->
+    <div class="kpis">
+      <div class="kpi">
+        <div class="kpi-label">Saldo inicial</div>
+        <div class="kpi-value" id="kpi-inicial">$22.20M</div>
+        <div class="kpi-delta" style="color:var(--muted)" id="kpi-inicial-date">01 abr 2026</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Total ingresos</div>
+        <div class="kpi-value" id="kpi-ingresos">$16.52M</div>
+        <div class="kpi-delta delta-pos">↑ entradas</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Total egresos</div>
+        <div class="kpi-value" id="kpi-egresos">$9.65M</div>
+        <div class="kpi-delta delta-neg">↓ salidas</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Saldo final</div>
+        <div class="kpi-value" id="kpi-final">$29.07M</div>
+        <div class="kpi-delta delta-pos" id="kpi-neto">+$6.87M neto</div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background: var(--vino);"></div>Saldo (inicial / final)</div>
+      <div class="legend-item"><div class="legend-dot" style="background: var(--green);"></div>Ingresos</div>
+      <div class="legend-item"><div class="legend-dot" style="background: var(--red);"></div>Egresos</div>
+    </div>
+
+    <div class="chart-wrap">
+      <canvas id="chart"></canvas>
+    </div>
+
+    <div class="insight" id="wf-insight">
+      <i class="ph ph-trend-up" id="wf-insight-icon" style="font-size:18px;margin-top:1px"></i>
+      <div id="wf-insight-text"></div>
+    </div>
+
+    <!-- Estado "sin reporte" (periodo sin dato) -->
+    <div id="wf-nodata" style="display:none;margin-top:8px;padding:40px 24px;text-align:center;background:#F9FAFB;border:1px dashed #CBD5E1;border-radius:12px">
+      <i class="ph ph-file-dashed" style="font-size:32px;color:#94A3B8"></i>
+      <p style="margin:10px 0 2px;font-weight:700;color:var(--vino)" id="wf-nodata-title">Sin reporte para este periodo</p>
+      <p style="margin:0;font-size:13px;color:var(--muted)">El originador no ha entregado el reporte mensual del fideicomiso. La conciliación de caja no puede cerrarse hasta recibirlo.</p>
+    </div>
+
+    <!-- View table disclosure -->
+    <details class="view-table-card" style="margin-top:20px;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;overflow:hidden">
+      <summary class="view-table-summary" style="display:flex;align-items:center;gap:8px;padding:14px 18px;cursor:pointer;background:#F8FAFC;border-bottom:1px solid transparent;transition:border-color 200ms">
+        <i class="ph ph-table" style="font-size:16px;color:#910057"></i>
+        <span style="font-family:'Sofia Sans',sans-serif;font-size:13px;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:.04em">Ver tabla · movimientos</span>
+        <i class="ph ph-caret-down" style="font-size:14px;color:#64748B;margin-left:auto;transition:transform 200ms"></i>
+      </summary>
+      <div style="padding:0">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;font-family:'Noto Sans',sans-serif">
+          <thead>
+            <tr style="background:#F8FAFC">
+              <th style="text-align:left;padding:10px 18px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0;border-top:1px solid #E2E8F0">Concepto</th>
+              <th style="text-align:right;padding:10px 18px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0;border-top:1px solid #E2E8F0">Monto (MXN)</th>
+              <th style="text-align:right;padding:10px 18px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;border-bottom:1px solid #E2E8F0;border-top:1px solid #E2E8F0">Saldo acumulado</th>
+            </tr>
+          </thead>
+          <tbody id="wfTableBody"></tbody>
+        </table>
+      </div>
+    </details>
+
+    <p style="font-size:11px;color:var(--muted);margin-top:18px;line-height:1.6">
+      Fuente: pestaña <strong>Flujo de Efectivo</strong> (Movimientos Cuentas y Fondos del Fideicomiso) del reporte mensual F-1600. El gráfico agrupa el detalle en buckets fijos por periodo; los conceptos en cero se muestran (barra plana) para mantener el layout estable y comparable entre meses. La tabla trae el desglose canónico completo, distinguiendo <strong>$0.00</strong> (valió cero) de <strong>sin dato</strong> (no reportado).
+    </p>
+  </div>
+</div>
+
+<script>
+  // ════════════════════════════════════════════════════════════════
+  //  ESQUEMA CANÓNICO · pestaña "Flujo de Efectivo"
+  //  El reporte mensual del fideicomiso SIEMPRE trae estos conceptos.
+  //  La vista NO se arma según qué tenga dato este periodo — se arma
+  //  según el esquema fijo. Así el layout es estable entre periodos y
+  //  comparable entre facilities.
+  //
+  //  value: número  → el concepto valió eso (incluido 0 real)
+  //  value: null    → el originador NO reportó el campo → "sin dato"
+  //                   (0 ≠ sin dato: un 0 es info; un null es un flag)
+  // ════════════════════════════════════════════════════════════════
+  // ── Builders: cada snapshot mensual usa el MISMO esquema canónico ──
+  //  Esto es lo que el DWH debe persistir: un renglón por (facility, periodo).
+  //  Hoy es sintético excepto abril (datos reales del reporte F-1600).
+  const P = (m) => Math.round(m * 1e6);   // millones → pesos
+  const MES = {
+    Ene:['enero','01','2026'], Feb:['febrero','02','2026'], Mar:['marzo','03','2026'],
+    Abr:['abril','04','2026'], May:['mayo','05','2026'],    Jun:['junio','06','2026'],
+    Jul:['julio','07','2025'], Ago:['agosto','08','2025'],  Sep:['septiembre','09','2025'],
+    Oct:['octubre','10','2025'], Nov:['noviembre','11','2025'], Dic:['diciembre','12','2025'],
+  };
+  const DIAS = { '01':'31','02':'28','03':'31','04':'30','05':'31','06':'30','07':'31','08':'31','09':'30','10':'31','11':'30','12':'31' };
+  function meta(key) {
+    const [abbr, ] = key.split(' ');
+    const [nombre, mm, yyyy] = MES[abbr];
+    const a = abbr.toLowerCase();
+    return { asOf: `${abbr} ${yyyy}`, nombre, dIni: `01 ${a} ${yyyy}`, dFin: `${DIAS[mm]} ${a} ${yyyy}` };
+  }
+  // b en millones: {cob, disp, intg, oi, fid, pri, intp, hon, oe}
+  function mk(key, iniM, b) {
+    const ingresos = [
+      { key:'disposicion', label:'Disposición de crédito',          value: P(b.disp) },
+      { key:'cobranza',    label:'Cobranza de cartera',             value: P(b.cob)  },
+      { key:'cobranza_nc', label:'Cobranza no cedida',              value: 0 },
+      { key:'cesion_inv',  label:'Traspaso por cesión inversa',     value: 0 },
+      { key:'int_ganados', label:'Intereses ganados',               value: P(b.intg) },
+      { key:'otros_ing',   label:'Otros ingresos',                  value: P(b.oi)   },
+    ];
+    const egresos = [
+      { key:'fondos_fid',  label:'Fondos al fideicomitente',        value: P(b.fid)  },
+      { key:'principal',   label:'Pago de principal / amort.',      value: P(b.pri)  },
+      { key:'gastos_emi',  label:'Gastos de emisión / colocación',  value: 0 },
+      { key:'int_pagados', label:'Intereses pagados',               value: P(b.intp) },
+      { key:'honorarios',  label:'Honorarios',                      value: P(b.hon)  },
+      { key:'impuestos',   label:'Impuestos',                       value: 0 },
+      { key:'comisiones',  label:'Comisiones bancarias',            value: 0 },
+      { key:'otros_egr',   label:'Otros egresos',                   value: P(b.oe)   },
+    ];
+    const ini = P(iniM);
+    const tIng = ingresos.reduce((s,x)=>s+x.value,0), tEgr = egresos.reduce((s,x)=>s+x.value,0);
+    return { ...meta(key), saldoInicial: ini, ingresos, egresos, saldoFinal: ini + tIng - tEgr };
+  }
+
+  // Snapshot REAL de abril (cifras exactas del reporte F-1600)
+  const abril = {
+    ...meta('Abr 26'),
+    saldoInicial: 22201071.08,
+    ingresos: [
+      { key:'disposicion', label:'Disposición de crédito',          value:  6276478.87 },
+      { key:'cobranza',    label:'Cobranza de cartera',             value: 10172473.04 },
+      { key:'cobranza_nc', label:'Cobranza no cedida',              value:        0    },
+      { key:'cesion_inv',  label:'Traspaso por cesión inversa',     value:        0    },
+      { key:'int_ganados', label:'Intereses ganados',               value:    49987.51 },
+      { key:'otros_ing',   label:'Otros ingresos',                  value:    20951.87 },
+    ],
+    egresos: [
+      { key:'fondos_fid',  label:'Fondos al fideicomitente',        value:  6276478.87 },
+      { key:'principal',   label:'Pago de principal / amort.',      value:        0    },
+      { key:'gastos_emi',  label:'Gastos de emisión / colocación',  value:        0    },
+      { key:'int_pagados', label:'Intereses pagados',               value:  3354421.82 },
+      { key:'honorarios',  label:'Honorarios',                      value:    18002.27 },
+      { key:'impuestos',   label:'Impuestos',                       value:        0    },
+      { key:'comisiones',  label:'Comisiones bancarias',            value:        0    },
+      { key:'otros_egr',   label:'Otros egresos',                   value:      382.80 },
+    ],
+    saldoFinal: 29071676.61,
+  };
+
+  // 12 snapshots · totales reconcilian con la serie del Histórico de caja.
+  const SNAPSHOTS = {
+    'Jul 25': mk('Jul 25', 16.50, { cob:10.10, disp:4.0, intg:0.05, oi:0.05, fid:4.0, pri:0,    intp:5.90, hon:0.02, oe:0.08 }),
+    'Ago 25': mk('Ago 25', 20.70, { cob:10.70, disp:2.0, intg:0.05, oi:0.05, fid:2.0, pri:2.50, intp:6.10, hon:0.02, oe:0.08 }),
+    'Sep 25': mk('Sep 25', 22.80, { cob:10.90, disp:0,   intg:0.05, oi:0.05, fid:0,   pri:8.30, intp:5.60, hon:0.02, oe:0.08 }),
+    'Oct 25': mk('Oct 25', 19.80, { cob:11.40, disp:2.0, intg:0.05, oi:0.05, fid:2.0, pri:2.0,  intp:6.0,  hon:0.02, oe:0.08 }),
+    'Nov 25': mk('Nov 25', 23.20, { cob:11.0,  disp:1.0, intg:0.05, oi:0.05, fid:1.0, pri:3.10, intp:6.10, hon:0.02, oe:0.08 }),
+    'Dic 25': mk('Dic 25', 25.00, { cob:9.30,  disp:0,   intg:0.05, oi:0.05, fid:0,   pri:8.40, intp:5.50, hon:0.02, oe:0.08 }),
+    'Ene 26': mk('Ene 26', 20.40, { cob:10.90, disp:2.0, intg:0.05, oi:0.05, fid:2.0, pri:1.90, intp:5.90, hon:0.02, oe:0.08 }),
+    'Feb 26': null,  // ← sin reporte: el snapshot no existe (≠ todo en cero)
+    'Mar 26': mk('Mar 26', 19.50, { cob:11.0,  disp:1.50,intg:0.05, oi:0.05, fid:1.50,pri:2.40, intp:5.90, hon:0.02, oe:0.08 }),
+    'Abr 26': abril,
+    'May 26': mk('May 26', 29.07, { cob:10.90, disp:1.0, intg:0.05, oi:0.05, fid:1.0, pri:2.60, intp:6.0,  hon:0.02, oe:0.08 }),
+    'Jun 26': mk('Jun 26', 31.37, { cob:8.80,  disp:0,   intg:0.05, oi:0.05, fid:0,   pri:4.20, intp:5.70, hon:0.02, oe:0.08 }),
+  };
+  const ORDER = ['Jul 25','Ago 25','Sep 25','Oct 25','Nov 25','Dic 25','Ene 26','Feb 26','Mar 26','Abr 26','May 26','Jun 26'];
+
+  const sumKeys = (arr, keys) => {
+    const vals = arr.filter(x => keys.includes(x.key)).map(x => x.value);
+    if (vals.some(v => v === null)) return null;
+    return vals.reduce((s, v) => s + v, 0);
+  };
+  const M = (n) => (n / 1e6);
+  const fmtM = (n) => (n < 0 ? '−$' : '$') + Math.abs(n / 1e6).toFixed(2) + 'M';
+  const fmtFull = (n) => (n < 0 ? '−' : '') + '$' + Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const colorFor = (t) => t === 'total' ? '#4A1942' : t === 'in' ? '#10B981' : '#EF4444';
+
+  // Estado vivo (reasignado en cada render por periodo)
+  let period = null, steps = [], bars = [], cum = [], bgColors = [];
+
+  // ── Buckets del chart (FIJO, no depende del valor): agrupa el detalle
+  //    para que "respire". La tabla muestra el desglose canónico completo. ──
+  function buildSteps() {
+    const ING = period.ingresos, EGR = period.egresos;
+    steps = [
+      { label: 'Saldo inicial',            type: 'total', value: period.saldoInicial },
+      { label: 'Cobranza de cartera',      type: 'in',    value:  sumKeys(ING, ['cobranza','cobranza_nc']) },
+      { label: 'Disposición de crédito',   type: 'in',    value:  sumKeys(ING, ['disposicion','cesion_inv']) },
+      { label: 'Otros ingresos',           type: 'in',    value:  sumKeys(ING, ['int_ganados','otros_ing']) },
+      { label: 'Fondos al fideicomitente', type: 'out',   value: -sumKeys(EGR, ['fondos_fid']) },
+      { label: 'Pago de principal',        type: 'out',   value: -sumKeys(EGR, ['principal']) },
+      { label: 'Intereses pagados',        type: 'out',   value: -sumKeys(EGR, ['int_pagados']) },
+      { label: 'Otros egresos',            type: 'out',   value: -sumKeys(EGR, ['gastos_emi','honorarios','impuestos','comisiones','otros_egr']) },
+      { label: 'Saldo final',              type: 'total', value: period.saldoFinal },
+    ];
+    let running = 0; bars = []; cum = [];
+    steps.forEach(s => {
+      if (s.type === 'total') { running = s.value; bars.push([0, M(running)]); cum.push(running); }
+      else if (s.value === null) { bars.push([M(running), M(running)]); cum.push(running); }
+      else { const start = running; running += s.value; bars.push([M(start), M(running)]); cum.push(running); }
+    });
+    bgColors = steps.map(s => s.value === null ? '#E5E7EB' : colorFor(s.type));
+  }
+
+  // Plugin · línea conectora punteada entre barras (estilo waterfall)
+  const connectorPlugin = {
+    id: 'connector',
+    afterDatasetsDraw(chart) {
+      const { ctx, scales: { x, y } } = chart;
+      ctx.save();
+      ctx.strokeStyle = '#CBD5E1';
+      ctx.setLineDash([4, 3]);
+      ctx.lineWidth = 1.5;
+      for (let i = 0; i < steps.length - 1; i++) {
+        const yEnd = steps[i].type === 'total' ? cum[i] : cum[i];
+        const yPix = y.getPixelForValue(M(yEnd));
+        const xa = x.getPixelForValue(i);
+        const xb = x.getPixelForValue(i + 1);
+        const half = (xb - xa) * 0.30;
+        ctx.beginPath();
+        ctx.moveTo(xa + half, yPix);
+        ctx.lineTo(xb - half, yPix);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+  };
+
+  // Plugin · etiquetas de valor sobre cada barra
+  const labelPlugin = {
+    id: 'valueLabels',
+    afterDatasetsDraw(chart) {
+      const { ctx, scales: { x, y } } = chart;
+      ctx.save();
+      ctx.font = 'bold 11px -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      steps.forEach((s, i) => {
+        const [a, b] = bars[i];
+        const top = Math.max(a, b);
+        const yPix = y.getPixelForValue(top) - 8;
+        const xPix = x.getPixelForValue(i);
+        let txt, color;
+        if (s.value === null) {            // sin dato
+          txt = 'sin dato'; color = '#94A3B8';
+        } else if (s.type === 'total') {
+          txt = fmtM(s.value); color = colorFor(s.type);
+        } else if (s.value === 0) {        // cero real → marcado, no oculto
+          txt = '$0.00M'; color = '#94A3B8';
+        } else {
+          txt = (s.value >= 0 ? '+' : '−') + '$' + Math.abs(M(s.value)).toFixed(2) + 'M';
+          color = colorFor(s.type);
+        }
+        ctx.fillStyle = color;
+        ctx.fillText(txt, xPix, yPix);
+      });
+      ctx.restore();
+    }
+  };
+
+  const ctx = document.getElementById('chart');
+  const chart = new Chart(ctx, {
+    type: 'bar',
+    data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderRadius: 4, barPercentage: 0.7, categoryPercentage: 0.8 }] },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: { padding: { top: 28 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1A1A2E',
+          padding: 12,
+          callbacks: {
+            label: (c) => {
+              const s = steps[c.dataIndex];
+              if (!s) return '';
+              if (s.value === null) return `${s.label}: sin dato`;
+              if (s.type === 'total') return `${s.label}: ${fmtFull(s.value)}`;
+              return [`${s.value >= 0 ? '+' : '−'}${fmtFull(Math.abs(s.value))}`, `Saldo: ${fmtFull(cum[c.dataIndex])}`];
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { color: '#6B7280', font: { size: 10.5 }, maxRotation: 35, minRotation: 0, autoSkip: false }
+        },
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: 'Monto (MXN)', color: '#6B7280', font: { size: 11 } },
+          ticks: { color: '#6B7280', font: { size: 11 }, callback: (v) => '$' + v + 'M' },
+          grid: { color: '#F3F4F6' }
+        }
+      }
+    },
+    plugins: [connectorPlugin, labelPlugin]
+  });
+
+  // ── Tabla = fuente de verdad: TODOS los conceptos canónicos, siempre.
+  //    0 real y "sin dato" se distinguen visualmente. ──
+  const tbody = document.getElementById('wfTableBody');
+  const cell = (s, n, run) => {  // celda de monto + saldo acumulado
+    let monto, mColor;
+    if (n === null)       { monto = 'sin dato'; mColor = '#94A3B8'; }
+    else if (n === 0)     { monto = '$0.00';    mColor = '#94A3B8'; }
+    else { monto = (s === 'in' ? '+' : '−') + fmtFull(Math.abs(n)); mColor = s === 'in' ? 'var(--green)' : 'var(--red)'; }
+    const saldo = run === null ? '<span style="color:#94A3B8">—</span>' : fmtFull(run);
+    return `<td class="num" style="color:${mColor}">${monto}</td><td class="num" style="color:var(--muted)">${saldo}</td>`;
+  };
+  const sectionRow = (label) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td colspan="3" style="padding:8px 18px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#910057;background:#FBF6FA">${label}</td>`;
+    tbody.appendChild(tr);
+  };
+  const totalRow = (label, n) => {
+    const tr = document.createElement('tr');
+    tr.style.background = '#FBF6FA';
+    tr.innerHTML = `<td style="font-weight:700;color:var(--vino)">${label}</td><td class="num" style="font-weight:700;color:var(--vino)">${fmtFull(n)}</td><td></td>`;
+    tbody.appendChild(tr);
+  };
+  function renderTable() {
+    tbody.innerHTML = '';
+    let run = period.saldoInicial;
+    totalRow(`Saldo inicial · ${period.dIni}`, period.saldoInicial);
+    sectionRow('Ingresos');
+    period.ingresos.forEach(it => {
+      if (it.value !== null) run += it.value;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${it.label}</td>${cell('in', it.value, it.value === null ? null : run)}`;
+      tbody.appendChild(tr);
+    });
+    sectionRow('Egresos');
+    period.egresos.forEach(it => {
+      if (it.value !== null) run -= it.value;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${it.label}</td>${cell('out', it.value, it.value === null ? null : run)}`;
+      tbody.appendChild(tr);
+    });
+    totalRow(`Saldo final · ${period.dFin}`, period.saldoFinal);
+  }
+
+  // ════════════════ Render por periodo (snapshot) ════════════════
+  const $ = (id) => document.getElementById(id);
+  function render(key) {
+    const snap = SNAPSHOTS[key];
+    const has = !!snap;
+    const m = has ? snap : meta(key);
+    $('wf-subtitle').textContent = `Movimientos de cuentas y fondos del fideicomiso · ${m.asOf} · LEASE MD F/1600`;
+    document.querySelector('.chart-wrap').style.display = has ? '' : 'none';
+    document.querySelector('.legend').style.display = has ? '' : 'none';
+    $('wf-insight').style.display = has ? '' : 'none';
+    document.querySelector('.view-table-card').style.display = has ? '' : 'none';
+    $('wf-nodata').style.display = has ? 'none' : '';
+    $('wf-period').value = key;
+
+    if (!has) {  // periodo sin reporte
+      $('wf-nodata-title').textContent = `Sin reporte · ${m.asOf}`;
+      ['kpi-inicial','kpi-ingresos','kpi-egresos','kpi-final'].forEach(id => $(id).textContent = '—');
+      $('kpi-neto').textContent = '—'; $('kpi-neto').className = 'kpi-delta';
+      $('kpi-inicial-date').textContent = m.asOf;
+      return;
+    }
+
+    period = snap;
+    buildSteps();
+
+    const tIng = period.ingresos.reduce((s,x)=>s+(x.value||0),0);
+    const tEgr = period.egresos.reduce((s,x)=>s+(x.value||0),0);
+    const neto = tIng - tEgr, pos = neto >= 0;
+    $('kpi-inicial').textContent = fmtM(period.saldoInicial);
+    $('kpi-inicial-date').textContent = period.dIni;
+    $('kpi-ingresos').textContent = fmtM(tIng);
+    $('kpi-egresos').textContent = fmtM(tEgr);
+    $('kpi-final').textContent = fmtM(period.saldoFinal);
+    const netoEl = $('kpi-neto');
+    netoEl.textContent = (pos?'+':'−') + '$' + Math.abs(neto/1e6).toFixed(2) + 'M neto';
+    netoEl.className = 'kpi-delta ' + (pos ? 'delta-pos' : 'delta-neg');
+
+    const cob = sumKeys(period.ingresos, ['cobranza','cobranza_nc']);
+    const intp = sumKeys(period.egresos, ['int_pagados']);
+    const ins = $('wf-insight');
+    ins.style.background = pos ? '#F0FDF4' : '#FEF2F2';
+    ins.style.borderLeftColor = pos ? 'var(--green)' : 'var(--red)';
+    ins.style.color = pos ? '#14532D' : '#7F1D1D';
+    $('wf-insight-icon').className = 'ph ' + (pos ? 'ph-trend-up' : 'ph-trend-down');
+    $('wf-insight-text').innerHTML = `El fideicomiso cerró ${period.nombre} con <strong>${(pos?'+':'−')+'$'+Math.abs(neto/1e6).toFixed(2)}M</strong> de flujo neto ${pos?'positivo':'negativo'}: cobranza de cartera (${fmtM(cob)}) frente a intereses pagados (${fmtM(intp)}). Saldo en bancos e inversiones: <strong>${fmtM(period.saldoFinal)}</strong>.`;
+
+    chart.data.labels = steps.map(s => s.label);
+    chart.data.datasets[0].data = bars;
+    chart.data.datasets[0].backgroundColor = bgColors;
+    chart.update();
+    renderTable();
+  }
+
+  // ── Init: poblar selector + resolver ?period= (default abril) ──
+  const sel = $('wf-period');
+  sel.innerHTML = ORDER.map(k => `<option value="${k}">${meta(k).asOf}${SNAPSHOTS[k] ? '' : ' · sin reporte'}</option>`).join('');
+  sel.addEventListener('change', (e) => {
+    const key = e.target.value;
+    const u = new URL(location.href); u.searchParams.set('period', key); history.replaceState({}, '', u);
+    render(key);
+  });
+  const raw = new URLSearchParams(location.search).get('period');
+  const initKey = ORDER.find(k => k.toLowerCase() === (raw || '').trim().toLowerCase()) || 'Abr 26';
+  render(initKey);
+</script>
+</body>
+</html>
