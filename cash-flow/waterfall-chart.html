@@ -175,11 +175,6 @@
       <canvas id="chart"></canvas>
     </div>
 
-    <div class="insight" id="wf-insight">
-      <i class="ph ph-trend-up" id="wf-insight-icon" style="font-size:18px;margin-top:1px"></i>
-      <div id="wf-insight-text"></div>
-    </div>
-
     <!-- Estado "sin reporte" (periodo sin dato) -->
     <div id="wf-nodata" style="display:none;margin-top:8px;padding:40px 24px;text-align:center;background:#F9FAFB;border:1px dashed #CBD5E1;border-radius:12px">
       <i class="ph ph-file-dashed" style="font-size:32px;color:#94A3B8"></i>
@@ -207,10 +202,6 @@
         </table>
       </div>
     </details>
-
-    <p style="font-size:11px;color:var(--muted);margin-top:18px;line-height:1.6">
-      Fuente: pestaña <strong>Flujo de Efectivo</strong> (Movimientos Cuentas y Fondos del Fideicomiso) del reporte mensual F-1600. El gráfico agrupa el detalle en buckets fijos por periodo; los conceptos en cero se muestran (barra plana) para mantener el layout estable y comparable entre meses. La tabla trae el desglose canónico completo, distinguiendo <strong>$0.00</strong> (valió cero) de <strong>sin dato</strong> (no reportado).
-    </p>
   </div>
 </div>
 
@@ -494,7 +485,6 @@
     $('wf-subtitle').textContent = `Movimientos de cuentas y fondos del fideicomiso · ${m.asOf} · LEASE MD F/1600`;
     document.querySelector('.chart-wrap').style.display = has ? '' : 'none';
     document.querySelector('.legend').style.display = has ? '' : 'none';
-    $('wf-insight').style.display = has ? '' : 'none';
     document.querySelector('.view-table-card').style.display = has ? '' : 'none';
     $('wf-nodata').style.display = has ? 'none' : '';
     $('wf-period').value = key;
@@ -523,15 +513,6 @@
     const netoEl = $('kpi-neto');
     netoEl.textContent = (pos?'+':'−') + '$' + Math.abs(neto/1e6).toFixed(2) + 'M neto';
     netoEl.className = 'kpi-delta ' + (pos ? 'delta-pos' : 'delta-neg');
-
-    const cob = sumKeys(period.ingresos, ['cobranza','cobranza_nc']);
-    const intp = sumKeys(period.egresos, ['int_pagados']);
-    const ins = $('wf-insight');
-    ins.style.background = pos ? '#F0FDF4' : '#FEF2F2';
-    ins.style.borderLeftColor = pos ? 'var(--green)' : 'var(--red)';
-    ins.style.color = pos ? '#14532D' : '#7F1D1D';
-    $('wf-insight-icon').className = 'ph ' + (pos ? 'ph-trend-up' : 'ph-trend-down');
-    $('wf-insight-text').innerHTML = `El fideicomiso cerró ${period.nombre} con <strong>${(pos?'+':'−')+'$'+Math.abs(neto/1e6).toFixed(2)}M</strong> de flujo neto ${pos?'positivo':'negativo'}: cobranza de cartera (${fmtM(cob)}) frente a intereses pagados (${fmtM(intp)}). Saldo en bancos e inversiones: <strong>${fmtM(period.saldoFinal)}</strong>.`;
 
     chart.data.labels = steps.map(s => s.label);
     chart.data.datasets[0].data = bars;
