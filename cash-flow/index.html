@@ -368,7 +368,6 @@
         <span class="inline-flex items-center"><span class="inline-block w-2.5 h-2.5 rounded-full bg-danger mr-1 align-middle"></span>Below required</span>
       </div>
       <svg id="abHistChart" viewBox="0 0 520 252" class="w-full h-[300px]" preserveAspectRatio="xMidYMid meet"></svg>
-      <p id="abHistCaption" class="text-center text-xs font-mono text-text-secondary mt-1 mb-0"></p>
     </div>
   </article>
   </div>
@@ -461,7 +460,6 @@
     s += '</g>';
 
     document.getElementById('abHistChart').innerHTML = s;
-    document.getElementById('abHistCaption').textContent = acc.caption;
 
     // selector active state
     document.querySelectorAll('#abAcctSelector button').forEach(b => {
