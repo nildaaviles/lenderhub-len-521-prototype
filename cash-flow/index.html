@@ -354,9 +354,13 @@
       <div class="flex items-center justify-between gap-3 flex-wrap mb-3">
         <div class="flex items-center gap-2">
           <i class="ph ph-chart-line-up text-secondary"></i>
-          <span class="font-primary text-xs font-bold uppercase tracking-wider text-text">History · balance vs required (12 mo)</span>
+          <span class="font-primary text-xs font-bold uppercase tracking-wider text-text">History · balance vs required</span>
         </div>
-        <div id="abAcctSelector" class="flex gap-1.5 flex-wrap"></div>
+        <div class="flex items-center gap-3 flex-wrap">
+          <div id="abRangeSel" class="flex gap-1.5"></div>
+          <span class="w-px h-4 bg-border"></span>
+          <div id="abAcctSelector" class="flex gap-1.5 flex-wrap"></div>
+        </div>
       </div>
       <div class="flex items-center justify-center gap-4 text-xs text-text-secondary mb-1.5">
         <span class="inline-flex items-center"><span class="inline-block w-4 border-t-2 border-dashed border-border-strong mr-1 align-middle" style="height:0"></span>Required</span>
@@ -409,13 +413,20 @@
     expense:  {label:'Expense',     req:null,  data:[2.1,2.4,2.2,2.6,2.8,2.5,2.3,2.7,2.9,2.6,2.4,2.65],  caption:'→ Operating account — no minimum requirement.'},
   };
   const abMonths = ['Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun'];
-  const abX = i => 50 + i * (460 / 11);
   let abCurrent = 'reserve';
+  let abRange = '12M';
+  // índice de inicio de la ventana (datos: Jul'25 … Jun'26). YTD = meses 2026 = desde Ene.
+  const abRangeStart = { '3M': 9, '6M': 6, '12M': 0, 'YTD': 6 };
 
   function abRenderHistory(key){
     abCurrent = key;
     const acc = abHist[key];
-    const yMax = Math.max(acc.req || 0, ...acc.data) * 1.12;
+    const start = abRangeStart[abRange] ?? 0;
+    const data = acc.data.slice(start);
+    const months = abMonths.slice(start);
+    const n = data.length;
+    const xOf = i => n === 1 ? 280 : 50 + i * (460 / (n - 1));
+    const yMax = Math.max(acc.req || 0, ...data) * 1.12;
     const yOf = v => 210 - (v / yMax) * 180;
     const fmt = v => '$' + v.toFixed(1) + 'M';
     let s = '';
@@ -436,27 +447,27 @@
     }
 
     // actual line
-    const pts = acc.data.map((v,i) => `${abX(i).toFixed(1)},${yOf(v).toFixed(1)}`).join(' ');
+    const pts = data.map((v,i) => `${xOf(i).toFixed(1)},${yOf(v).toFixed(1)}`).join(' ');
     s += `<polyline points="${pts}" fill="none" stroke="#0284C7" stroke-width="2.5" stroke-linejoin="round"/>`;
 
     // points (red when below required)
-    acc.data.forEach((v,i) => {
+    data.forEach((v,i) => {
       const breach = acc.req != null && v < acc.req;
-      const last = i === acc.data.length - 1;
-      s += `<circle cx="${abX(i).toFixed(1)}" cy="${yOf(v).toFixed(1)}" r="${last?4:2.6}" fill="${breach?'#DC2626':'#0284C7'}"/>`;
+      const last = i === n - 1;
+      s += `<circle cx="${xOf(i).toFixed(1)}" cy="${yOf(v).toFixed(1)}" r="${last?4:2.6}" fill="${breach?'#DC2626':'#0284C7'}"/>`;
     });
     // last value label
-    const lv = acc.data[acc.data.length-1], lastBreach = acc.req != null && lv < acc.req;
-    s += `<text x="${(abX(11)-2).toFixed(1)}" y="${(yOf(lv)-8).toFixed(1)}" text-anchor="end" font-family="Space Mono" font-size="10" font-weight="700" fill="${lastBreach?'#DC2626':'#0284C7'}">${fmt(lv)}</text>`;
+    const lv = data[n-1], lastBreach = acc.req != null && lv < acc.req;
+    s += `<text x="${(xOf(n-1)-2).toFixed(1)}" y="${(yOf(lv)-8).toFixed(1)}" text-anchor="end" font-family="Space Mono" font-size="10" font-weight="700" fill="${lastBreach?'#DC2626':'#0284C7'}">${fmt(lv)}</text>`;
 
-    // x-axis month labels (every other to avoid crowding)
+    // x-axis month labels (todas si ≤6, cada otra si más)
     s += '<g font-family="Sofia Sans" font-size="9" fill="#64748B" text-anchor="middle">';
-    abMonths.forEach((m,i) => { if (i % 2 === 0 || i === 11) s += `<text x="${abX(i).toFixed(1)}" y="226">${m}</text>`; });
+    months.forEach((m,i) => { if (n <= 6 || i % 2 === 0 || i === n-1) s += `<text x="${xOf(i).toFixed(1)}" y="226">${m}</text>`; });
     s += '</g>';
 
     document.getElementById('abHistChart').innerHTML = s;
 
-    // selector active state
+    // account selector active state
     document.querySelectorAll('#abAcctSelector button').forEach(b => {
       const on = b.dataset.key === key;
       b.className = 'px-2.5 py-1 rounded-full text-xs font-bold font-primary transition-colors ' +
@@ -464,13 +475,25 @@
     });
   }
 
-  // build selector + initial render
+  function abSetRange(r){
+    abRange = r;
+    document.querySelectorAll('#abRangeSel button').forEach(b => {
+      const on = b.dataset.r === r;
+      b.className = 'px-2.5 py-1 rounded-md text-xs font-bold font-primary transition-colors ' +
+        (on ? 'bg-secondary text-white' : 'bg-border text-text-secondary hover:bg-border-strong');
+    });
+    abRenderHistory(abCurrent);
+  }
+
+  // build selectors + initial render
   (function abInit(){
     const sel = document.getElementById('abAcctSelector');
     if (!sel) return;
+    document.getElementById('abRangeSel').innerHTML = ['3M','6M','12M','YTD'].map(r =>
+      `<button type="button" data-r="${r}" onclick="abSetRange('${r}')">${r}</button>`).join('');
     sel.innerHTML = Object.entries(abHist).map(([k,v]) =>
       `<button type="button" data-key="${k}" onclick="abRenderHistory('${k}')">${v.label}</button>`).join('');
-    abRenderHistory('reserve');
+    abSetRange('12M');
   })();
 </script>
 
