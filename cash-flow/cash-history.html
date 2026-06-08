@@ -42,7 +42,7 @@
   .toggle button.active { background: var(--vino); color: #fff; }
 
   /* KPI strip */
-  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; padding: 20px; background: linear-gradient(135deg, #FBF6FA 0%, #F7EDF4 100%); border-radius: 12px; }
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; padding: 20px; background: linear-gradient(135deg, #FBF6FA 0%, #F7EDF4 100%); border-radius: 12px; }
   .kpi { border-right: 1px solid #EADCE5; padding-right: 16px; }
   .kpi:last-child { border-right: none; }
   .kpi-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
@@ -95,11 +95,6 @@
         <div class="kpi-label">Meses con flujo negativo</div>
         <div class="kpi-value">3<span style="font-size:13px;color:var(--muted)"> / 11</span></div>
         <div class="kpi-sub" style="color:var(--muted)">sep · dic · jun</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Meses sin reporte</div>
-        <div class="kpi-value warn">1 ⚠️</div>
-        <div class="kpi-sub warn">feb 2026</div>
       </div>
     </div>
 
