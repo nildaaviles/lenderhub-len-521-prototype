@@ -164,6 +164,9 @@
     <button id="tab-waterfall" onclick="switchTab('waterfall')" class="cf-tab px-4 py-2 text-sm font-medium border-b-2 border-transparent -mb-px font-primary text-text-secondary hover:text-text">
       <i class="ph ph-align-bottom mr-1"></i> Waterfall
     </button>
+    <button id="tab-historical" onclick="switchTab('historical')" class="cf-tab px-4 py-2 text-sm font-medium border-b-2 border-transparent -mb-px font-primary text-text-secondary hover:text-text">
+      <i class="ph ph-chart-line-up mr-1"></i> Histórico
+    </button>
     <a id="openStandalone" href="./collection-chart.html" target="_blank" class="ml-auto inline-flex items-center gap-1 text-xs text-text-secondary hover:text-text" title="Open in new tab">
       <i class="ph ph-arrow-square-out"></i> Open standalone
     </a>
@@ -173,6 +176,7 @@
   <iframe id="frame-collection" class="cf-frame" src="./collection-chart.html" title="Collection Chart"></iframe>
   <iframe id="frame-history" class="cf-frame hidden" src="./payment-history.html" title="Payment History"></iframe>
   <iframe id="frame-waterfall" class="cf-frame hidden" src="./waterfall-chart.html" title="Waterfall"></iframe>
+  <iframe id="frame-historical" class="cf-frame hidden" src="./cash-history.html" title="Histórico de caja"></iframe>
 
   <!-- Account Balance pane (inline, hidden by default) -->
   <div id="frame-account" class="hidden">
@@ -212,64 +216,28 @@
       <span class="inline-flex items-center"><span class="inline-block w-2.5 h-2.5 rounded-sm bg-danger mr-1 align-middle"></span>Actual · breach</span>
     </div>
     <div class="bg-bg border border-border rounded-lg p-3.5 mb-4">
-      <svg viewBox="0 0 520 252" class="w-full h-[300px]" preserveAspectRatio="xMidYMid meet">
-        <!-- grid -->
-        <g stroke="#E2E8F0" stroke-width="1">
-          <line x1="50" y1="30" x2="510" y2="30"/>
-          <line x1="50" y1="120" x2="510" y2="120"/>
-          <line x1="50" y1="210" x2="510" y2="210" stroke="#CBD5E1"/>
-        </g>
-        <g font-family="Space Mono" font-size="9" fill="#64748B">
-          <text x="46" y="33" text-anchor="end">$50M</text>
-          <text x="46" y="123" text-anchor="end">$25M</text>
-          <text x="46" y="213" text-anchor="end">$0</text>
-        </g>
-        <!-- 1 · Collection Account A · Req 42.50 / Act 48.12 · compliant -->
-        <rect x="64"  y="57"    width="28" height="153"   fill="#CBD5E1"/>
-        <rect x="100" y="36.8"  width="28" height="173.2" fill="#16A34A" style="cursor:pointer" onclick="abRenderHistory('a')"/>
-        <text x="78"  y="53"  text-anchor="middle" font-family="Space Mono" font-size="8"   fill="#94A3B8">$42.5M</text>
-        <text x="114" y="32"  text-anchor="middle" font-family="Space Mono" font-size="9.5" font-weight="700" fill="#16A34A">$48.1M</text>
-        <!-- 2 · Payment Reserve Fund · Req 28.00 / Act 22.14 · breach -->
-        <rect x="156" y="109.2" width="28" height="100.8" fill="#CBD5E1"/>
-        <rect x="192" y="130.3" width="28" height="79.7"  fill="#DC2626" style="cursor:pointer" onclick="abRenderHistory('reserve')"/>
-        <text x="170" y="105" text-anchor="middle" font-family="Space Mono" font-size="8"   fill="#94A3B8">$28.0M</text>
-        <text x="206" y="126" text-anchor="middle" font-family="Space Mono" font-size="9.5" font-weight="700" fill="#DC2626">$22.1M</text>
-        <!-- 3 · Collection Account B · Req 12.80 / Act 13.40 · compliant -->
-        <rect x="248" y="163.9" width="28" height="46.1"  fill="#CBD5E1"/>
-        <rect x="284" y="161.8" width="28" height="48.2"  fill="#16A34A" style="cursor:pointer" onclick="abRenderHistory('b')"/>
-        <text x="262" y="159" text-anchor="middle" font-family="Space Mono" font-size="8"   fill="#94A3B8">$12.8M</text>
-        <text x="298" y="156" text-anchor="middle" font-family="Space Mono" font-size="9.5" font-weight="700" fill="#16A34A">$13.4M</text>
-        <!-- 4 · Liquidity Fund · Req 8.50 / Act 6.93 · breach -->
-        <rect x="340" y="179.4" width="28" height="30.6"  fill="#CBD5E1"/>
-        <rect x="376" y="185.1" width="28" height="24.9"  fill="#DC2626" style="cursor:pointer" onclick="abRenderHistory('liquidity')"/>
-        <text x="354" y="175" text-anchor="middle" font-family="Space Mono" font-size="8"   fill="#94A3B8">$8.5M</text>
-        <text x="390" y="181" text-anchor="middle" font-family="Space Mono" font-size="9.5" font-weight="700" fill="#DC2626">$6.9M</text>
-        <!-- 5 · Expense Account · sin requerimiento / Act 2.65 -->
-        <rect x="468" y="200.5" width="28" height="9.5"   fill="#0284C7" style="cursor:pointer" onclick="abRenderHistory('expense')"/>
-        <text x="482" y="196" text-anchor="middle" font-family="Space Mono" font-size="9.5" font-weight="700" fill="#0284C7">$2.7M</text>
-        <!-- x-axis labels -->
-        <g font-family="Sofia Sans" font-size="9" fill="#64748B" text-anchor="middle">
-          <text x="96"  y="226">Coll. A</text>
-          <text x="188" y="226" fill="#DC2626" font-weight="700">Pmt Reserve</text>
-          <text x="280" y="226">Coll. B</text>
-          <text x="372" y="226" fill="#DC2626" font-weight="700">Liquidity</text>
-          <text x="464" y="226">Expense</text>
-        </g>
-      </svg>
+      <svg id="abBarChart" viewBox="0 0 520 252" class="w-full h-[300px]" preserveAspectRatio="xMidYMid meet"></svg>
     </div>
 
-    <!-- ════════ ACCOUNT BALANCE · HISTORY (drill-down) ════════ -->
+    <!-- ════════ ACCOUNT BALANCE · HISTORY · OVERVIEW (small multiples) ════════ -->
     <div class="bg-bg border border-border rounded-lg p-3.5 mb-4">
-      <div class="flex items-center justify-between gap-3 flex-wrap mb-3">
-        <div class="flex items-center gap-2">
-          <i class="ph ph-chart-line-up text-secondary"></i>
-          <span class="font-primary text-xs font-bold uppercase tracking-wider text-text">History · balance vs required (12 mo)</span>
-        </div>
-        <div id="abAcctSelector" class="flex gap-1.5 flex-wrap"></div>
+      <div class="flex items-center gap-2 mb-3 flex-wrap">
+        <i class="ph ph-squares-four text-secondary"></i>
+        <span class="font-primary text-xs font-bold uppercase tracking-wider text-text">History · all accounts (12 mo)</span>
+        <span class="text-[11px] text-text-secondary font-ui">· click an account to expand below</span>
+      </div>
+      <div id="abGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5"></div>
+    </div>
+
+    <!-- ════════ ACCOUNT BALANCE · HISTORY · DETAIL (drill-down) ════════ -->
+    <div class="bg-bg border border-border rounded-lg p-3.5 mb-4">
+      <div class="flex items-center gap-2 mb-1">
+        <i class="ph ph-chart-line-up text-secondary"></i>
+        <span id="abHistTitle" class="font-primary text-xs font-bold uppercase tracking-wider text-text">Detail</span>
       </div>
       <div class="flex items-center justify-center gap-4 text-xs text-text-secondary mb-1.5">
         <span class="inline-flex items-center"><span class="inline-block w-4 border-t-2 border-dashed border-border-strong mr-1 align-middle" style="height:0"></span>Required</span>
-        <span class="inline-flex items-center"><span class="inline-block w-2.5 h-2.5 rounded-full bg-secondary mr-1 align-middle"></span>Actual</span>
+        <span class="inline-flex items-center"><span class="inline-block w-2.5 h-2.5 rounded-full bg-info mr-1 align-middle"></span>Actual</span>
         <span class="inline-flex items-center"><span class="inline-block w-2.5 h-2.5 rounded-full bg-danger mr-1 align-middle"></span>Below required</span>
       </div>
       <svg id="abHistChart" viewBox="0 0 520 252" class="w-full h-[300px]" preserveAspectRatio="xMidYMid meet"></svg>
@@ -373,7 +341,7 @@
 
 <script>
   function switchTab(tab){
-    const tabs = ['collection','history','account','waterfall'];
+    const tabs = ['collection','history','account','waterfall','historical'];
     tabs.forEach(t => {
       const btn = document.getElementById('tab-'+t);
       const frame = document.getElementById('frame-'+t);
@@ -395,84 +363,152 @@
       openLink.style.display = '';
       openLink.href = tab === 'collection' ? './collection-chart.html'
                     : tab === 'history'    ? './payment-history.html'
-                    : './waterfall-chart.html';
+                    : tab === 'waterfall'  ? './waterfall-chart.html'
+                    : './cash-history.html';
     }
   }
 </script>
 
 <script>
-  // ════════ Account Balance · History (drill-down) ════════
-  const abHist = {
-    a:        {label:'Coll. A',     req:42.50, data:[43.8,44.2,45.0,45.6,46.1,46.0,46.8,47.0,47.3,47.6,47.9,48.12], caption:'↗ Healthy buffer all 12 months — never near requirement.'},
-    reserve:  {label:'Pmt Reserve', req:28.00, data:[31.6,31.0,30.4,29.7,29.1,28.6,28.0,26.9,25.7,24.5,23.3,22.14], caption:'↘ Steady decline — crossed below required in Feb 2026, now −$5.86M.'},
-    b:        {label:'Coll. B',     req:12.80, data:[13.1,12.9,13.3,13.6,13.2,13.0,13.5,13.7,13.4,13.2,13.5,13.40], caption:'→ Stable — fluctuating just above requirement.'},
-    liquidity:{label:'Liquidity',   req:8.50,  data:[9.3,9.4,9.2,9.5,9.3,9.4,9.2,9.3,9.1,8.7,7.8,6.93],  caption:'↘ Sharp drop in last 2 months after a stable year — breached.'},
-    expense:  {label:'Expense',     req:null,  data:[2.1,2.4,2.2,2.6,2.8,2.5,2.3,2.7,2.9,2.6,2.4,2.65],  caption:'→ Operating account — no minimum requirement.'},
-  };
-  const abMonths = ['Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun'];
-  const abX = i => 50 + i * (460 / 11);
-  let abCurrent = 'reserve';
+  // ════════ Account Balance · data-driven (cuentas por fideicomiso) ════════
+  // Única fuente de verdad. Cada fideicomiso tiene su propio set de cuentas;
+  // cambiar de fideicomiso = cambiar este array. required:null => sin mínimo.
+  const abAccounts = [
+    { id:'collA',     name:'Collection Account A', short:'Coll. A',     required:42.50, series:[43.8,44.2,45.0,45.6,46.1,46.0,46.8,47.0,47.3,47.6,47.9,48.12] },
+    { id:'reserve',   name:'Payment Reserve Fund', short:'Pmt Reserve', required:28.00, series:[31.6,31.0,30.4,29.7,29.1,28.6,28.0,26.9,25.7,24.5,23.3,22.14] },
+    { id:'collB',     name:'Collection Account B', short:'Coll. B',     required:12.80, series:[13.1,12.9,13.3,13.6,13.2,13.0,13.5,13.7,13.4,13.2,13.5,13.40] },
+    { id:'liquidity', name:'Liquidity Fund',       short:'Liquidity',   required:8.50,  series:[9.3,9.4,9.2,9.5,9.3,9.4,9.2,9.3,9.1,8.7,7.8,6.93] },
+    { id:'expense',   name:'Expense Account',      short:'Expense',     required:null,  series:[2.1,2.4,2.2,2.6,2.8,2.5,2.3,2.7,2.9,2.6,2.4,2.65] },
+  ];
+  const abMonths  = ['Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun'];
+  const abMonthYr = i => abMonths[i] + ' ' + (i < 6 ? 2025 : 2026);
+  const abFmt   = v => (v < 0 ? '−$' : '$') + Math.abs(v).toFixed(1) + 'M';
+  const abLast  = a => a.series[a.series.length - 1];
+  const abBreach= a => a.required != null && abLast(a) < a.required;
+  const C = { req:'#94A3B8', reqBar:'#CBD5E1', actual:'#0284C7', ok:'#16A34A', bad:'#DC2626', grid:'#E2E8F0', axis:'#CBD5E1', text:'#64748B', muted:'#94A3B8' };
+  let abCurrent = abAccounts[0].id;
 
-  function abRenderHistory(key){
-    abCurrent = key;
-    const acc = abHist[key];
-    const yMax = Math.max(acc.req || 0, ...acc.data) * 1.12;
-    const yOf = v => 210 - (v / yMax) * 180;
-    const fmt = v => '$' + v.toFixed(1) + 'M';
-    let s = '';
-
-    // grid + y labels
-    [0, yMax/2, yMax].forEach((v,idx) => {
-      const y = yOf(v);
-      s += `<line x1="50" y1="${y.toFixed(1)}" x2="510" y2="${y.toFixed(1)}" stroke="${idx===0?'#CBD5E1':'#E2E8F0'}" stroke-width="1"/>`;
-      s += `<text x="46" y="${(y+3).toFixed(1)}" text-anchor="end" font-family="Space Mono" font-size="9" fill="#64748B">$${v.toFixed(0)}M</text>`;
-    });
-
-    // breach zone + required threshold line
-    if (acc.req != null){
-      const yr = yOf(acc.req);
-      s += `<rect x="50" y="${yr.toFixed(1)}" width="460" height="${(210-yr).toFixed(1)}" fill="#DC2626" opacity="0.06"/>`;
-      s += `<line x1="50" y1="${yr.toFixed(1)}" x2="510" y2="${yr.toFixed(1)}" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="5 4"/>`;
-      s += `<text x="510" y="${(yr-5).toFixed(1)}" text-anchor="end" font-family="Space Mono" font-size="9" font-weight="700" fill="#64748B">Required ${fmt(acc.req)}</text>`;
+  // ── caption auto-generado (escala a cualquier cuenta) ──
+  function abCaption(a){
+    const last = abLast(a), first = a.series[0], d = last - first;
+    const dir = d > Math.abs(first)*0.03 ? '↗' : d < -Math.abs(first)*0.03 ? '↘' : '→';
+    if (a.required == null) return '→ Operating account — no minimum requirement.';
+    if (abBreach(a)){
+      const idx = a.series.findIndex(v => v < a.required);
+      return `${dir} Below required since ${abMonthYr(idx)} — now ${abFmt(last - a.required)}.`;
     }
+    return `${dir} Above requirement all period — healthy buffer.`;
+  }
 
-    // actual line
-    const pts = acc.data.map((v,i) => `${abX(i).toFixed(1)},${yOf(v).toFixed(1)}`).join(' ');
-    s += `<polyline points="${pts}" fill="none" stroke="#0284C7" stroke-width="2.5" stroke-linejoin="round"/>`;
-
-    // points (red when below required)
-    acc.data.forEach((v,i) => {
-      const breach = acc.req != null && v < acc.req;
-      const last = i === acc.data.length - 1;
-      s += `<circle cx="${abX(i).toFixed(1)}" cy="${yOf(v).toFixed(1)}" r="${last?4:2.6}" fill="${breach?'#DC2626':'#0284C7'}"/>`;
+  // ── 1 · Snapshot bar chart (Required vs Actual, N cuentas) ──
+  function abRenderBars(){
+    const N = abAccounts.length;
+    const yMax = Math.max(...abAccounts.flatMap(a => [a.required||0, abLast(a)])) * 1.12;
+    const yOf = v => 210 - (v/yMax)*180;
+    const slot = 460 / N, barW = Math.min(26, slot*0.3);
+    let s = '';
+    [0, yMax/2, yMax].forEach((v,idx) => { const y = yOf(v);
+      s += `<line x1="50" y1="${y.toFixed(1)}" x2="510" y2="${y.toFixed(1)}" stroke="${idx===0?C.axis:C.grid}"/>`;
+      s += `<text x="46" y="${(y+3).toFixed(1)}" text-anchor="end" font-family="Space Mono" font-size="9" fill="${C.text}">$${v.toFixed(0)}M</text>`;
     });
-    // last value label
-    const lv = acc.data[acc.data.length-1], lastBreach = acc.req != null && lv < acc.req;
-    s += `<text x="${(abX(11)-2).toFixed(1)}" y="${(yOf(lv)-8).toFixed(1)}" text-anchor="end" font-family="Space Mono" font-size="10" font-weight="700" fill="${lastBreach?'#DC2626':'#0284C7'}">${fmt(lv)}</text>`;
+    abAccounts.forEach((a,i) => {
+      const cx = 50 + (i+0.5)*slot, act = abLast(a), br = abBreach(a);
+      const actColor = a.required == null ? C.actual : (br ? C.bad : C.ok);
+      if (a.required != null){
+        const rx = cx - barW - 1, ax = cx + 1;
+        s += `<rect x="${rx.toFixed(1)}" y="${yOf(a.required).toFixed(1)}" width="${barW}" height="${(210-yOf(a.required)).toFixed(1)}" fill="${C.reqBar}" style="cursor:pointer" onclick="abRenderHistory('${a.id}')"/>`;
+        s += `<rect x="${ax.toFixed(1)}" y="${yOf(act).toFixed(1)}" width="${barW}" height="${(210-yOf(act)).toFixed(1)}" fill="${actColor}" style="cursor:pointer" onclick="abRenderHistory('${a.id}')"/>`;
+        s += `<text x="${(rx+barW/2).toFixed(1)}" y="${(yOf(a.required)-4).toFixed(1)}" text-anchor="middle" font-family="Space Mono" font-size="8" fill="${C.muted}">$${a.required.toFixed(1)}M</text>`;
+        s += `<text x="${(ax+barW/2).toFixed(1)}" y="${(yOf(act)-4).toFixed(1)}" text-anchor="middle" font-family="Space Mono" font-size="9" font-weight="700" fill="${actColor}">$${act.toFixed(1)}M</text>`;
+      } else {
+        const ax = cx - barW/2;
+        s += `<rect x="${ax.toFixed(1)}" y="${yOf(act).toFixed(1)}" width="${barW}" height="${(210-yOf(act)).toFixed(1)}" fill="${actColor}" style="cursor:pointer" onclick="abRenderHistory('${a.id}')"/>`;
+        s += `<text x="${cx.toFixed(1)}" y="${(yOf(act)-4).toFixed(1)}" text-anchor="middle" font-family="Space Mono" font-size="9" font-weight="700" fill="${actColor}">$${act.toFixed(1)}M</text>`;
+      }
+      s += `<text x="${cx.toFixed(1)}" y="226" text-anchor="middle" font-family="Sofia Sans" font-size="9" fill="${br?C.bad:C.text}" ${br?'font-weight="700"':''}>${a.short}</text>`;
+    });
+    document.getElementById('abBarChart').innerHTML = s;
+  }
 
-    // x-axis month labels (every other to avoid crowding)
-    s += '<g font-family="Sofia Sans" font-size="9" fill="#64748B" text-anchor="middle">';
-    abMonths.forEach((m,i) => { if (i % 2 === 0 || i === 11) s += `<text x="${abX(i).toFixed(1)}" y="226">${m}</text>`; });
+  // ── 2 · Mini sparkline para la rejilla ──
+  function abMini(a){
+    const x0=6,x1=164,y0=10,y1=54, n=a.series.length;
+    const yMax = Math.max(a.required||0, ...a.series)*1.1;
+    const X = i => x0 + i*((x1-x0)/(n-1)), Y = v => y1 - (v/yMax)*(y1-y0);
+    let s = '';
+    if (a.required != null){ const yr = Y(a.required);
+      s += `<rect x="${x0}" y="${yr.toFixed(1)}" width="${x1-x0}" height="${(y1-yr).toFixed(1)}" fill="${C.bad}" opacity="0.07"/>`;
+      s += `<line x1="${x0}" y1="${yr.toFixed(1)}" x2="${x1}" y2="${yr.toFixed(1)}" stroke="${C.req}" stroke-width="1" stroke-dasharray="4 3"/>`;
+    }
+    s += `<polyline points="${a.series.map((v,i)=>`${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(' ')}" fill="none" stroke="${C.actual}" stroke-width="2" stroke-linejoin="round"/>`;
+    const br = abBreach(a);
+    s += `<circle cx="${X(n-1).toFixed(1)}" cy="${Y(abLast(a)).toFixed(1)}" r="3" fill="${br?C.bad:C.actual}"/>`;
+    return `<svg viewBox="0 0 170 64" class="w-full" style="height:60px" preserveAspectRatio="none">${s}</svg>`;
+  }
+
+  // ── 2 · Rejilla de small multiples (overview de todas las cuentas) ──
+  function abRenderGrid(){
+    document.getElementById('abGrid').innerHTML = abAccounts.map(a => {
+      const br = abBreach(a);
+      const status = a.required == null
+        ? '<span class="text-[10px] text-text-muted font-primary font-bold">NO MIN</span>'
+        : br ? '<span class="text-[10px] font-bold text-danger font-primary">BREACH</span>'
+             : '<span class="text-[10px] font-bold text-success font-primary">OK</span>';
+      return `<button type="button" data-id="${a.id}" onclick="abRenderHistory('${a.id}')"
+        class="ab-cell text-left rounded-lg border border-border bg-surface p-2.5 hover:border-secondary transition-colors">
+        <div class="flex items-center justify-between gap-1 mb-1">
+          <span class="font-primary text-[11px] font-bold text-text truncate">${a.short}</span>${status}
+        </div>${abMini(a)}
+        <div class="flex items-center justify-between mt-1 font-mono text-[10px]">
+          <span class="${br?'text-danger font-bold':'text-text'}">${abFmt(abLast(a))}</span>
+          <span class="text-text-muted">${a.required!=null?'req '+abFmt(a.required):'—'}</span>
+        </div></button>`;
+    }).join('');
+  }
+
+  // ── 3 · Detalle drill-down (gráfico grande de una cuenta) ──
+  function abRenderHistory(id){
+    abCurrent = id;
+    const a = abAccounts.find(x => x.id === id) || abAccounts[0];
+    const n = a.series.length;
+    const yMax = Math.max(a.required||0, ...a.series)*1.12;
+    const yOf = v => 210 - (v/yMax)*180, X = i => 50 + i*(460/(n-1));
+    let s = '';
+    [0, yMax/2, yMax].forEach((v,idx) => { const y = yOf(v);
+      s += `<line x1="50" y1="${y.toFixed(1)}" x2="510" y2="${y.toFixed(1)}" stroke="${idx===0?C.axis:C.grid}"/>`;
+      s += `<text x="46" y="${(y+3).toFixed(1)}" text-anchor="end" font-family="Space Mono" font-size="9" fill="${C.text}">$${v.toFixed(0)}M</text>`;
+    });
+    if (a.required != null){ const yr = yOf(a.required);
+      s += `<rect x="50" y="${yr.toFixed(1)}" width="460" height="${(210-yr).toFixed(1)}" fill="${C.bad}" opacity="0.06"/>`;
+      s += `<line x1="50" y1="${yr.toFixed(1)}" x2="510" y2="${yr.toFixed(1)}" stroke="${C.req}" stroke-width="1.5" stroke-dasharray="5 4"/>`;
+      s += `<text x="510" y="${(yr-5).toFixed(1)}" text-anchor="end" font-family="Space Mono" font-size="9" font-weight="700" fill="${C.text}">Required ${abFmt(a.required)}</text>`;
+    }
+    s += `<polyline points="${a.series.map((v,i)=>`${X(i).toFixed(1)},${yOf(v).toFixed(1)}`).join(' ')}" fill="none" stroke="${C.actual}" stroke-width="2.5" stroke-linejoin="round"/>`;
+    a.series.forEach((v,i) => { const br = a.required!=null && v<a.required, last = i===n-1;
+      s += `<circle cx="${X(i).toFixed(1)}" cy="${yOf(v).toFixed(1)}" r="${last?4:2.6}" fill="${br?C.bad:C.actual}"/>`;
+    });
+    const lv = abLast(a), lb = a.required!=null && lv<a.required;
+    s += `<text x="${(X(n-1)-2).toFixed(1)}" y="${(yOf(lv)-8).toFixed(1)}" text-anchor="end" font-family="Space Mono" font-size="10" font-weight="700" fill="${lb?C.bad:C.actual}">${abFmt(lv)}</text>`;
+    s += `<g font-family="Sofia Sans" font-size="9" fill="${C.text}" text-anchor="middle">`;
+    abMonths.forEach((m,i) => { if (i%2===0 || i===n-1) s += `<text x="${X(i).toFixed(1)}" y="226">${m}</text>`; });
     s += '</g>';
-
     document.getElementById('abHistChart').innerHTML = s;
-    document.getElementById('abHistCaption').textContent = acc.caption;
-
-    // selector active state
-    document.querySelectorAll('#abAcctSelector button').forEach(b => {
-      const on = b.dataset.key === key;
-      b.className = 'px-2.5 py-1 rounded-full text-xs font-bold font-primary transition-colors ' +
-        (on ? 'bg-secondary text-white' : 'bg-border text-text-secondary hover:bg-border-strong');
+    document.getElementById('abHistCaption').textContent = abCaption(a);
+    document.getElementById('abHistTitle').textContent = a.name;
+    document.querySelectorAll('#abGrid .ab-cell').forEach(c => {
+      const on = c.dataset.id === id;
+      c.classList.toggle('border-secondary', on);
+      c.classList.toggle('ring-2', on);
+      c.classList.toggle('ring-secondary/30', on);
     });
   }
 
-  // build selector + initial render
+  // build all from data + initial render (default: first breaching account)
   (function abInit(){
-    const sel = document.getElementById('abAcctSelector');
-    if (!sel) return;
-    sel.innerHTML = Object.entries(abHist).map(([k,v]) =>
-      `<button type="button" data-key="${k}" onclick="abRenderHistory('${k}')">${v.label}</button>`).join('');
-    abRenderHistory('reserve');
+    if (!document.getElementById('abBarChart')) return;
+    abRenderBars();
+    abRenderGrid();
+    abRenderHistory((abAccounts.find(abBreach) || abAccounts[0]).id);
   })();
 </script>
 
