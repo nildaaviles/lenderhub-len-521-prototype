@@ -199,4 +199,4 @@ Escenario: Totales no cuadran
 
 ---
 
-*Prototipos de referencia: `waterfall-chart.html` (snapshot por periodo), `cash-history.html` (puente de caja histórico), `cash-flow-mapping.html` (capa de mapeo, 3 reportes reales).*
+*Prototipos de referencia: `waterfall-chart.html` (snapshot por periodo + histórico/puente de caja integrado como navegador), `cash-flow-final.html` (waterfall por facility), `cash-flow-mapping.html` (capa de mapeo, 3 reportes reales).*
