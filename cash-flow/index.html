@@ -201,6 +201,67 @@
       </div>
     </div>
 
+    <!-- Chart · Required vs Actual por cuenta -->
+    <div class="flex items-center justify-center gap-4 text-xs text-text-secondary mb-1.5">
+      <span class="inline-flex items-center"><span class="inline-block w-2.5 h-2.5 rounded-sm bg-border-strong mr-1 align-middle"></span>Required</span>
+      <span class="inline-flex items-center"><span class="inline-block w-2.5 h-2.5 rounded-sm bg-success mr-1 align-middle"></span>Actual · compliant</span>
+      <span class="inline-flex items-center"><span class="inline-block w-2.5 h-2.5 rounded-sm bg-danger mr-1 align-middle"></span>Actual · breach</span>
+    </div>
+    <div class="bg-bg border border-border rounded-lg p-3.5 mb-4">
+      <svg viewBox="0 0 520 252" class="w-full h-[300px]" preserveAspectRatio="xMidYMid meet">
+        <!-- grid -->
+        <g stroke="#E2E8F0" stroke-width="1">
+          <line x1="50" y1="30" x2="510" y2="30"/>
+          <line x1="50" y1="120" x2="510" y2="120"/>
+          <line x1="50" y1="210" x2="510" y2="210" stroke="#CBD5E1"/>
+        </g>
+        <g font-family="Space Mono" font-size="9" fill="#64748B">
+          <text x="46" y="33" text-anchor="end">$50M</text>
+          <text x="46" y="123" text-anchor="end">$25M</text>
+          <text x="46" y="213" text-anchor="end">$0</text>
+        </g>
+        <!-- 1 · Collection Account A · Req 42.50 / Act 48.12 · compliant -->
+        <rect x="64"  y="57"    width="28" height="153"   fill="#CBD5E1"/>
+        <rect x="100" y="36.8"  width="28" height="173.2" fill="#16A34A"/>
+        <text x="78"  y="53"  text-anchor="middle" font-family="Space Mono" font-size="8"   fill="#94A3B8">$42.5M</text>
+        <text x="114" y="32"  text-anchor="middle" font-family="Space Mono" font-size="9.5" font-weight="700" fill="#16A34A">$48.1M</text>
+        <!-- 2 · Payment Reserve Fund · Req 28.00 / Act 22.14 · breach -->
+        <rect x="156" y="109.2" width="28" height="100.8" fill="#CBD5E1"/>
+        <rect x="192" y="130.3" width="28" height="79.7"  fill="#DC2626"/>
+        <text x="170" y="105" text-anchor="middle" font-family="Space Mono" font-size="8"   fill="#94A3B8">$28.0M</text>
+        <text x="206" y="126" text-anchor="middle" font-family="Space Mono" font-size="9.5" font-weight="700" fill="#DC2626">$22.1M</text>
+        <!-- 3 · Collection Account B · Req 12.80 / Act 13.40 · compliant -->
+        <rect x="248" y="163.9" width="28" height="46.1"  fill="#CBD5E1"/>
+        <rect x="284" y="161.8" width="28" height="48.2"  fill="#16A34A"/>
+        <text x="262" y="159" text-anchor="middle" font-family="Space Mono" font-size="8"   fill="#94A3B8">$12.8M</text>
+        <text x="298" y="156" text-anchor="middle" font-family="Space Mono" font-size="9.5" font-weight="700" fill="#16A34A">$13.4M</text>
+        <!-- 4 · Liquidity Fund · Req 8.50 / Act 6.93 · breach -->
+        <rect x="340" y="179.4" width="28" height="30.6"  fill="#CBD5E1"/>
+        <rect x="376" y="185.1" width="28" height="24.9"  fill="#DC2626"/>
+        <text x="354" y="175" text-anchor="middle" font-family="Space Mono" font-size="8"   fill="#94A3B8">$8.5M</text>
+        <text x="390" y="181" text-anchor="middle" font-family="Space Mono" font-size="9.5" font-weight="700" fill="#DC2626">$6.9M</text>
+        <!-- 5 · Expense Account · sin requerimiento / Act 2.65 -->
+        <rect x="468" y="200.5" width="28" height="9.5"   fill="#0284C7"/>
+        <text x="482" y="196" text-anchor="middle" font-family="Space Mono" font-size="9.5" font-weight="700" fill="#0284C7">$2.7M</text>
+        <!-- x-axis labels -->
+        <g font-family="Sofia Sans" font-size="9" fill="#64748B" text-anchor="middle">
+          <text x="96"  y="226">Coll. A</text>
+          <text x="188" y="226" fill="#DC2626" font-weight="700">Pmt Reserve</text>
+          <text x="280" y="226">Coll. B</text>
+          <text x="372" y="226" fill="#DC2626" font-weight="700">Liquidity</text>
+          <text x="464" y="226">Expense</text>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Show table · disclosure -->
+    <details class="mt-1 rounded-lg border border-border overflow-hidden">
+      <summary class="flex items-center gap-2 px-3.5 py-2.5 cursor-pointer select-none list-none bg-bg hover:bg-border/40 transition-colors">
+        <i class="ph ph-table text-secondary"></i>
+        <span class="font-primary text-xs font-bold uppercase tracking-wider text-text">Show table · accounts</span>
+        <i class="ph ph-caret-down text-xs text-text-muted ml-auto"></i>
+      </summary>
+      <div class="p-3.5">
     <table class="w-full border-collapse text-sm">
       <thead>
         <tr class="bg-bg">
@@ -281,6 +342,8 @@
         </tr>
       </tfoot>
     </table>
+      </div>
+    </details>
   </article>
   </div>
 

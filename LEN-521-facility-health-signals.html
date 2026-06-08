@@ -416,69 +416,35 @@
 
             <!-- ──────── YEAR ACCORDIONS ──────── -->
 
-            <!-- 2026 · expanded by default · cadencia semanal (martes) -->
+            <!-- 2026 · expanded by default · lista poblada por renderCutoffs(freq) -->
             <details class="year-group py-1 mt-1 border-t border-border" open>
               <summary class="flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-bg rounded-md list-none">
                 <i class="ph ph-caret-down text-xs text-text-secondary year-caret"></i>
                 <span class="w-1.5 h-1.5 rounded-full bg-warning" title="Year contains non-compliant cuts"></span>
                 <span class="text-[10px] font-bold uppercase tracking-wider text-text-secondary font-primary">2026</span>
-                <span class="ml-auto text-[10px] text-text-muted font-primary">13 cuts · 1 issue</span>
+                <span id="yr2026-count" class="ml-auto text-[10px] text-text-muted font-primary">13 cuts · 1 issue</span>
               </summary>
-              <div class="pl-2 mt-1">
-                <div class="cutoff-item flex items-center justify-between gap-2 px-2.5 py-2 rounded-md bg-border font-semibold text-sm cursor-pointer" data-date="march 31 2026 mar">
-                  <span>March 31, 2026</span>
-                  <span class="flex items-center gap-1.5">
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning-bg text-warning border border-warning-border text-[10px] font-bold font-primary">
-                      <i class="ph ph-warning text-[10px]"></i> Non compliant
-                    </span>
-                    <span class="inline-block px-1.5 py-0.5 rounded bg-border text-primary text-[10px] font-bold tracking-wider font-primary">LATEST</span>
-                  </span>
-                </div>
-                <div class="cutoff-item flex items-center justify-between gap-2 px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="march 24 2026 mar">
-                  <span>March 24, 2026</span>
-                </div>
-                <div class="cutoff-item flex items-center justify-between gap-2 px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="march 17 2026 mar">
-                  <span>March 17, 2026</span>
-                </div>
-                <div class="cutoff-item flex items-center justify-between gap-2 px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="march 10 2026 mar">
-                  <span>March 10, 2026</span>
-                </div>
-                <div class="cutoff-item flex items-center justify-between gap-2 px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="march 3 2026 mar">
-                  <span>March 3, 2026</span>
-                </div>
-                <div class="text-[11px] italic text-text-muted px-2.5 py-1.5">…and 8 more weekly cuts in 2026</div>
-              </div>
+              <div id="yr2026-list" class="pl-2 mt-1"></div>
             </details>
 
-            <!-- 2025 · collapsed by default · 52 cortes semanales -->
+            <!-- 2025 · collapsed by default -->
             <details class="year-group py-1 mt-1 border-t border-border">
               <summary class="flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-bg rounded-md list-none">
                 <i class="ph ph-caret-right text-xs text-text-secondary year-caret"></i>
                 <span class="text-[10px] font-bold uppercase tracking-wider text-text-secondary font-primary">2025</span>
-                <span class="ml-auto text-[10px] text-text-muted font-primary">52 cuts</span>
+                <span id="yr2025-count" class="ml-auto text-[10px] text-text-muted font-primary">52 cuts</span>
               </summary>
-              <div class="pl-2 mt-1">
-                <div class="cutoff-item flex items-center px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="december 30 2025 dec">December 30, 2025</div>
-                <div class="cutoff-item flex items-center px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="december 23 2025 dec">December 23, 2025</div>
-                <div class="cutoff-item flex items-center px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="december 16 2025 dec">December 16, 2025</div>
-                <div class="cutoff-item flex items-center px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="december 9 2025 dec">December 9, 2025</div>
-                <div class="text-[11px] italic text-text-muted px-2.5 py-1.5">…and 48 more weekly cuts in 2025</div>
-              </div>
+              <div id="yr2025-list" class="pl-2 mt-1"></div>
             </details>
 
-            <!-- 2024 · collapsed · 52 cortes semanales -->
+            <!-- 2024 · collapsed -->
             <details class="year-group py-1 mt-1 border-t border-border">
               <summary class="flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-bg rounded-md list-none">
                 <i class="ph ph-caret-right text-xs text-text-secondary year-caret"></i>
                 <span class="text-[10px] font-bold uppercase tracking-wider text-text-secondary font-primary">2024</span>
-                <span class="ml-auto text-[10px] text-text-muted font-primary">52 cuts</span>
+                <span id="yr2024-count" class="ml-auto text-[10px] text-text-muted font-primary">52 cuts</span>
               </summary>
-              <div class="pl-2 mt-1">
-                <div class="cutoff-item flex items-center px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="december 31 2024 dec">December 31, 2024</div>
-                <div class="cutoff-item flex items-center px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="december 24 2024 dec">December 24, 2024</div>
-                <div class="cutoff-item flex items-center px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="december 17 2024 dec">December 17, 2024</div>
-                <div class="text-[11px] italic text-text-muted px-2.5 py-1.5">…and 49 more weekly cuts in 2024</div>
-              </div>
+              <div id="yr2024-list" class="pl-2 mt-1"></div>
             </details>
 
             <!-- Empty state (search no match) -->
@@ -493,12 +459,13 @@
       <!-- <reporting-frequency-badge [frequency]="freq()" [facilityId]="..." /> -->
       <reporting-frequency-badge data-input-frequency="weekly" data-input-median-delta-days="7">
         <span class="flex flex-col items-start gap-0.5">
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-info-bg text-info text-xs font-bold font-primary"
-                role="status" aria-label="Reporting frequency: Weekly"
-                data-tt="Inferred from the cut-off history of this facility.">
-            <i class="ph ph-clock-counter-clockwise text-xs"></i> Weekly
+          <span id="freqBadge" onclick="cycleFreq()" role="button" tabindex="0"
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-info-bg text-info text-xs font-bold font-primary cursor-pointer hover:brightness-95 select-none"
+                aria-label="Reporting frequency: Weekly"
+                data-tt="Frecuencia inferida del historial de cut-offs. Click para alternar Daily / Weekly / Monthly (demo).">
+            <i class="ph ph-clock-counter-clockwise text-xs"></i> <span id="freqLabel">Weekly</span>
           </span>
-          <span class="text-[10px] text-text-muted pl-1 leading-none">Prior cut-off: Mar 24, 2026</span>
+          <span id="freqPrior" class="text-[10px] text-text-muted pl-1 leading-none">Prior cut-off: Mar 24, 2026</span>
         </span>
       </reporting-frequency-badge>
 
@@ -1558,6 +1525,66 @@
         caret.classList.toggle('ph-caret-right', !group.open);
       });
     });
+  })();
+
+  // ════════ Reporting frequency · clickeable Daily / Weekly / Monthly (demo) ════════
+  (function () {
+    const $ = id => document.getElementById(id);
+    const FREQ = {
+      daily: {
+        label: 'Daily', prior: 'Prior cut-off: Mar 30, 2026',
+        y2026: { count: '90 cuts · 1 issue', dates: ['March 30, 2026','March 29, 2026','March 28, 2026','March 27, 2026'], more: '…and 85 more daily cuts in 2026' },
+        y2025: { count: '365 cuts', dates: ['December 31, 2025','December 30, 2025','December 29, 2025','December 28, 2025'], more: '…and 361 more daily cuts in 2025' },
+        y2024: { count: '366 cuts', dates: ['December 31, 2024','December 30, 2024','December 29, 2024'], more: '…and 363 more daily cuts in 2024' },
+      },
+      weekly: {
+        label: 'Weekly', prior: 'Prior cut-off: Mar 24, 2026',
+        y2026: { count: '13 cuts · 1 issue', dates: ['March 24, 2026','March 17, 2026','March 10, 2026','March 3, 2026'], more: '…and 8 more weekly cuts in 2026' },
+        y2025: { count: '52 cuts', dates: ['December 30, 2025','December 23, 2025','December 16, 2025','December 9, 2025'], more: '…and 48 more weekly cuts in 2025' },
+        y2024: { count: '52 cuts', dates: ['December 31, 2024','December 24, 2024','December 17, 2024'], more: '…and 49 more weekly cuts in 2024' },
+      },
+      monthly: {
+        label: 'Monthly', prior: 'Prior cut-off: Feb 28, 2026',
+        y2026: { count: '3 cuts · 1 issue', dates: ['February 28, 2026','January 31, 2026'], more: '' },
+        y2025: { count: '9 cuts', dates: ['December 31, 2025','November 30, 2025','October 31, 2025','September 30, 2025','August 31, 2025','July 31, 2025','June 30, 2025','May 31, 2025','April 30, 2025'], more: '' },
+        y2024: { count: '12 cuts', dates: ['March 31, 2024','February 29, 2024','January 31, 2024'], more: '…and 9 more cuts in 2024' },
+      },
+    };
+    const ORDER = ['daily','weekly','monthly'];
+    let cur = 'weekly';
+
+    const dkey = s => s.toLowerCase();
+    const latestItem = () =>
+        '<div class="cutoff-item flex items-center justify-between gap-2 px-2.5 py-2 rounded-md bg-border font-semibold text-sm cursor-pointer" data-date="march 31 2026 mar">'
+      + '<span>March 31, 2026</span><span class="flex items-center gap-1.5">'
+      + '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning-bg text-warning border border-warning-border text-[10px] font-bold font-primary"><i class="ph ph-warning text-[10px]"></i> Non compliant</span>'
+      + '<span class="inline-block px-1.5 py-0.5 rounded bg-border text-primary text-[10px] font-bold tracking-wider font-primary">LATEST</span></span></div>';
+    const item = d => '<div class="cutoff-item flex items-center px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="'+dkey(d)+'"><span>'+d+'</span></div>';
+    const moreLine = t => t ? '<div class="text-[11px] italic text-text-muted px-2.5 py-1.5">'+t+'</div>' : '';
+
+    function render(f) {
+      const c = FREQ[f];
+      $('freqLabel').textContent = c.label;
+      $('freqBadge').setAttribute('aria-label', 'Reporting frequency: ' + c.label);
+      $('freqPrior').textContent = c.prior;
+      $('yr2026-count').textContent = c.y2026.count;
+      $('yr2026-list').innerHTML = latestItem() + c.y2026.dates.map(item).join('') + moreLine(c.y2026.more);
+      $('yr2025-count').textContent = c.y2025.count;
+      $('yr2025-list').innerHTML = c.y2025.dates.map(item).join('') + moreLine(c.y2025.more);
+      $('yr2024-count').textContent = c.y2024.count;
+      $('yr2024-list').innerHTML = c.y2024.dates.map(item).join('') + moreLine(c.y2024.more);
+    }
+
+    window.cycleFreq = function () {
+      cur = ORDER[(ORDER.indexOf(cur) + 1) % ORDER.length];
+      render(cur);
+    };
+
+    const badge = $('freqBadge');
+    if (badge) {
+      badge.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.cycleFreq(); } });
+      render(cur);
+    }
   })();
 
   // ════════ Flag for review — recipient logic ════════
