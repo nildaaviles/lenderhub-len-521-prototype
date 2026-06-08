@@ -131,11 +131,12 @@
           <button data-r="YTD" class="hr-pill">YTD</button>
         </div>
       </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">Flujo y trayectoria de caja · saldos a <strong>cierre de mes</strong> (dato mensual, sin intra-mes). El riesgo vs. reserva requerida se monitorea en <strong>Account Balance</strong>.</div>
       <div style="font-size:11px;color:var(--muted);margin-top:2px"><i class="ph ph-cursor-click"></i> Click en un mes para ver su desglose abajo ↓</div>
       <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:8px">
         <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:var(--green)"></span>Entrada neta del mes (barras)</span>
         <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:#64748B"></span>Salida neta del mes</span>
-        <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:16px;height:0;border-top:2.5px solid var(--vino)"></span>Saldo de caja (línea)</span>
+        <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:16px;height:0;border-top:2.5px solid var(--vino)"></span>Saldo a cierre de mes (línea)</span>
         <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:#E5E7EB"></span>Sin dato</span>
       </div>
       <div style="position:relative;height:200px;margin-top:6px"><canvas id="histChart"></canvas></div>
@@ -552,7 +553,7 @@
   const histChart = new Chart(document.getElementById('histChart'), {
     data: { labels: [], datasets: [
       { type:'bar', label:'Flujo neto', data:[], backgroundColor:[], borderRadius:3, barPercentage:0.55, categoryPercentage:0.82, yAxisID:'y', order:1 },
-      { type:'line', label:'Saldo', data:[], borderColor:'#4A1942', backgroundColor:'#4A1942', borderWidth:2, tension:0.3, pointRadius:3, pointBackgroundColor:'#fff', pointBorderColor:'#4A1942', pointBorderWidth:1.5, yAxisID:'y1', order:0, spanGaps:false },
+      { type:'line', label:'Saldo', data:[], borderColor:'#4A1942', backgroundColor:'#4A1942', borderWidth:2, tension:0, pointRadius:3.5, pointBackgroundColor:'#fff', pointBorderColor:'#4A1942', pointBorderWidth:1.5, yAxisID:'y1', order:0, spanGaps:false },
     ]},
     options: { responsive:true, maintainAspectRatio:false, layout:{padding:{top:6}},
       onClick:(e,els)=>{ if(!els.length) return; const k=visibleKeys[els[0].index]; const u=new URL(location.href); u.searchParams.set('period',k); history.replaceState({},'',u); render(k); },
@@ -560,10 +561,10 @@
       plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'#1A1A2E', padding:10, callbacks:{
         title:(it)=>meta(vis()[it[0].dataIndex].m).asOf,
         label:(c)=>{ const d=vis()[c.dataIndex]; if(d.net===null) return 'Sin reporte';
-          return c.dataset.label==='Saldo' ? 'Saldo: $'+d.saldo.toFixed(2)+'M' : (d.net>=0?'Entrada neta: +':'Salida neta: −')+'$'+Math.abs(d.net).toFixed(2)+'M · click para ver waterfall'; } } } },
+          return c.dataset.label==='Saldo' ? 'Saldo a cierre: $'+d.saldo.toFixed(2)+'M' : (d.net>=0?'Entrada neta: +':'Salida neta: −')+'$'+Math.abs(d.net).toFixed(2)+'M · click para ver waterfall'; } } } },
       scales:{ x:{ grid:{display:false}, ticks:{color:'#6B7280',font:{size:10}} },
         y:{ position:'left', title:{display:true,text:'Flujo neto',color:'#6B7280',font:{size:9}}, ticks:{color:'#6B7280',font:{size:9},callback:v=>'$'+v+'M'}, grid:{color:'#F3F4F6'} },
-        y1:{ position:'right', beginAtZero:true, suggestedMax:35, title:{display:true,text:'Saldo',color:'#4A1942',font:{size:9}}, ticks:{color:'#4A1942',font:{size:9},callback:v=>'$'+v+'M'}, grid:{display:false} } } },
+        y1:{ position:'right', beginAtZero:true, suggestedMax:35, title:{display:true,text:'Saldo (cierre de mes)',color:'#4A1942',font:{size:9}}, ticks:{color:'#4A1942',font:{size:9},callback:v=>'$'+v+'M'}, grid:{display:false} } } },
     plugins:[histSelBand, histND],
   });
 

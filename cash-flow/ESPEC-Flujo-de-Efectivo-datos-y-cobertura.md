@@ -197,6 +197,15 @@ Escenario: Totales no cuadran
 | R4 | `blank` a nivel de línea: ¿es `0` o `sin dato`? En la muestra reconcilia como 0, pero la regla debe ser explícita por plantilla. | Datos |
 | R5 | Owner y SLA del diccionario de mapeo. | HoP/Ops |
 
+### Granularidad: solo mensual (sin intra-mes)
+
+El reporte da **3 cifras por mes**: saldo inicial, movimientos netos y saldo final — es decir, **dos observaciones de saldo (inicio y cierre), nada entre medias**. Consecuencias que acotan lo que el módulo puede prometer:
+
+- El **flujo neto** del histórico es un **agregado mensual** (no una secuencia intra-mes).
+- La **línea de saldo** une puntos de **cierre de mes**; se dibuja con **segmentos rectos** (no curva) para no insinuar una trayectoria intra-mes que no existe.
+- El **mínimo de caja / breach solo se puede evaluar a fin de mes**. Si la caja bajó del piso intra-mes y se recuperó antes del cierre, **no es observable**. → No prometer monitoreo de liquidez intra-mes.
+- El **histórico de caja es vista de narrativa/trayectoria, no de riesgo**. El riesgo (saldo vs *Required*) vive en **Account Balance**, también a cierre de mes.
+
 ---
 
 *Prototipos de referencia: `waterfall-chart.html` (snapshot por periodo + histórico/puente de caja integrado como navegador), `cash-flow-final.html` (waterfall por facility), `cash-flow-mapping.html` (capa de mapeo, 3 reportes reales).*
