@@ -131,8 +131,6 @@
           <button data-r="YTD" class="hr-pill">YTD</button>
         </div>
       </div>
-      <div style="font-size:11px;color:var(--muted);margin-top:2px">Flujo y trayectoria de caja · saldos a <strong>cierre de mes</strong> (dato mensual, sin intra-mes). El riesgo vs. reserva requerida se monitorea en <strong>Account Balance</strong>.</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:2px"><i class="ph ph-cursor-click"></i> Click en un mes para ver su desglose abajo ↓</div>
       <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:8px">
         <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:var(--green)"></span>Entrada neta del mes (barras)</span>
         <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:#64748B"></span>Salida neta del mes</span>
@@ -287,20 +285,25 @@
     saldoFinal: 29071676.61,
   };
 
-  // 12 snapshots · totales reconcilian con la serie del Histórico de caja.
+  // 12 snapshots · escenario realista de un fideicomiso de arrendamiento.
+  // Ritmo: meses de acumulación (entra cobranza, se paga interés → la caja sube)
+  // y meses de distribución/amortización trimestral (se distribuye al fideicomitente
+  // + se amortiza principal → la caja baja fuerte). Diente de sierra ~$14M–$29M.
+  // Abril = dato REAL ($22.20M→$29.07M). Feb = sin reporte (esconde una distribución).
+  // Cada mes encadena (saldo final = inicial del siguiente) y reconcilia.
   const SNAPSHOTS = {
-    'Jul 25': mk('Jul 25', 16.50, { cob:10.10, disp:4.0, intg:0.05, oi:0.05, fid:4.0, pri:0,    intp:5.90, hon:0.02, oe:0.08 }),
-    'Ago 25': mk('Ago 25', 20.70, { cob:10.70, disp:2.0, intg:0.05, oi:0.05, fid:2.0, pri:2.50, intp:6.10, hon:0.02, oe:0.08 }),
-    'Sep 25': mk('Sep 25', 22.80, { cob:10.90, disp:0,   intg:0.05, oi:0.05, fid:0,   pri:8.30, intp:5.60, hon:0.02, oe:0.08 }),
-    'Oct 25': mk('Oct 25', 19.80, { cob:11.40, disp:2.0, intg:0.05, oi:0.05, fid:2.0, pri:2.0,  intp:6.0,  hon:0.02, oe:0.08 }),
-    'Nov 25': mk('Nov 25', 23.20, { cob:11.0,  disp:1.0, intg:0.05, oi:0.05, fid:1.0, pri:3.10, intp:6.10, hon:0.02, oe:0.08 }),
-    'Dic 25': mk('Dic 25', 25.00, { cob:9.30,  disp:0,   intg:0.05, oi:0.05, fid:0,   pri:8.40, intp:5.50, hon:0.02, oe:0.08 }),
-    'Ene 26': mk('Ene 26', 20.40, { cob:10.90, disp:2.0, intg:0.05, oi:0.05, fid:2.0, pri:1.90, intp:5.90, hon:0.02, oe:0.08 }),
-    'Feb 26': null,  // ← sin reporte: el snapshot no existe (≠ todo en cero)
-    'Mar 26': mk('Mar 26', 19.50, { cob:11.0,  disp:1.50,intg:0.05, oi:0.05, fid:1.50,pri:2.40, intp:5.90, hon:0.02, oe:0.08 }),
-    'Abr 26': abril,
-    'May 26': mk('May 26', 29.07, { cob:10.90, disp:1.0, intg:0.05, oi:0.05, fid:1.0, pri:2.60, intp:6.0,  hon:0.02, oe:0.08 }),
-    'Jun 26': mk('Jun 26', 31.37, { cob:8.80,  disp:0,   intg:0.05, oi:0.05, fid:0,   pri:4.20, intp:5.70, hon:0.02, oe:0.08 }),
+    'Jul 25': mk('Jul 25', 16.00, { cob:9.40, disp:0, intg:0.05, oi:0.02, fid:0,     pri:0,    intp:3.35, hon:0.018, oe:0.002 }), // acumula → 22.10
+    'Ago 25': mk('Ago 25', 22.10, { cob:9.50, disp:0, intg:0.05, oi:0.02, fid:0,     pri:0,    intp:3.35, hon:0.018, oe:0.002 }), // acumula → 28.30
+    'Sep 25': mk('Sep 25', 28.30, { cob:9.60, disp:0, intg:0.05, oi:0.02, fid:13.00, pri:7.00, intp:3.30, hon:0.018, oe:0.002 }), // distribución → 14.65
+    'Oct 25': mk('Oct 25', 14.65, { cob:9.45, disp:0, intg:0.05, oi:0.02, fid:0,     pri:0,    intp:3.25, hon:0.018, oe:0.002 }), // acumula → 20.90
+    'Nov 25': mk('Nov 25', 20.90, { cob:9.55, disp:0, intg:0.05, oi:0.02, fid:0,     pri:0,    intp:3.25, hon:0.018, oe:0.002 }), // acumula → 27.25
+    'Dic 25': mk('Dic 25', 27.25, { cob:9.30, disp:0, intg:0.05, oi:0.02, fid:12.50, pri:7.00, intp:3.25, hon:0.018, oe:0.002 }), // distribución → 13.85
+    'Ene 26': mk('Ene 26', 13.85, { cob:9.60, disp:0, intg:0.05, oi:0.02, fid:0,     pri:0,    intp:3.20, hon:0.018, oe:0.002 }), // acumula → 20.30
+    'Feb 26': null,  // ← sin reporte (realísticamente, mes de distribución no observado)
+    'Mar 26': mk('Mar 26', 16.20, { cob:9.35, disp:0, intg:0.05, oi:0.02, fid:0,     pri:0,    intp:3.40, hon:0.018, oe:0.002 }), // acumula → 22.20 (= inicial real de abr)
+    'Abr 26': abril,                                                                                                              // REAL → 29.07
+    'May 26': mk('May 26', 29.07, { cob:9.60, disp:0, intg:0.05, oi:0.02, fid:13.00, pri:6.00, intp:3.10, hon:0.018, oe:0.002 }), // distribución → 16.62
+    'Jun 26': mk('Jun 26', 16.62, { cob:9.50, disp:0, intg:0.05, oi:0.02, fid:0,     pri:0,    intp:3.10, hon:0.018, oe:0.002 }), // acumula → 23.07
   };
   const ORDER = ['Jul 25','Ago 25','Sep 25','Oct 25','Nov 25','Dic 25','Ene 26','Feb 26','Mar 26','Abr 26','May 26','Jun 26'];
 
