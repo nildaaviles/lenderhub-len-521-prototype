@@ -985,7 +985,6 @@
           <span id="ocPill" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-warning-bg text-warning text-xs font-bold font-primary">
             <i class="ph ph-warning"></i> Non compliant
           </span>
-          <span id="ocScenarioTag" class="ml-auto text-[10px] font-primary font-semibold text-text-muted inline-flex items-center gap-1"><i class="ph ph-cursor-click"></i> Non compliant</span>
         </header>
 
         <div class="grid grid-cols-2 gap-4 mb-3">
@@ -1063,7 +1062,7 @@
 
     <!-- ════════ <borrowing-base-section> · LEN-918 — order 2 ════════ -->
     <borrowing-base-section class="order-2 block">
-      <article id="bbCard" onclick="toggleBB(event)" class="bg-surface border border-border rounded-xl p-4 cursor-pointer hover:border-border-strong transition-colors" title="Click para alternar Availability ⇄ Excess">
+      <article id="bbCard" onclick="toggleBB(event)" class="bg-surface border border-border rounded-xl p-4 cursor-pointer hover:border-border-strong transition-colors" title="Click para alternar Surplus ⇄ Deficiency">
         <header class="flex items-center gap-2.5 mb-3 flex-wrap">
           <h3 class="font-primary text-base font-bold uppercase tracking-wider text-text m-0">Borrowing Base</h3>
           <!-- Two INDEPENDENT pills · LEN-918 · alternables por caso -->
@@ -1075,16 +1074,15 @@
                 data-tt="Utilization above 100% — drawn balance exceeds borrowing base">
             <i class="ph ph-gauge text-xs"></i> 105.3% Utilization · Breach
           </span>
-          <span id="bbScenarioTag" class="ml-auto text-[10px] font-primary font-semibold text-text-muted inline-flex items-center gap-1"><i class="ph ph-cursor-click"></i> Déficit (over-advance)</span>
         </header>
 
         <!-- KPI strip · 3 primary numbers -->
         <div class="grid grid-cols-3 gap-3 mb-3 max-[900px]:grid-cols-1">
           <!-- Primary KPI · alternable: Déficit (over-advance) ⇄ Excess (cushion) -->
           <kpi-card id="bbPrimaryCard" class="block bg-danger-bg border border-danger-border rounded-xl p-4 min-h-[118px]"
-                    data-tt="Outstanding Debt − Borrowing Base = $226.40M − $215.00M = −$11.40M (déficit)">
+                    data-tt="Outstanding Debt − Borrowing Base = $226.40M − $215.00M = −$11.40M (deficiency)">
             <div class="flex items-center gap-1.5 mb-1">
-              <h4 class="font-primary text-sm font-medium text-danger m-0">Déficit</h4>
+              <h4 class="font-primary text-sm font-medium text-danger m-0">Deficiency</h4>
               <i class="ph ph-info text-text-muted text-sm cursor-help"></i>
             </div>
             <div class="num text-3xl font-bold text-danger leading-tight">−$11.40M</div>
@@ -1183,7 +1181,7 @@
               <th class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Cut-off</th>
               <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Borrowing Base</th>
               <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Outstanding Debt</th>
-              <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Excess / (Déficit)</th>
+              <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Surplus / (Deficiency)</th>
               <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Utilization</th>
               <th class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Status</th>
             </tr></thead>
@@ -2098,23 +2096,23 @@
   const CASES = {
     deficit: {
       odColor:'#DC2626', legendOD:'text-danger',
-      tag:'<i class="ph ph-cursor-click"></i> Déficit (over-advance)',
+      tag:'<i class="ph ph-cursor-click"></i> Deficiency (over-advance)',
       pill1:{cls:'bg-danger-bg text-danger border border-danger-border', html:'<i class="ph ph-x-circle text-xs"></i> Non-compliant · BB deficit'},
       pill2:{cls:'bg-danger-bg text-danger border border-danger-border', html:'<i class="ph ph-gauge text-xs"></i> 105.3% Utilization · Breach'},
       card:{cls:'block bg-danger-bg border border-danger-border rounded-xl p-4 min-h-[118px]',
-            tt:'Outstanding Debt − Borrowing Base = $226.40M − $215.00M = −$11.40M (déficit)',
-            title:'Déficit', tcls:'text-danger', val:'−$11.40M', vcls:'text-danger', sub:''},
+            tt:'Outstanding Debt − Borrowing Base = $226.40M − $215.00M = −$11.40M (deficiency)',
+            title:'Deficiency', tcls:'text-danger', val:'−$11.40M', vcls:'text-danger', sub:''},
       bbVal:'$215.00M',
       data:[{m:'Apr 25',bb:252,od:200},{m:'May 25',bb:251,od:202},{m:'Jun 25',bb:250,od:204},{m:'Jul 25',bb:249,od:206},{m:'Aug 25',bb:248,od:208},{m:'Sep 25',bb:247,od:209},{m:'Oct 25',bb:246,od:209.5},{m:'Nov 25',bb:245,od:210},{m:'Dec 25',bb:238,od:216},{m:'Jan 26',bb:230,od:221},{m:'Feb 26',bb:222,od:224},{m:'Mar 26',bb:215,od:226.4}],
     },
     excess: {
       odColor:'#B45309', legendOD:'text-warning',
-      tag:'<i class="ph ph-cursor-click"></i> Excess (cushion)',
+      tag:'<i class="ph ph-cursor-click"></i> Surplus (cushion)',
       pill1:{cls:'bg-success-bg text-success border border-success/30', html:'<i class="ph ph-check-circle text-xs"></i> Compliant'},
       pill2:{cls:'bg-warning-bg text-warning border border-warning-border', html:'<i class="ph ph-gauge text-xs"></i> 94.9% Utilization · Watch'},
       card:{cls:'block bg-success-bg border border-success/30 rounded-xl p-4 min-h-[118px]',
-            tt:'Borrowing Base − Outstanding Debt = $238.50M − $226.40M = +$12.10M (excess)',
-            title:'Excess', tcls:'text-success', val:'$12.10M', vcls:'text-success', sub:''},
+            tt:'Borrowing Base − Outstanding Debt = $238.50M − $226.40M = +$12.10M (surplus)',
+            title:'Surplus', tcls:'text-success', val:'$12.10M', vcls:'text-success', sub:''},
       bbVal:'$238.50M',
       data:[{m:'Apr 25',bb:250,od:198},{m:'May 25',bb:249,od:200},{m:'Jun 25',bb:248,od:202},{m:'Jul 25',bb:247,od:204},{m:'Aug 25',bb:246.5,od:206},{m:'Sep 25',bb:246,od:207},{m:'Oct 25',bb:245.5,od:208},{m:'Nov 25',bb:245,od:210},{m:'Dec 25',bb:243,od:215.5},{m:'Jan 26',bb:241.5,od:220},{m:'Feb 26',bb:240,od:223.5},{m:'Mar 26',bb:238.5,od:226.4}],
     },
@@ -2158,7 +2156,6 @@
   function renderBB(n){
     const c = CASES[cur];
     const data = c.data.slice(c.data.length - Math.min(n || (window.TR ? window.TR.n() : 6), c.data.length));
-    $('bbScenarioTag').innerHTML = c.tag;
     $('bbPill1').className = pillBase + c.pill1.cls; $('bbPill1').innerHTML = c.pill1.html;
     $('bbPill2').className = pillBase + c.pill2.cls; $('bbPill2').innerHTML = c.pill2.html;
     const card = $('bbPrimaryCard');
@@ -2246,7 +2243,6 @@
     $('ocDelta').innerHTML = c.delta.html;
     $('ocCallout').className = 'flex items-center gap-2.5 p-3 px-4 rounded-md border text-sm mt-3 ' + c.aside.cls;
     $('ocCallout').innerHTML = c.aside.html;
-    $('ocScenarioTag').innerHTML = '<i class="ph ph-cursor-click"></i> ' + c.tag;
     renderOC(window.TR.n());
   }
   window.toggleOC = function(e){
