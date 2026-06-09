@@ -287,22 +287,23 @@
 
   // 12 snapshots · escenario realista de un fideicomiso de arrendamiento.
   // Ritmo: meses de acumulación (entra cobranza, se paga interés → la caja sube)
-  // y meses de distribución/amortización trimestral (se distribuye al fideicomitente
-  // + se amortiza principal → la caja baja fuerte). Diente de sierra ~$14M–$29M.
+  // y meses de amortización trimestral (gran pago de principal al lender → la caja
+  // baja fuerte). Fondos al fideicomitente = disposición (pass-through), como en el
+  // dato real de abril. Diente de sierra ~$14M–$29M.
   // Abril = dato REAL ($22.20M→$29.07M). Feb = sin reporte (esconde una distribución).
   // Cada mes encadena (saldo final = inicial del siguiente) y reconcilia.
   const SNAPSHOTS = {
     'Jul 25': mk('Jul 25', 16.00, { cob:9.40, disp:0, intg:0.05, oi:0.02, fid:0,     pri:0,    intp:3.35, hon:0.018, oe:0.002 }), // acumula → 22.10
     'Ago 25': mk('Ago 25', 22.10, { cob:9.50, disp:0, intg:0.05, oi:0.02, fid:0,     pri:0,    intp:3.35, hon:0.018, oe:0.002 }), // acumula → 28.30
-    'Sep 25': mk('Sep 25', 28.30, { cob:9.60, disp:0, intg:0.05, oi:0.02, fid:13.00, pri:7.00, intp:3.30, hon:0.018, oe:0.002 }), // distribución → 14.65
+    'Sep 25': mk('Sep 25', 28.30, { cob:9.60, disp:0, intg:0.05, oi:0.02, fid:0, pri:20.00, intp:3.30, hon:0.018, oe:0.002 }), // amortización trimestral → 14.65
     'Oct 25': mk('Oct 25', 14.65, { cob:9.45, disp:0, intg:0.05, oi:0.02, fid:0,     pri:0,    intp:3.25, hon:0.018, oe:0.002 }), // acumula → 20.90
     'Nov 25': mk('Nov 25', 20.90, { cob:9.55, disp:0, intg:0.05, oi:0.02, fid:0,     pri:0,    intp:3.25, hon:0.018, oe:0.002 }), // acumula → 27.25
-    'Dic 25': mk('Dic 25', 27.25, { cob:9.30, disp:0, intg:0.05, oi:0.02, fid:12.50, pri:7.00, intp:3.25, hon:0.018, oe:0.002 }), // distribución → 13.85
+    'Dic 25': mk('Dic 25', 27.25, { cob:9.30, disp:0, intg:0.05, oi:0.02, fid:0, pri:19.50, intp:3.25, hon:0.018, oe:0.002 }), // amortización trimestral → 13.85
     'Ene 26': mk('Ene 26', 13.85, { cob:9.60, disp:0, intg:0.05, oi:0.02, fid:0,     pri:0,    intp:3.20, hon:0.018, oe:0.002 }), // acumula → 20.30
     'Feb 26': null,  // ← sin reporte (realísticamente, mes de distribución no observado)
     'Mar 26': mk('Mar 26', 16.20, { cob:9.35, disp:0, intg:0.05, oi:0.02, fid:0,     pri:0,    intp:3.40, hon:0.018, oe:0.002 }), // acumula → 22.20 (= inicial real de abr)
     'Abr 26': abril,                                                                                                              // REAL → 29.07
-    'May 26': mk('May 26', 29.07, { cob:9.60, disp:0, intg:0.05, oi:0.02, fid:13.00, pri:6.00, intp:3.10, hon:0.018, oe:0.002 }), // distribución → 16.62
+    'May 26': mk('May 26', 29.07, { cob:9.60, disp:0, intg:0.05, oi:0.02, fid:0, pri:19.00, intp:3.10, hon:0.018, oe:0.002 }), // amortización trimestral → 16.62
     'Jun 26': mk('Jun 26', 16.62, { cob:9.50, disp:0, intg:0.05, oi:0.02, fid:0,     pri:0,    intp:3.10, hon:0.018, oe:0.002 }), // acumula → 23.07
   };
   const ORDER = ['Jul 25','Ago 25','Sep 25','Oct 25','Nov 25','Dic 25','Ene 26','Feb 26','Mar 26','Abr 26','May 26','Jun 26'];
