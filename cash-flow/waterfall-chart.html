@@ -103,8 +103,13 @@
   .view-table-summary { list-style: none; }
   #wfTableBody td { padding: 9px 18px; border-bottom: 1px solid #F1F5F9; }
   #wfTableBody td.num { text-align: right; font-family: "SF Mono", Menlo, monospace; }
-  .hr-pill { border:1px solid var(--border); background:#fff; color:var(--muted); font-size:11px; font-weight:600; padding:4px 10px; border-radius:7px; cursor:pointer; }
-  .hr-pill.active { background:var(--vino); color:#fff; border-color:var(--vino); }
+  .mfilter { display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin:4px 0 18px; }
+  .mfilter .lbl { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--vino-soft); margin-right:4px; }
+  .mpill { border:1px solid var(--border); background:#fff; color:var(--muted); font-size:11px; font-weight:600; padding:5px 11px; border-radius:7px; cursor:pointer; font-family:'Space Mono', monospace; }
+  .mpill:hover { border-color:var(--vino-soft); color:var(--vino); }
+  .mpill.active { background:var(--vino); color:#fff; border-color:var(--vino); }
+  .mpill.nodata { color:var(--text-muted, #94A3B8); border-style:dashed; cursor:default; }
+  .mpill.nodata:hover { border-color:var(--border); color:#94A3B8; }
 </style>
 </head>
 <body>
@@ -120,26 +125,8 @@
       </div>
     </div>
 
-    <!-- ════ HISTÓRICO (navegador) ════ -->
-    <div style="margin-bottom:6px">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--vino-soft)">Histórico de caja · puente de flujo</div>
-        <div id="histRange" style="display:inline-flex;gap:6px">
-          <button data-r="3M"  class="hr-pill">3M</button>
-          <button data-r="6M"  class="hr-pill">6M</button>
-          <button data-r="12M" class="hr-pill active">12M</button>
-          <button data-r="YTD" class="hr-pill">YTD</button>
-        </div>
-      </div>
-      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:8px">
-        <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:var(--green)"></span>Entrada neta del mes (barras)</span>
-        <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:#64748B"></span>Salida neta del mes</span>
-        <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:16px;height:0;border-top:2.5px solid var(--vino)"></span>Saldo a cierre de mes (línea)</span>
-        <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:#E5E7EB"></span>Sin dato</span>
-      </div>
-      <div style="position:relative;height:200px;margin-top:6px"><canvas id="histChart"></canvas></div>
-    </div>
-    <hr style="border:0;border-top:1px solid var(--border);margin:14px 0 18px"/>
+    <!-- Filtro mes por mes -->
+    <div class="mfilter" id="mfilter"><span class="lbl">Periodo</span></div>
 
     <!-- KPI Strip -->
     <div class="kpis">
@@ -161,7 +148,7 @@
       <div class="kpi">
         <div class="kpi-label">Saldo final</div>
         <div class="kpi-value" id="kpi-final">$29.07M</div>
-        <div class="kpi-delta delta-pos" id="kpi-neto">+$6.87M neto</div>
+        <div class="kpi-delta" style="color:var(--muted)" id="kpi-neto">30 abr 2026</div>
       </div>
     </div>
 
@@ -495,8 +482,7 @@
     document.querySelector('.view-table-card').style.display = has ? '' : 'none';
     $('wf-nodata').style.display = has ? 'none' : '';
     currentKey = key;
-    selIndex = visibleKeys.indexOf(key);
-    if (histChart) histChart.update();
+    document.querySelectorAll('#mfilter .mpill').forEach(b => b.classList.toggle('active', b.dataset.k === key));
 
     if (!has) {  // periodo sin reporte
       $('wf-nodata-title').textContent = `Sin reporte · ${m.asOf}`;
@@ -518,8 +504,9 @@
     $('kpi-egresos').textContent = fmtM(tEgr);
     $('kpi-final').textContent = fmtM(period.saldoFinal);
     const netoEl = $('kpi-neto');
-    netoEl.textContent = (pos?'+':'−') + '$' + Math.abs(neto/1e6).toFixed(2) + 'M neto';
-    netoEl.className = 'kpi-delta ' + (pos ? 'delta-pos' : 'delta-neg');
+    netoEl.textContent = period.dFin;            // último día del mes (simétrico al saldo inicial)
+    netoEl.className = 'kpi-delta';
+    netoEl.style.color = 'var(--muted)';
 
     chart.data.labels = steps.map(s => s.label);
     chart.data.datasets[0].data = bars;
@@ -528,65 +515,22 @@
     renderTable();
   }
 
-  // ════════ Histórico (navegador) · derivado de los mismos 12 snapshots ════════
-  let selIndex = 0;
-  let currentKey = 'Abr 26';         // periodo activo (se elige por click en el histórico)
-  let visibleKeys = ORDER.slice();   // ventana visible (controlada por 3M/6M/12M/YTD)
-  const histByKey = Object.fromEntries(ORDER.map(k => {
-    const s = SNAPSHOTS[k];
-    if (!s) return [k, { m:k, net:null, saldo:null }];
-    const ing = s.ingresos.reduce((a,x)=>a+(x.value||0),0);
-    const egr = s.egresos.reduce((a,x)=>a+(x.value||0),0);
-    return [k, { m:k, net:(ing-egr)/1e6, saldo:s.saldoFinal/1e6 }];
-  }));
-  const vis = () => visibleKeys.map(k => histByKey[k]);   // serie visible
+  let currentKey = 'Abr 26';   // periodo activo (default; ?period= lo sobreescribe)
 
-  const rangeKeys = (r) => {
-    if (r === '3M')  return ORDER.slice(-3);
-    if (r === '6M')  return ORDER.slice(-6);
-    if (r === 'YTD') { const yy = ORDER[ORDER.length-1].split(' ')[1]; return ORDER.filter(k => k.split(' ')[1] === yy); }
-    return ORDER.slice();   // 12M
-  };
-
-  const histSelBand = { id:'histSel', beforeDatasetsDraw(c){ const {ctx,chartArea,scales:{x}}=c; if(selIndex<0) return;
-    const cx=x.getPixelForValue(selIndex), w=(x.getPixelForValue(1)-x.getPixelForValue(0))*0.92;
-    ctx.save(); ctx.fillStyle='rgba(74,25,66,0.08)'; ctx.fillRect(cx-w/2, chartArea.top, w, chartArea.bottom-chartArea.top); ctx.restore(); } };
-  const histND = { id:'histND', afterDatasetsDraw(c){ const {ctx,scales:{x,y}}=c; vis().forEach((d,i)=>{ if(d.net!==null) return;
-    const xp=x.getPixelForValue(i), yp=y.getPixelForValue(0); ctx.save(); ctx.fillStyle='#94A3B8'; ctx.font='italic 9px -apple-system,sans-serif'; ctx.textAlign='center'; ctx.fillText('s/d', xp, yp-5); ctx.restore(); }); } };
-
-  const histChart = new Chart(document.getElementById('histChart'), {
-    data: { labels: [], datasets: [
-      { type:'bar', label:'Flujo neto', data:[], backgroundColor:[], borderRadius:3, barPercentage:0.55, categoryPercentage:0.82, yAxisID:'y', order:1 },
-      { type:'line', label:'Saldo', data:[], borderColor:'#4A1942', backgroundColor:'#4A1942', borderWidth:2, tension:0, pointRadius:3.5, pointBackgroundColor:'#fff', pointBorderColor:'#4A1942', pointBorderWidth:1.5, yAxisID:'y1', order:0, spanGaps:false },
-    ]},
-    options: { responsive:true, maintainAspectRatio:false, layout:{padding:{top:6}},
-      onClick:(e,els)=>{ if(!els.length) return; const k=visibleKeys[els[0].index]; const u=new URL(location.href); u.searchParams.set('period',k); history.replaceState({},'',u); render(k); },
-      onHover:(e,els)=>{ e.native.target.style.cursor = els.length ? 'pointer' : 'default'; },
-      plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'#1A1A2E', padding:10, callbacks:{
-        title:(it)=>meta(vis()[it[0].dataIndex].m).asOf,
-        label:(c)=>{ const d=vis()[c.dataIndex]; if(d.net===null) return 'Sin reporte';
-          return c.dataset.label==='Saldo' ? 'Saldo a cierre: $'+d.saldo.toFixed(2)+'M' : (d.net>=0?'Entrada neta: +':'Salida neta: −')+'$'+Math.abs(d.net).toFixed(2)+'M · click para ver waterfall'; } } } },
-      scales:{ x:{ grid:{display:false}, ticks:{color:'#6B7280',font:{size:10}} },
-        y:{ position:'left', title:{display:true,text:'Flujo neto',color:'#6B7280',font:{size:9}}, ticks:{color:'#6B7280',font:{size:9},callback:v=>'$'+v+'M'}, grid:{color:'#F3F4F6'} },
-        y1:{ position:'right', beginAtZero:true, suggestedMax:35, title:{display:true,text:'Saldo (cierre de mes)',color:'#4A1942',font:{size:9}}, ticks:{color:'#4A1942',font:{size:9},callback:v=>'$'+v+'M'}, grid:{display:false} } } },
-    plugins:[histSelBand, histND],
+  // ── Filtro mes por mes: pills que cambian el waterfall ──
+  const mf = document.getElementById('mfilter');
+  mf.insertAdjacentHTML('beforeend', ORDER.map(k => {
+    const nd = !SNAPSHOTS[k];
+    return `<button class="mpill${nd?' nodata':''}" data-k="${k}"${nd?' title="Sin reporte"':''}>${meta(k).asOf.replace(' 20',' ')}${nd?' · s/d':''}</button>`;
+  }).join(''));
+  mf.addEventListener('click', (e) => {
+    const b = e.target.closest('.mpill'); if (!b) return;
+    const k = b.dataset.k;
+    const u = new URL(location.href); u.searchParams.set('period', k); history.replaceState({}, '', u);
+    render(k);
   });
 
-  function applyRange(r){
-    visibleKeys = rangeKeys(r);
-    const s = vis();
-    histChart.data.labels = s.map(d => meta(d.m).asOf.replace(' 20',' '));
-    histChart.data.datasets[0].data = s.map(d => d.net);
-    histChart.data.datasets[0].backgroundColor = s.map(d => d.net===null ? '#E5E7EB' : d.net>=0 ? '#10B981' : '#64748B');
-    histChart.data.datasets[1].data = s.map(d => d.saldo);
-    selIndex = visibleKeys.indexOf(currentKey);
-    histChart.update();
-  }
-  document.getElementById('histRange').addEventListener('click', (e)=>{ const b=e.target.closest('button'); if(!b) return;
-    [...e.currentTarget.children].forEach(x=>x.classList.toggle('active', x===b)); applyRange(b.dataset.r); });
-  applyRange('12M');
-
-  // ── Init: resolver ?period= (default abril) · el periodo se elige por click en el histórico ──
+  // ── Init: resolver ?period= (default abril) ──
   const raw = new URLSearchParams(location.search).get('period');
   const initKey = ORDER.find(k => k.toLowerCase() === (raw || '').trim().toLowerCase()) || 'Abr 26';
   render(initKey);
