@@ -144,21 +144,45 @@
 
   <hr class="border-0 border-t border-border mb-5"/>
 
-  <div class="mb-5 flex items-end justify-between gap-4 flex-wrap">
-    <div>
-      <h2 class="font-primary text-base font-bold text-text m-0">Covenants</h2>
-      <p class="text-sm text-text-secondary m-0 mt-0.5">Financial covenants defined in the credit agreement. Reported quarterly by the originator.</p>
-    </div>
-    <!-- Summary chips -->
-    <div class="flex items-center gap-2 text-xs font-primary">
-      <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-success-bg text-success font-bold"><i class="ph ph-check-circle"></i> <span id="cntCompliant">0</span> Compliant</span>
-      <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-warning-bg text-warning font-bold"><i class="ph ph-warning"></i> <span id="cntWatch">0</span> Watch</span>
-      <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-danger-bg text-danger font-bold"><i class="ph ph-x-circle"></i> <span id="cntBreach">0</span> Non-compliant</span>
-    </div>
+  <!-- ════════ TABS ════════ -->
+  <div class="flex items-center gap-1 border-b border-border mb-6" role="tablist">
+    <button id="tabBtn-covenants" onclick="switchTab('covenants')" role="tab" aria-selected="true"
+      class="tab-btn relative px-4 py-2.5 text-sm font-semibold font-primary text-secondary-active -mb-px border-b-2 border-secondary-active flex items-center gap-2">
+      <i class="ph ph-shield-check"></i> Covenants
+    </button>
+    <button id="tabBtn-financials" onclick="switchTab('financials')" role="tab" aria-selected="false"
+      class="tab-btn relative px-4 py-2.5 text-sm font-semibold font-primary text-text-secondary -mb-px border-b-2 border-transparent hover:text-text flex items-center gap-2">
+      <i class="ph ph-coins"></i> Financials
+    </button>
   </div>
 
-  <!-- ════════ COVENANT CARDS GRID ════════ -->
-  <div id="covenantsGrid" class="grid grid-cols-2 gap-4 max-[1100px]:grid-cols-1"></div>
+  <!-- ════════ PANEL · COVENANTS ════════ -->
+  <section id="panel-covenants" role="tabpanel">
+    <div class="mb-5 flex items-end justify-between gap-4 flex-wrap">
+      <div>
+        <h2 class="font-primary text-base font-bold text-text m-0">Covenants</h2>
+        <p class="text-sm text-text-secondary m-0 mt-0.5">Financial covenants defined in the credit agreement. Reported quarterly by the originator.</p>
+      </div>
+      <!-- Summary chips -->
+      <div class="flex items-center gap-2 text-xs font-primary">
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-success-bg text-success font-bold"><i class="ph ph-check-circle"></i> <span id="cntCompliant">0</span> Compliant</span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-warning-bg text-warning font-bold"><i class="ph ph-warning"></i> <span id="cntWatch">0</span> Watch</span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-danger-bg text-danger font-bold"><i class="ph ph-x-circle"></i> <span id="cntBreach">0</span> Non-compliant</span>
+      </div>
+    </div>
+
+    <!-- ════════ COVENANT CARDS GRID ════════ -->
+    <div id="covenantsGrid" class="grid grid-cols-2 gap-4 max-[1100px]:grid-cols-1"></div>
+  </section>
+
+  <!-- ════════ PANEL · FINANCIALS ════════ -->
+  <section id="panel-financials" role="tabpanel" class="hidden">
+    <div class="mb-5">
+      <h2 class="font-primary text-base font-bold text-text m-0">Financial health</h2>
+      <p class="text-sm text-text-secondary m-0 mt-0.5">Company-level financial position of the originator. Sourced from quarterly financial statements.</p>
+    </div>
+    <div id="financialsBody"></div>
+  </section>
 
 </main>
 
@@ -419,6 +443,216 @@ COVENANTS.forEach(c => { const s = statusOf(c); if(s==='compliant')nC++; else if
 document.getElementById('cntCompliant').textContent = nC;
 document.getElementById('cntWatch').textContent = nW;
 document.getElementById('cntBreach').textContent = nB;
+</script>
+
+<!-- ════════ FINANCIAL HEALTH (Financials tab) ════════ -->
+<script>
+const PERIODS = ['Mar-2025','Jun-2025','Sep-2025','Dec-2025'];
+const FIN = {
+  // ── Income statement (quarterly, MXN) ──
+  revenue:   [142_000_000, 156_000_000, 168_000_000, 181_000_000],
+  ebitda:    [ 38_000_000,  42_000_000,  45_000_000,  49_000_000],
+  netIncome: [ 14_000_000,  16_000_000,  18_000_000,  21_000_000],
+  // ── Balance sheet (latest) ──
+  totalAssets:      3_476_000_000,
+  totalLiabilities: 2_797_000_000,
+  equity:             679_000_000,
+  cash:               194_950_000,
+  // ── Ratios: value, threshold, type (min good above / max good below), unit ──
+  ratios: [
+    { label:'Current ratio',        desc:'Current assets / current liabilities', value:1.42, threshold:1.20, type:'min', unit:'x'  },
+    { label:'Debt / Equity',        desc:'Total debt / tangible equity',         value:4.12, threshold:7.00, type:'max', unit:'x'  },
+    { label:'EBITDA margin',        desc:'EBITDA / revenue',                     value:27.1, threshold:20.0, type:'min', unit:'%' },
+    { label:'Net margin',           desc:'Net income / revenue',                 value:11.6, threshold:8.0,  type:'min', unit:'%' },
+    { label:'ROE (TTM)',            desc:'Net income TTM / equity',              value:10.2, threshold:8.0,  type:'min', unit:'%' },
+    { label:'Interest coverage',    desc:'EBITDA / interest + principal',        value:1.58, threshold:1.25, type:'min', unit:'x'  },
+  ],
+};
+
+function money(v){
+  if (Math.abs(v) >= 1_000_000) return '$' + (v/1_000_000).toFixed(1) + 'M';
+  if (Math.abs(v) >= 1_000)     return '$' + (v/1_000).toFixed(0) + 'K';
+  return '$' + v.toFixed(0);
+}
+function pct(a,b){ return ((a-b)/b*100); }
+function ratioStatus(r){
+  const tol = r.type==='max' ? r.threshold*0.9 : r.threshold*1.1;
+  if (r.type==='max'){ if(r.value>r.threshold) return 'breach'; if(r.value>=tol) return 'watch'; return 'compliant'; }
+  if (r.value<r.threshold) return 'breach'; if(r.value<=tol) return 'watch'; return 'compliant';
+}
+function chip(s){
+  if(s==='compliant') return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-success-bg text-success text-[11px] font-bold font-primary"><i class="ph ph-check"></i> Healthy</span>`;
+  if(s==='watch')     return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning-bg text-warning text-[11px] font-bold font-primary"><i class="ph ph-warning"></i> Watch</span>`;
+  return                     `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-danger-bg text-danger text-[11px] font-bold font-primary"><i class="ph ph-x-circle"></i> At risk</span>`;
+}
+
+// Dual-line trend chart: revenue (bars) + net income (line)
+function trendChart(){
+  const W=560,H=220,PAD_L=56,PAD_R=16,PAD_T=16,PAD_B=28;
+  const plotW=W-PAD_L-PAD_R, plotH=H-PAD_T-PAD_B;
+  const maxV=Math.max(...FIN.revenue)*1.1;
+  const px=i=>PAD_L+ (plotW/FIN.revenue.length)*i + (plotW/FIN.revenue.length)/2;
+  const bw=(plotW/FIN.revenue.length)*0.5;
+  const py=v=>PAD_T+plotH-(v/maxV)*plotH;
+  const bars=FIN.revenue.map((v,i)=>`<rect x="${px(i)-bw/2}" y="${py(v)}" width="${bw}" height="${PAD_T+plotH-py(v)}" rx="3" fill="#FCE7F3"/><rect x="${px(i)-bw/2}" y="${py(v)}" width="${bw}" height="4" rx="2" fill="#910057"/>`).join('');
+  const niPath=FIN.netIncome.map((v,i)=>`${i===0?'M':'L'}${px(i)},${py(v)}`).join(' ');
+  const niDots=FIN.netIncome.map((v,i)=>`<circle cx="${px(i)}" cy="${py(v)}" r="4" fill="#fff" stroke="#0284C7" stroke-width="2"/>`).join('');
+  const yTicks=[0,.25,.5,.75,1].map(f=>({v:maxV*f,y:py(maxV*f)}));
+  const yGrid=yTicks.map(t=>`<line x1="${PAD_L}" y1="${t.y}" x2="${W-PAD_R}" y2="${t.y}" stroke="#E2E8F0"/>`).join('');
+  const yLab=yTicks.map(t=>`<text x="${PAD_L-8}" y="${t.y+3}" text-anchor="end" font-family="Space Mono" font-size="10" fill="#94A3B8">${money(t.v)}</text>`).join('');
+  const xLab=PERIODS.map((p,i)=>`<text x="${px(i)}" y="${H-8}" text-anchor="middle" font-family="Noto Sans" font-size="10" fill="#64748B">${p}</text>`).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" class="w-full h-[220px]" preserveAspectRatio="xMidYMid meet">
+    ${yGrid}${yLab}${xLab}${bars}
+    <path d="${niPath}" fill="none" stroke="#0284C7" stroke-width="2"/>${niDots}
+  </svg>`;
+}
+
+function renderFinancials(){
+  const r = FIN.revenue, ni = FIN.netIncome;
+  const last = r.length-1;
+  const revGrowth = pct(r[last], r[last-1]);
+  const niGrowth  = pct(ni[last], ni[last-1]);
+  const ttmNI = ni.reduce((a,b)=>a+b,0);
+
+  // overall score: share of healthy ratios + margin signal
+  const statuses = FIN.ratios.map(ratioStatus);
+  const nHealthy = statuses.filter(s=>s==='compliant').length;
+  const nWatch   = statuses.filter(s=>s==='watch').length;
+  const nRisk    = statuses.filter(s=>s==='breach').length;
+  const score = Math.round((nHealthy + nWatch*0.5) / FIN.ratios.length * 100);
+  const overall = nRisk>0 ? 'breach' : nWatch>1 ? 'watch' : 'compliant';
+  const overallBg = overall==='compliant'?'bg-success-bg':overall==='watch'?'bg-warning-bg':'bg-danger-bg';
+  const overallTxt = overall==='compliant'?'text-success':overall==='watch'?'text-warning':'text-danger';
+  const overallLabel = overall==='compliant'?'Healthy':overall==='watch'?'Watch':'At risk';
+
+  const grow = v => `<span class="text-[11px] font-bold ${v>=0?'text-success':'text-danger'}"><i class="ph ph-trend-${v>=0?'up':'down'}"></i> ${v>=0?'+':''}${v.toFixed(1)}% QoQ</span>`;
+
+  const kpi = (label,val,sub) => `
+    <div class="bg-surface border border-border rounded-xl p-4">
+      <div class="text-[11px] text-text-secondary font-semibold uppercase tracking-wide">${label}</div>
+      <div class="text-2xl font-bold text-text font-mono mt-1">${val}</div>
+      <div class="mt-1">${sub}</div>
+    </div>`;
+
+  // Income statement rows
+  const isRow = (name,arr,bold) => `<tr class="${bold?'font-bold text-text':'text-text-secondary'} border-b border-border last:border-0">
+    <td class="py-2 pr-4 text-sm ${bold?'':'pl-3'}">${name}</td>
+    ${arr.map(v=>`<td class="py-2 px-3 text-right text-sm font-mono">${money(v)}</td>`).join('')}
+  </tr>`;
+  const opex = FIN.revenue.map((v,i)=>v-FIN.ebitda[i]);
+
+  // Balance sheet composition
+  const liabPct = FIN.totalLiabilities/FIN.totalAssets*100;
+  const eqPct   = FIN.equity/FIN.totalAssets*100;
+
+  document.getElementById('financialsBody').innerHTML = `
+    <!-- Overall health band -->
+    <div class="${overallBg} border border-border rounded-xl p-5 mb-5 flex items-center gap-5 flex-wrap">
+      <div class="flex items-center gap-4">
+        <div class="relative w-16 h-16 grid place-items-center">
+          <svg viewBox="0 0 36 36" class="w-16 h-16 -rotate-90">
+            <circle cx="18" cy="18" r="15.5" fill="none" stroke="#E2E8F0" stroke-width="3"/>
+            <circle cx="18" cy="18" r="15.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+              stroke-dasharray="${(score/100*97.4).toFixed(1)} 97.4" class="${overallTxt}"/>
+          </svg>
+          <span class="absolute text-base font-bold font-mono ${overallTxt}">${score}</span>
+        </div>
+        <div>
+          <div class="text-[11px] text-text-secondary font-semibold uppercase tracking-wide">Overall financial health</div>
+          <div class="text-xl font-bold font-primary ${overallTxt}">${overallLabel}</div>
+          <div class="text-xs text-text-secondary mt-0.5">${nHealthy} healthy · ${nWatch} watch · ${nRisk} at risk · across ${FIN.ratios.length} ratios</div>
+        </div>
+      </div>
+      <div class="ml-auto text-right">
+        <div class="text-[11px] text-text-secondary">Last statement</div>
+        <div class="text-sm font-semibold text-text">${PERIODS[last]}</div>
+      </div>
+    </div>
+
+    <!-- KPI tiles -->
+    <div class="grid grid-cols-4 gap-4 mb-6 max-[900px]:grid-cols-2">
+      ${kpi('Revenue', money(FIN.revenue[last]), grow(revGrowth))}
+      ${kpi('EBITDA', money(FIN.ebitda[last]), `<span class="text-[11px] text-text-secondary">${(FIN.ebitda[last]/FIN.revenue[last]*100).toFixed(1)}% margin</span>`)}
+      ${kpi('Net income', money(FIN.netIncome[last]), grow(niGrowth))}
+      ${kpi('Free cash', money(FIN.cash), `<span class="text-[11px] text-text-secondary">unrestricted</span>`)}
+    </div>
+
+    <div class="grid grid-cols-2 gap-5 mb-6 max-[1100px]:grid-cols-1">
+      <!-- Income statement -->
+      <article class="bg-surface border border-border rounded-xl p-5">
+        <h3 class="font-primary text-sm font-bold uppercase tracking-wider text-text m-0 mb-3 flex items-center gap-2"><i class="ph ph-receipt text-text-secondary"></i> Income statement</h3>
+        <table class="w-full border-collapse">
+          <thead><tr class="text-[11px] text-text-muted uppercase"><th class="text-left font-semibold pb-2"></th>${PERIODS.map(p=>`<th class="text-right font-semibold pb-2 px-3">${p}</th>`).join('')}</tr></thead>
+          <tbody>
+            ${isRow('Revenue', FIN.revenue, true)}
+            ${isRow('Operating expenses', opex, false)}
+            ${isRow('EBITDA', FIN.ebitda, true)}
+            ${isRow('Net income', FIN.netIncome, true)}
+          </tbody>
+        </table>
+      </article>
+
+      <!-- Balance sheet -->
+      <article class="bg-surface border border-border rounded-xl p-5">
+        <h3 class="font-primary text-sm font-bold uppercase tracking-wider text-text m-0 mb-3 flex items-center gap-2"><i class="ph ph-scales text-text-secondary"></i> Balance sheet · ${PERIODS[last]}</h3>
+        <div class="flex items-baseline justify-between py-2 border-b border-border"><span class="text-sm text-text-secondary">Total assets</span><span class="text-sm font-bold font-mono text-text">${money(FIN.totalAssets)}</span></div>
+        <div class="flex items-baseline justify-between py-2 border-b border-border"><span class="text-sm text-text-secondary">Total liabilities</span><span class="text-sm font-mono text-text">${money(FIN.totalLiabilities)}</span></div>
+        <div class="flex items-baseline justify-between py-2 mb-3"><span class="text-sm text-text-secondary">Tangible equity</span><span class="text-sm font-bold font-mono text-secondary-active">${money(FIN.equity)}</span></div>
+        <div class="h-3 w-full rounded-full overflow-hidden flex">
+          <div class="bg-secondary-active h-full" style="width:${liabPct.toFixed(1)}%" title="Liabilities"></div>
+          <div class="bg-success h-full" style="width:${eqPct.toFixed(1)}%" title="Equity"></div>
+        </div>
+        <div class="flex items-center gap-4 mt-2 text-[11px] text-text-secondary">
+          <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-secondary-active"></span> Liabilities ${liabPct.toFixed(0)}%</span>
+          <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-success"></span> Equity ${eqPct.toFixed(0)}%</span>
+        </div>
+      </article>
+    </div>
+
+    <!-- Key ratios -->
+    <article class="bg-surface border border-border rounded-xl p-5 mb-6">
+      <h3 class="font-primary text-sm font-bold uppercase tracking-wider text-text m-0 mb-4 flex items-center gap-2"><i class="ph ph-gauge text-text-secondary"></i> Key ratios</h3>
+      <div class="grid grid-cols-3 gap-4 max-[900px]:grid-cols-1">
+        ${FIN.ratios.map((r,i)=>{const s=statuses[i];const v=r.unit==='%'?r.value.toFixed(1)+' %':r.value.toFixed(2)+' x';const t=r.unit==='%'?r.threshold.toFixed(0)+' %':r.threshold.toFixed(2)+' x';return `
+          <div class="border border-border rounded-lg p-4">
+            <div class="flex items-center justify-between gap-2 mb-1"><span class="text-[11px] font-bold uppercase tracking-wide text-text-secondary">${r.label}</span>${chip(s)}</div>
+            <div class="text-xl font-bold font-mono text-text">${v}</div>
+            <div class="text-[11px] text-text-muted mt-0.5">${r.desc}</div>
+            <div class="text-[11px] text-text-secondary mt-1">${r.type==='max'?'Max':'Min'}: ${t}</div>
+          </div>`;}).join('')}
+      </div>
+    </article>
+
+    <!-- Trend -->
+    <article class="bg-surface border border-border rounded-xl p-5">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-primary text-sm font-bold uppercase tracking-wider text-text m-0 flex items-center gap-2"><i class="ph ph-chart-bar text-text-secondary"></i> Revenue & net income trend</h3>
+        <div class="flex items-center gap-4 text-xs text-text-secondary">
+          <span class="inline-flex items-center gap-1.5"><span class="w-3 h-2.5 rounded-sm bg-secondary-active"></span> Revenue</span>
+          <span class="inline-flex items-center gap-1.5"><span class="inline-block w-3 h-px bg-info"></span><span class="w-1.5 h-1.5 rounded-full border border-info bg-white inline-block"></span> Net income</span>
+        </div>
+      </div>
+      ${trendChart()}
+    </article>
+  `;
+}
+
+function switchTab(tab){
+  const isFin = tab==='financials';
+  document.getElementById('panel-covenants').classList.toggle('hidden', isFin);
+  document.getElementById('panel-financials').classList.toggle('hidden', !isFin);
+  // button styles
+  const on  = ['text-secondary-active','border-secondary-active'];
+  const off = ['text-text-secondary','border-transparent'];
+  const bC=document.getElementById('tabBtn-covenants'), bF=document.getElementById('tabBtn-financials');
+  bC.classList.toggle('text-secondary-active', !isFin); bC.classList.toggle('border-secondary-active', !isFin);
+  bC.classList.toggle('text-text-secondary', isFin);    bC.classList.toggle('border-transparent', isFin);
+  bC.setAttribute('aria-selected', String(!isFin));
+  bF.classList.toggle('text-secondary-active', isFin);  bF.classList.toggle('border-secondary-active', isFin);
+  bF.classList.toggle('text-text-secondary', !isFin);   bF.classList.toggle('border-transparent', !isFin);
+  bF.setAttribute('aria-selected', String(isFin));
+}
+renderFinancials();
 </script>
 
 <script>function toggleFlujos(){const k=document.getElementById("flujosKids"),c=document.getElementById("flujosCaret");const h=k.classList.toggle("hidden");c.classList.toggle("ph-caret-down",!h);c.classList.toggle("ph-caret-right",h);}</script>
