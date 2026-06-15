@@ -2320,6 +2320,9 @@
   const SPLIT = [25,10,8,22,18,12,5]; // reparto del 30+ entre los 7 buckets de mora
   const THIRTY = [8.5,9,9.3,9.6,9.9,10.1,10.3,10.5,11.4,12.1,12.74,13.96];
   const NINETY = [3.5,4,4.3,4.6,4.9,5.1,5.3,5.5,6.8,7.7,7.96,9.18];
+  // Tooltip por bucket (LEN-578): nombre · monto · % · # contratos. Total ~ $300M / ~500 contratos (demo; producción del DWH).
+  const BNAMES = ['Current','1-30','31-60','61-90','91-120','121-150','151-180','180+'];
+  const TOTAL_USD = 300, TOTAL_CTR = 500;
   const agY = p => +(200 - p/100*170).toFixed(1); // % sobre el eje 0–100 del chart apilado
   let agingMode = 'pct';
   function bucketsFor(i){
@@ -2335,11 +2338,13 @@
       const b = bucketsFor(mi), x = AX0 + k*slot + (slot - barW)/2, cx = x + barW/2;
       centers.push({ cx, mi });
       let yBottom = 200, rects = '';
-      b.forEach((pct, bi) => { const h = pct/100*170; yBottom -= h; rects += `<rect x="${x.toFixed(1)}" y="${yBottom.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" fill="${COLORS[bi]}"/>`; });
+      b.forEach((pct, bi) => {
+        const h = pct/100*170; yBottom -= h;
+        const usd = (pct/100*TOTAL_USD).toFixed(1), ctr = Math.max(1, Math.round(pct/100*TOTAL_CTR));
+        rects += `<rect x="${x.toFixed(1)}" y="${yBottom.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" fill="${COLORS[bi]}" style="cursor:pointer"><title>${BNAMES[bi]} · $${usd}M · ${pct.toFixed(1)}% · ${ctr} contracts</title></rect>`;
+      });
       const last = mi === THIRTY.length - 1;
-      const lbl = agingMode === 'pct' ? THIRTY[mi].toFixed(1)+'%' : '$'+(THIRTY[mi]*3).toFixed(1)+'M';
       html += `<g><g>${rects}</g>`
-        + `<text x="${cx.toFixed(1)}" y="24" text-anchor="middle" font-family="Sofia Sans" font-size="${N>7?'8':'10'}" font-weight="700" fill="${last?'#DC2626':'#B45309'}">${lbl}</text>`
         + `<text x="${cx.toFixed(1)}" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="${N>7?'8':'10'}"${last?' font-weight="700"':''} fill="${last?'#334155':'#64748B'}">${ms[k]}</text></g>`;
     });
     // Líneas de tendencia 30+ (ámbar sólida) y 90+ (rojo punteada) sobre las barras
