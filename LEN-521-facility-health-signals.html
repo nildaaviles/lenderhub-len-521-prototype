@@ -691,7 +691,7 @@
           <div class="flex items-center gap-2.5">
             <h3 class="font-primary text-base font-bold uppercase tracking-wider text-text m-0">Aging</h3>
             <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-danger-bg text-danger border border-danger-border text-xs font-semibold font-primary">
-              <i class="ph ph-trend-up text-xs"></i> Rising trend · 5 cuts on 90+
+              <i class="ph ph-trend-up text-xs"></i> Rising trend · 3 cuts on 90+
             </span>
           </div>
         </header>
@@ -781,7 +781,6 @@
                 <rect x="0" y="34"  width="44" height="2"   fill="#B91C1C"/>
                 <rect x="0" y="32"  width="44" height="2"   fill="#991B1B"/>
                 <rect x="0" y="30"  width="44" height="2"   fill="#7F1D1D"/>
-                <text id="agingLabel-nov" x="22" y="24" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#B45309">10.5%</text>
                 <text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" fill="#64748B">Nov 25</text>
               </g>
 
@@ -795,7 +794,6 @@
                 <rect x="0" y="34"  width="44" height="3"   fill="#B91C1C"/>
                 <rect x="0" y="32"  width="44" height="2"   fill="#991B1B"/>
                 <rect x="0" y="30"  width="44" height="2"   fill="#7F1D1D"/>
-                <text id="agingLabel-dec" x="22" y="24" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#B45309">11.4%</text>
                 <text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" fill="#64748B">Dec 25</text>
               </g>
 
@@ -809,7 +807,6 @@
                 <rect x="0" y="36"  width="44" height="3"   fill="#B91C1C"/>
                 <rect x="0" y="33"  width="44" height="3"   fill="#991B1B"/>
                 <rect x="0" y="30"  width="44" height="3"   fill="#7F1D1D"/>
-                <text id="agingLabel-jan" x="22" y="24" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#B45309">12.1%</text>
                 <text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" fill="#64748B">Jan 26</text>
               </g>
 
@@ -823,21 +820,21 @@
                 <rect x="0" y="36"  width="44" height="3"   fill="#B91C1C"/>
                 <rect x="0" y="33"  width="44" height="3"   fill="#991B1B"/>
                 <rect x="0" y="30"  width="44" height="3"   fill="#7F1D1D"/>
-                <text id="agingLabel-feb" x="22" y="24" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#B45309">12.7%</text>
                 <text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" fill="#64748B">Feb 26</text>
               </g>
 
               <!-- Mar 26 · 30+=13.96% · 90+=9.18% — latest -->
+              <!-- Tooltip por bucket (LEN-578 Bloque D): monto · % · # contratos. Demo en el corte latest;
+                   en producción cada bucket de cada corte trae bucket_balance_usd, bucket_pct y bucket_contracts_count del DWH. -->
               <g transform="translate(324,0)">
-                <rect x="0" y="70"  width="44" height="130" fill="#1E3A8A"/>
-                <rect x="0" y="55"  width="44" height="15"  fill="#0E7490"/>
-                <rect x="0" y="51"  width="44" height="4"   fill="#A16207"/>
-                <rect x="0" y="47"  width="44" height="4"   fill="#C2410C"/>
-                <rect x="0" y="42"  width="44" height="5"   fill="#DC2626"/>
-                <rect x="0" y="38"  width="44" height="4"   fill="#B91C1C"/>
-                <rect x="0" y="34"  width="44" height="4"   fill="#991B1B"/>
-                <rect x="0" y="30"  width="44" height="4"   fill="#7F1D1D"/>
-                <text id="agingLabel-mar" x="22" y="24" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#DC2626">14.0%</text>
+                <rect x="0" y="70"  width="44" height="130" fill="#1E3A8A" style="cursor:pointer"><title>Current · $229.0M · 76.5% · 412 contracts</title></rect>
+                <rect x="0" y="55"  width="44" height="15"  fill="#0E7490" style="cursor:pointer"><title>1-30 · $26.3M · 8.8% · 38 contracts</title></rect>
+                <rect x="0" y="51"  width="44" height="4"   fill="#A16207" style="cursor:pointer"><title>31-60 · $7.2M · 2.4% · 11 contracts</title></rect>
+                <rect x="0" y="47"  width="44" height="4"   fill="#C2410C" style="cursor:pointer"><title>61-90 · $7.2M · 2.4% · 9 contracts</title></rect>
+                <rect x="0" y="42"  width="44" height="5"   fill="#DC2626" style="cursor:pointer"><title>91-120 · $8.7M · 2.9% · 7 contracts</title></rect>
+                <rect x="0" y="38"  width="44" height="4"   fill="#B91C1C" style="cursor:pointer"><title>121-150 · $7.2M · 2.4% · 6 contracts</title></rect>
+                <rect x="0" y="34"  width="44" height="4"   fill="#991B1B" style="cursor:pointer"><title>151-180 · $7.2M · 2.4% · 5 contracts</title></rect>
+                <rect x="0" y="30"  width="44" height="4"   fill="#7F1D1D" style="cursor:pointer"><title>180+ · $7.2M · 2.4% · 5 contracts</title></rect>
                 <text x="22" y="214" text-anchor="middle" font-family="Sofia Sans" font-size="10" font-weight="700" fill="#334155">Mar 26</text>
               </g>
               </g>
@@ -927,13 +924,6 @@
                 <td class="p-2.5 text-right num text-warning font-semibold">+$5.87M</td>
                 <td class="p-2.5 border-l border-border text-right num text-danger font-semibold">+1.22 pp</td>
                 <td class="p-2.5 text-right num text-danger font-semibold">+$5.03M</td>
-              </tr>
-              <tr class="bg-bg">
-                <td class="p-2.5 font-primary font-bold uppercase tracking-wider text-[10px] text-text-secondary">Δ since Nov 25</td>
-                <td class="p-2.5 border-l border-border text-right num text-danger font-bold">+3.46 pp</td>
-                <td class="p-2.5 text-right num text-danger font-bold">+$15.10M</td>
-                <td class="p-2.5 border-l border-border text-right num text-danger font-bold">+3.68 pp</td>
-                <td class="p-2.5 text-right num text-danger font-bold">+$13.50M</td>
               </tr>
             </tfoot>
           </table>
