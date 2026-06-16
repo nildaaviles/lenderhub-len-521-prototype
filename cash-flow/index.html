@@ -760,6 +760,21 @@
     // Trend Range only meaningful for collection, history, account
     const trendWrap = document.getElementById('cf-trend-wrap');
     if (trendWrap) trendWrap.style.opacity = tab === 'waterfall' ? '0.35' : '1';
+    // Frequency badge: Monthly for waterfall, Weekly for the rest
+    const freqLabel = document.getElementById('cf-freqLabel');
+    const freqPrior = document.getElementById('cf-freqPrior');
+    const freqBadge = document.getElementById('cf-freqBadge');
+    if (freqLabel && freqPrior) {
+      if (tab === 'waterfall') {
+        freqLabel.textContent = 'Monthly';
+        freqPrior.textContent = 'Prior cut-off: Feb 28, 2026';
+        if (freqBadge) freqBadge.setAttribute('aria-label', 'Reporting frequency: Monthly');
+      } else {
+        freqLabel.textContent = 'Weekly';
+        freqPrior.textContent = 'Prior cut-off: Mar 24, 2026';
+        if (freqBadge) freqBadge.setAttribute('aria-label', 'Reporting frequency: Weekly');
+      }
+    }
   }
 
   let _cfRange = '6M';
