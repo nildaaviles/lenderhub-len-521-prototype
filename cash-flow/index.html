@@ -820,8 +820,8 @@
     // Trend Range: hidden for account balance (has its own) and dimmed for waterfall
     const trendWrap = document.getElementById('cf-trend-wrap');
     if (trendWrap) {
-      trendWrap.style.display  = tab === 'account'    ? 'none'  : '';
-      trendWrap.style.opacity  = tab === 'waterfall'  ? '0.35'  : '1';
+      trendWrap.style.display = (tab === 'account' || tab === 'waterfall') ? 'none' : '';
+      trendWrap.style.opacity = '1';
     }
 
     // Filter bar: frequency + cut-off date adapt per tab
