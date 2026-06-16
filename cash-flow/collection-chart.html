@@ -205,6 +205,7 @@
         <div class="icon-bg">💰</div>
         <div>
           <div class="title">COLLECTION</div>
+          <div class="subtitle">Last 5 months · Covalto-LeaseMD Facility</div>
         </div>
       </div>
       <div class="filters" id="filters">
@@ -537,9 +538,6 @@
   updateKpis();
   renderTable();
 
-  // Hide built-in filters (parent filter bar controls range)
-  const filtersEl = document.getElementById('filters');
-  if (filtersEl) filtersEl.style.display = 'none';
 
   window.addEventListener('message', e => {
     if (e.data && e.data.type === 'setRange') setRange(e.data.range);
