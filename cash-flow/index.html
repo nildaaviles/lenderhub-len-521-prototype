@@ -54,6 +54,51 @@
   body { font-family: 'Noto Sans', system-ui, sans-serif; color: #334155; }
   h1, h2, h3, h4 { font-family: 'Sofia Sans', system-ui, sans-serif; }
   .cf-frame { width: 100%; height: calc(100vh - 280px); min-height: 500px; border: 0; border-radius: 8px; background: #FFFFFF; }
+
+  /* ── Export selection mode ── */
+  .cf-chart-wrap { position: relative; }
+  body.cf-selection-mode .cf-chart-wrap {
+    cursor: pointer;
+    outline: 2px dashed #CBD5E1;
+    outline-offset: -2px;
+    border-radius: 8px;
+    opacity: 0.6;
+    transition: opacity 150ms, outline 150ms;
+  }
+  body.cf-selection-mode .cf-chart-wrap:hover { opacity: 0.85; }
+  body.cf-selection-mode .cf-chart-wrap.cf-selected {
+    opacity: 1;
+    outline: 2px solid #910057;
+    background-color: #FDF2F8;
+  }
+  body.cf-selection-mode .cf-chart-wrap::before {
+    content: '';
+    position: absolute;
+    top: 10px; left: 10px;
+    width: 18px; height: 18px;
+    border: 2px solid #CBD5E1;
+    border-radius: 4px;
+    background: #FFFFFF;
+    z-index: 20;
+    transition: all 150ms;
+    pointer-events: none;
+  }
+  body.cf-selection-mode .cf-chart-wrap.cf-selected::before {
+    background: #910057;
+    border-color: #910057;
+  }
+  body.cf-selection-mode .cf-chart-wrap.cf-selected::after {
+    content: '';
+    position: absolute;
+    top: 13px; left: 15px;
+    width: 4px; height: 8px;
+    border: solid #FFFFFF;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    z-index: 21;
+    pointer-events: none;
+  }
+  body.cf-selection-mode .cf-frame { pointer-events: none; }
 </style>
 </head>
 
@@ -145,9 +190,32 @@
 
   <hr class="border-0 border-t border-border mb-5"/>
 
-  <div class="mb-5">
-    <h2 class="font-primary text-base font-bold text-text m-0">Cash Flow</h2>
-    <p class="text-sm text-text-secondary m-0 mt-0.5">Collections, payments, and distributions across the trust accounts.</p>
+  <div class="flex items-center justify-between gap-3 flex-wrap mb-5">
+    <div>
+      <h2 class="font-primary text-base font-bold text-text m-0">Cash Flow</h2>
+      <p class="text-sm text-text-secondary m-0 mt-0.5">Collections, payments, and distributions across the trust accounts.</p>
+    </div>
+    <div class="flex gap-2">
+      <button id="cf-exportBtn" onclick="cfEnterSelection()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md border border-border text-text text-sm font-semibold hover:bg-bg"><i class="ph ph-download-simple"></i> Export</button>
+      <button id="cf-cancelBtn" onclick="cfExitSelection()" class="hidden inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md border border-border text-text text-sm font-semibold hover:bg-bg"><i class="ph ph-x"></i> Cancel</button>
+    </div>
+  </div>
+
+  <!-- Selection mode banner -->
+  <div id="cf-selBanner" class="hidden mb-4 flex items-center justify-between gap-4 flex-wrap p-3.5 rounded-lg" style="background:#FDF2F8;border:1px solid #FBCFE8">
+    <div class="flex items-center gap-3">
+      <span class="w-8 h-8 rounded-md bg-white grid place-items-center text-secondary"><i class="ph ph-cursor-click"></i></span>
+      <div>
+        <div class="font-primary text-sm font-bold text-secondary">Selection Mode</div>
+        <div class="text-xs text-text-secondary mt-0.5">Click on the charts you want to include in your report. Choose format when ready.</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <span id="cf-selCount" class="text-xs font-primary font-bold px-2.5 py-1 rounded-full bg-white text-text-secondary border border-border">0 selected</span>
+      <button onclick="cfSelectAll()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-white text-text text-xs font-semibold hover:bg-bg">Select all</button>
+      <button onclick="cfClearSel()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-white text-text text-xs font-semibold hover:bg-bg">Clear</button>
+      <button id="cf-continueBtn" onclick="cfOpenModal()" disabled class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-white text-xs font-semibold hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed">Continue <i class="ph ph-arrow-right"></i></button>
+    </div>
   </div>
 
   <!-- Tabs -->
@@ -292,12 +360,18 @@
   </section>
 
   <!-- Iframes + inline pane (only one visible at a time) -->
-  <iframe id="frame-collection" class="cf-frame" src="./collection-chart.html" title="Collection Chart"></iframe>
-  <iframe id="frame-history" class="cf-frame hidden" src="./payment-history.html" title="Payment History"></iframe>
-  <iframe id="frame-waterfall" class="cf-frame hidden" src="./waterfall-chart.html" title="Waterfall"></iframe>
+  <div id="frame-collection" class="cf-chart-wrap" data-label="Collection Chart" onclick="cfToggleChart(this)">
+    <iframe id="iframe-collection" class="cf-frame" src="./collection-chart.html" title="Collection Chart"></iframe>
+  </div>
+  <div id="frame-history" class="cf-chart-wrap hidden" data-label="Payment History" onclick="cfToggleChart(this)">
+    <iframe id="iframe-history" class="cf-frame" src="./payment-history.html" title="Payment History"></iframe>
+  </div>
+  <div id="frame-waterfall" class="cf-chart-wrap hidden" data-label="Waterfall" onclick="cfToggleChart(this)">
+    <iframe id="iframe-waterfall" class="cf-frame" src="./waterfall-chart.html" title="Waterfall"></iframe>
+  </div>
 
   <!-- Account Balance pane (inline, hidden by default) -->
-  <div id="frame-account" class="hidden">
+  <div id="frame-account" class="cf-chart-wrap hidden" data-label="Account Balance" onclick="cfToggleChart(this)">
   <!-- ════════ ACCOUNT BALANCE ════════ -->
   <article class="bg-surface border border-border rounded-xl p-4">
     <header class="flex items-center justify-between gap-3 flex-wrap mb-2">
@@ -496,6 +570,167 @@
 
 </main>
 
+<!-- ════════ Export modal ════════ -->
+<div id="cf-export-modal" class="hidden fixed inset-0 z-[1200] bg-primary/40 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-surface rounded-lg shadow-card max-w-[680px] w-full max-h-[92vh] overflow-y-auto" onclick="event.stopPropagation()">
+    <header class="flex items-start justify-between px-6 py-4 border-b border-border">
+      <div>
+        <h2 class="font-primary text-xl font-bold text-text m-0">Export report</h2>
+        <p class="text-xs text-text-secondary m-0 mt-0.5"><span id="cf-exportCount">0</span> charts selected</p>
+      </div>
+      <button onclick="cfCloseModal()" class="w-8 h-8 rounded-md hover:bg-bg grid place-items-center"><i class="ph ph-x text-text-secondary"></i></button>
+    </header>
+    <div class="px-6 py-5 space-y-5">
+      <!-- Format -->
+      <div class="grid grid-cols-2 gap-3">
+        <label id="cf-fmtPdf" class="border-2 border-secondary bg-secondary-bg rounded-lg p-5 cursor-pointer flex flex-col items-center gap-2 transition-all">
+          <input type="radio" name="cfExportFmt" value="pdf" checked class="sr-only" onchange="cfSelectFmt('pdf')"/>
+          <span class="w-12 h-12 rounded-md bg-white border border-border grid place-items-center"><i class="ph ph-file-pdf text-2xl text-secondary"></i></span>
+          <span class="font-primary font-bold text-text">PDF</span>
+          <span class="text-xs text-text-secondary text-center">Single executive document</span>
+        </label>
+        <label id="cf-fmtPng" class="border-2 border-border bg-surface rounded-lg p-5 cursor-pointer flex flex-col items-center gap-2 transition-all hover:border-border-strong">
+          <input type="radio" name="cfExportFmt" value="png" class="sr-only" onchange="cfSelectFmt('png')"/>
+          <span class="w-12 h-12 rounded-md bg-bg border border-border grid place-items-center"><i class="ph ph-image text-2xl text-text-secondary"></i></span>
+          <span class="font-primary font-bold text-text">PNG</span>
+          <span class="text-xs text-text-secondary text-center">High-resolution image (300 DPI)</span>
+        </label>
+      </div>
+      <!-- File name -->
+      <div>
+        <label class="block font-primary text-xs font-bold tracking-wider uppercase text-text-secondary mb-2">File Name</label>
+        <input id="cf-exportFilename" type="text" class="w-full px-3 py-2.5 text-sm border border-border-strong rounded-md focus:border-secondary focus:outline-none font-mono" value="LEASE MD F/1600 · Cash Flow · Mar 31, 2026"/>
+      </div>
+      <!-- Preview tiles -->
+      <div>
+        <label class="block font-primary text-xs font-bold tracking-wider uppercase text-text-secondary mb-2">Document Preview</label>
+        <div class="bg-bg border border-border rounded-lg p-3">
+          <div class="bg-surface border border-border rounded-md p-3 min-h-[120px]">
+            <div id="cf-exportPreview" class="grid grid-cols-3 gap-1.5 text-[8px] text-text-secondary"></div>
+            <div class="text-[9px] text-text-muted font-mono mt-3 pt-2 border-t border-border text-center">Confidential — Generated by LenderHub</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer class="flex items-center justify-between px-6 py-4 border-t border-border bg-bg/40">
+      <button onclick="cfCloseModal()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-md border border-border text-text text-sm font-semibold hover:bg-bg"><i class="ph ph-arrow-left"></i> Back to selection</button>
+      <button onclick="cfGenerate()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-md bg-primary text-white text-sm font-semibold hover:opacity-90"><i class="ph ph-download-simple"></i> Generate</button>
+    </footer>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="cf-toast" class="hidden fixed bottom-6 right-6 z-[1300] bg-primary text-white rounded-lg shadow-card px-4 py-3 flex items-start gap-3 max-w-[400px]">
+  <div class="w-8 h-8 rounded-full bg-success text-white grid place-items-center flex-shrink-0"><i class="ph ph-check"></i></div>
+  <div class="flex-1">
+    <div class="font-primary font-bold text-sm" id="cf-toastTitle">Report generated</div>
+    <div class="text-xs text-white/80 mt-0.5" id="cf-toastDetail"></div>
+  </div>
+  <button onclick="document.getElementById('cf-toast').classList.add('hidden')" class="text-white/60 hover:text-white"><i class="ph ph-x"></i></button>
+</div>
+
+<script>
+  const CF_CHARTS = [
+    { id: 'frame-collection', label: 'Collection Chart',  icon: 'ph-chart-bar' },
+    { id: 'frame-history',    label: 'Payment History',   icon: 'ph-clock-counter-clockwise' },
+    { id: 'frame-account',    label: 'Account Balance',   icon: 'ph-shield-check' },
+    { id: 'frame-waterfall',  label: 'Waterfall',         icon: 'ph-align-bottom' },
+  ];
+
+  function cfEnterSelection() {
+    document.body.classList.add('cf-selection-mode');
+    document.getElementById('cf-selBanner').classList.remove('hidden');
+    document.getElementById('cf-exportBtn').classList.add('hidden');
+    document.getElementById('cf-cancelBtn').classList.remove('hidden');
+    CF_CHARTS.forEach(c => {
+      const el = document.getElementById(c.id);
+      if (el) el.classList.remove('cf-selected');
+    });
+    cfUpdateCount();
+  }
+
+  function cfExitSelection() {
+    document.body.classList.remove('cf-selection-mode');
+    document.getElementById('cf-selBanner').classList.add('hidden');
+    document.getElementById('cf-exportBtn').classList.remove('hidden');
+    document.getElementById('cf-cancelBtn').classList.add('hidden');
+    CF_CHARTS.forEach(c => {
+      const el = document.getElementById(c.id);
+      if (el) el.classList.remove('cf-selected');
+    });
+  }
+
+  function cfToggleChart(el) {
+    if (!document.body.classList.contains('cf-selection-mode')) return;
+    el.classList.toggle('cf-selected');
+    cfUpdateCount();
+  }
+
+  function cfSelectAll() {
+    CF_CHARTS.forEach(c => {
+      const el = document.getElementById(c.id);
+      if (el) el.classList.add('cf-selected');
+    });
+    cfUpdateCount();
+  }
+
+  function cfClearSel() {
+    CF_CHARTS.forEach(c => {
+      const el = document.getElementById(c.id);
+      if (el) el.classList.remove('cf-selected');
+    });
+    cfUpdateCount();
+  }
+
+  function cfUpdateCount() {
+    const n = document.querySelectorAll('.cf-chart-wrap.cf-selected').length;
+    const el = document.getElementById('cf-selCount');
+    el.textContent = n + ' selected';
+    el.classList.toggle('text-secondary', n > 0);
+    el.classList.toggle('text-text-secondary', n === 0);
+    document.getElementById('cf-continueBtn').disabled = n === 0;
+  }
+
+  function cfOpenModal() {
+    const selected = CF_CHARTS.filter(c => document.getElementById(c.id)?.classList.contains('cf-selected'));
+    if (!selected.length) return;
+    document.getElementById('cf-exportCount').textContent = selected.length;
+    document.getElementById('cf-exportPreview').innerHTML = selected.map(c =>
+      `<div class="bg-bg border border-border rounded p-1.5 flex flex-col gap-1">
+        <i class="ph ${c.icon} text-text-muted text-sm"></i>
+        <div class="text-[7px] uppercase tracking-wider text-text-muted truncate">${c.label}</div>
+      </div>`
+    ).join('');
+    document.getElementById('cf-export-modal').classList.remove('hidden');
+  }
+
+  function cfCloseModal() {
+    document.getElementById('cf-export-modal').classList.add('hidden');
+  }
+
+  function cfSelectFmt(fmt) {
+    const pdf = document.getElementById('cf-fmtPdf');
+    const png = document.getElementById('cf-fmtPng');
+    const active = 'border-2 border-secondary bg-secondary-bg rounded-lg p-5 cursor-pointer flex flex-col items-center gap-2 transition-all';
+    const idle   = 'border-2 border-border bg-surface rounded-lg p-5 cursor-pointer flex flex-col items-center gap-2 transition-all hover:border-border-strong';
+    pdf.className = fmt === 'pdf' ? active : idle;
+    png.className = fmt === 'png' ? active : idle;
+  }
+
+  function cfGenerate() {
+    const fmt      = document.querySelector('input[name="cfExportFmt"]:checked').value;
+    const filename = document.getElementById('cf-exportFilename').value;
+    const count    = document.querySelectorAll('.cf-chart-wrap.cf-selected').length;
+    cfCloseModal();
+    cfExitSelection();
+    document.getElementById('cf-toastTitle').textContent  = fmt.toUpperCase() + ' report generated';
+    document.getElementById('cf-toastDetail').textContent = `${filename}.${fmt} · ${count} chart${count !== 1 ? 's' : ''} included`;
+    const toast = document.getElementById('cf-toast');
+    toast.classList.remove('hidden');
+    setTimeout(() => toast.classList.add('hidden'), 4500);
+  }
+</script>
+
 <script>
   function switchTab(tab){
     const tabs = ['collection','history','account','waterfall'];
@@ -539,7 +774,7 @@
         b.classList.add('text-text-secondary');
       }
     });
-    ['frame-collection','frame-history'].forEach(id => {
+    ['iframe-collection','iframe-history'].forEach(id => {
       const f = document.getElementById(id);
       if (f && f.contentWindow) f.contentWindow.postMessage({type:'setRange', range: r}, '*');
     });
