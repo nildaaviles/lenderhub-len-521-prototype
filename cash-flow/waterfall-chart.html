@@ -533,6 +533,12 @@
   const raw = new URLSearchParams(location.search).get('period');
   const initKey = ORDER.find(k => k.toLowerCase() === (raw || '').trim().toLowerCase()) || 'Abr 26';
   render(initKey);
+
+  window.addEventListener('message', e => {
+    if (e.data && e.data.type === 'setPeriod' && ORDER.includes(e.data.key)) {
+      render(e.data.key);
+    }
+  });
 </script>
 </body>
 </html>

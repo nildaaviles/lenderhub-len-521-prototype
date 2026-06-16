@@ -293,8 +293,8 @@
               onclick="document.getElementById('cf-cutoff-panel').classList.toggle('hidden')">
         <i class="ph ph-calendar-blank text-text-secondary"></i>
         <span class="flex flex-col leading-tight">
-          <span class="text-base font-semibold text-text">March 31, 2026</span>
-          <span class="text-xs text-text-secondary">Tuesday · Latest available</span>
+          <span id="cf-cutoffDate" class="text-base font-semibold text-text">March 31, 2026</span>
+          <span id="cf-cutoffSub" class="text-xs text-text-secondary">Tuesday · Latest available</span>
         </span>
         <i class="ph ph-caret-down text-xs text-text-muted ml-1.5"></i>
       </button>
@@ -732,10 +732,70 @@
 </script>
 
 <script>
+  // Waterfall period map: key → { date, sub, nodata }
+  const WF_PERIODS = [
+    { key:'Jun 26', date:'June 30, 2026',     sub:'Sunday' },
+    { key:'May 26', date:'May 31, 2026',      sub:'Sunday' },
+    { key:'Abr 26', date:'April 30, 2026',    sub:'Wednesday · Latest available', latest:true },
+    { key:'Mar 26', date:'March 31, 2026',    sub:'Tuesday' },
+    { key:'Feb 26', date:'February 28, 2026', sub:'Saturday · s/d', nodata:true },
+    { key:'Ene 26', date:'January 31, 2026',  sub:'Saturday' },
+    { key:'Dic 25', date:'December 31, 2025', sub:'Wednesday' },
+    { key:'Nov 25', date:'November 30, 2025', sub:'Sunday' },
+    { key:'Oct 25', date:'October 31, 2025',  sub:'Friday' },
+    { key:'Sep 25', date:'September 30, 2025',sub:'Tuesday' },
+    { key:'Ago 25', date:'August 31, 2025',   sub:'Sunday' },
+    { key:'Jul 25', date:'July 31, 2025',     sub:'Thursday' },
+  ];
+  let _wfCurrentKey = 'Abr 26';
+
+  function cfSelectWfPeriod(key) {
+    _wfCurrentKey = key;
+    const p = WF_PERIODS.find(x => x.key === key);
+    if (p) {
+      document.getElementById('cf-cutoffDate').textContent = p.date;
+      document.getElementById('cf-cutoffSub').textContent  = p.sub;
+    }
+    document.getElementById('cf-cutoff-panel').classList.add('hidden');
+    const iframe = document.getElementById('iframe-waterfall');
+    if (iframe && iframe.contentWindow) {
+      iframe.contentWindow.postMessage({ type:'setPeriod', key }, '*');
+    }
+  }
+
+  function cfPopulateWaterfallDropdown() {
+    const list2026 = [], list2025 = [];
+    WF_PERIODS.forEach(p => {
+      const yr = p.date.includes('2026') ? list2026 : list2025;
+      if (p.latest) {
+        yr.push(`<div class="cutoff-item flex items-center justify-between gap-2 px-2.5 py-2 rounded-md bg-border font-semibold text-sm cursor-pointer" onclick="cfSelectWfPeriod('${p.key}')" data-date="${p.date.toLowerCase()}">
+          <span>${p.date}</span>
+          <span class="inline-block px-1.5 py-0.5 rounded bg-border text-primary text-[10px] font-bold tracking-wider font-primary">LATEST</span>
+        </div>`);
+      } else if (p.nodata) {
+        yr.push(`<div class="cutoff-item flex items-center justify-between gap-2 px-2.5 py-2 rounded-md text-text-muted text-sm" data-date="${p.date.toLowerCase()}">
+          <span>${p.date}</span>
+          <span class="text-[10px] text-text-muted font-primary">s/d</span>
+        </div>`);
+      } else {
+        const active = p.key === _wfCurrentKey ? ' bg-secondary-bg font-semibold' : ' hover:bg-bg';
+        yr.push(`<div class="cutoff-item flex items-center px-2.5 py-2 rounded-md text-sm cursor-pointer${active}" onclick="cfSelectWfPeriod('${p.key}')" data-date="${p.date.toLowerCase()}"><span>${p.date}</span></div>`);
+      }
+    });
+    const el26 = document.getElementById('cf-yr2026-list');
+    const el25 = document.getElementById('cf-yr2025-list');
+    const cnt26 = document.getElementById('cf-yr2026-count');
+    const cnt25 = document.getElementById('cf-yr2025-count');
+    if (el26) el26.innerHTML = list2026.join('');
+    if (el25) el25.innerHTML = list2025.join('');
+    if (cnt26) cnt26.textContent = list2026.length + ' cuts';
+    if (cnt25) cnt25.textContent = list2025.length + ' cuts';
+  }
+
   function switchTab(tab){
     const tabs = ['collection','history','account','waterfall'];
     tabs.forEach(t => {
-      const btn = document.getElementById('tab-'+t);
+      const btn   = document.getElementById('tab-'+t);
       const frame = document.getElementById('frame-'+t);
       if (t === tab){
         btn.classList.add('border-secondary','text-text','font-semibold');
@@ -747,7 +807,7 @@
         frame.classList.add('hidden');
       }
     });
-    // Update "Open standalone" link · hidden for inline panes (account)
+    // Open standalone link
     const openLink = document.getElementById('openStandalone');
     if (tab === 'account') {
       openLink.style.display = 'none';
@@ -757,22 +817,35 @@
                     : tab === 'history'    ? './payment-history.html'
                     : './waterfall-chart.html';
     }
-    // Trend Range only meaningful for collection, history, account
+    // Trend Range
     const trendWrap = document.getElementById('cf-trend-wrap');
     if (trendWrap) trendWrap.style.opacity = tab === 'waterfall' ? '0.35' : '1';
-    // Frequency badge: Monthly for waterfall, Weekly for the rest
-    const freqLabel = document.getElementById('cf-freqLabel');
-    const freqPrior = document.getElementById('cf-freqPrior');
-    const freqBadge = document.getElementById('cf-freqBadge');
-    if (freqLabel && freqPrior) {
-      if (tab === 'waterfall') {
-        freqLabel.textContent = 'Monthly';
-        freqPrior.textContent = 'Prior cut-off: Feb 28, 2026';
-        if (freqBadge) freqBadge.setAttribute('aria-label', 'Reporting frequency: Monthly');
-      } else {
-        freqLabel.textContent = 'Weekly';
-        freqPrior.textContent = 'Prior cut-off: Mar 24, 2026';
-        if (freqBadge) freqBadge.setAttribute('aria-label', 'Reporting frequency: Weekly');
+
+    // Filter bar: frequency + cut-off date adapt per tab
+    const freqLabel  = document.getElementById('cf-freqLabel');
+    const freqPrior  = document.getElementById('cf-freqPrior');
+    const freqBadge  = document.getElementById('cf-freqBadge');
+    const cutoffDate = document.getElementById('cf-cutoffDate');
+    const cutoffSub  = document.getElementById('cf-cutoffSub');
+
+    if (tab === 'waterfall') {
+      if (freqLabel) freqLabel.textContent = 'Monthly';
+      if (freqPrior) freqPrior.textContent = 'Prior cut-off: Mar 31, 2026';
+      if (freqBadge) freqBadge.setAttribute('aria-label', 'Reporting frequency: Monthly');
+      const cur = WF_PERIODS.find(p => p.key === _wfCurrentKey) || WF_PERIODS[2];
+      if (cutoffDate) cutoffDate.textContent = cur.date;
+      if (cutoffSub)  cutoffSub.textContent  = cur.sub;
+      cfPopulateWaterfallDropdown();
+    } else {
+      if (freqLabel) freqLabel.textContent = 'Weekly';
+      if (freqPrior) freqPrior.textContent = 'Prior cut-off: Mar 24, 2026';
+      if (freqBadge) freqBadge.setAttribute('aria-label', 'Reporting frequency: Weekly');
+      if (cutoffDate) cutoffDate.textContent = 'March 31, 2026';
+      if (cutoffSub)  cutoffSub.textContent  = 'Tuesday · Latest available';
+      // Restore weekly dropdown via existing cfCycleFreq data
+      if (typeof cfCycleFreq === 'function') {
+        // Re-render weekly (trigger the IIFE render without cycling)
+        document.getElementById('cf-yr2026-list') && (document.getElementById('cf-yr2026-count').textContent = '13 cuts · 1 issue');
       }
     }
   }
