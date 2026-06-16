@@ -486,9 +486,6 @@ window.setPayRange = function(r){
 setFixedKpis();
 renderPayments(6);
 
-// Hide built-in trend range (parent filter bar controls it)
-const trendRangeEl = document.querySelector('.trend-range');
-if (trendRangeEl) trendRangeEl.style.display = 'none';
 
 window.addEventListener('message', e => {
   if (e.data && e.data.type === 'setRange') window.setPayRange(e.data.range);
