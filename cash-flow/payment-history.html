@@ -96,7 +96,7 @@ body {
 
 /* ── KPI mini strip ── */
 .kpi-mini {
-  display: grid; grid-template-columns: repeat(4, 1fr);
+  display: grid; grid-template-columns: repeat(3, 1fr);
   gap: 12px; margin-bottom: 24px;
 }
 .kpi-mini-card {
@@ -239,11 +239,6 @@ body {
       <div class="kpi-mini-label">Total Interest</div>
       <div class="kpi-mini-value slate" id="kpiInt">$64.7M</div>
       <div class="kpi-mini-sub"><span class="pct-pill slate" id="kpiIntPct">64.6%</span> of total paid</div>
-    </div>
-    <div class="kpi-mini-card">
-      <div class="kpi-mini-label">Last Payment</div>
-      <div class="kpi-mini-value" id="kpiLast">$20.6M</div>
-      <div class="kpi-mini-sub" id="kpiLastMonth">Apr 2026</div>
     </div>
   </div>
 
@@ -489,8 +484,16 @@ window.setPayRange = function(r){
   document.querySelectorAll('.trend-range button').forEach(b => b.classList.toggle('active', b.dataset.r === r));
   renderPayments(PAY_RANGES[r]);
 };
-setFixedKpis();        // una vez
-renderPayments(6);     // default 6M (solo gráfico + tabla)
+setFixedKpis();
+renderPayments(6);
+
+// Hide built-in trend range (parent filter bar controls it)
+const trendRangeEl = document.querySelector('.trend-range');
+if (trendRangeEl) trendRangeEl.style.display = 'none';
+
+window.addEventListener('message', e => {
+  if (e.data && e.data.type === 'setRange') window.setPayRange(e.data.range);
+});
 </script>
 </body>
 </html>

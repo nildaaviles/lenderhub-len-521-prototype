@@ -536,6 +536,14 @@
 
   updateKpis();
   renderTable();
+
+  // Hide built-in filters (parent filter bar controls range)
+  const filtersEl = document.getElementById('filters');
+  if (filtersEl) filtersEl.style.display = 'none';
+
+  window.addEventListener('message', e => {
+    if (e.data && e.data.type === 'setRange') setRange(e.data.range);
+  });
 </script>
 </body>
 </html>

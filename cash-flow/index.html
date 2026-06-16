@@ -169,6 +169,41 @@
     </a>
   </div>
 
+  <!-- Filter bar -->
+  <div id="cf-filterbar" class="flex flex-wrap items-center gap-y-2 bg-surface border border-border rounded-lg px-4 py-2.5 mb-4">
+    <!-- Currency -->
+    <div class="flex items-center gap-2 pr-4 border-r border-border">
+      <span class="text-[10px] font-bold uppercase tracking-wider text-text-secondary font-primary">Currency</span>
+      <button class="flex items-center gap-1.5 px-2.5 py-1 border border-border rounded-md bg-bg text-xs font-bold font-primary text-text hover:bg-border transition-colors">
+        <img src="https://flagcdn.com/16x12/mx.png" alt="MX" style="width:16px;height:12px;border-radius:2px;"/>
+        MXN
+        <i class="ph ph-caret-down text-[10px] text-text-muted ml-0.5"></i>
+      </button>
+    </div>
+    <!-- Cut-off date -->
+    <div class="flex items-center px-4 border-r border-border">
+      <div class="border border-border-strong rounded-md px-3 py-1.5 text-center leading-none">
+        <div class="font-primary text-sm font-bold text-text">March 31, 2026</div>
+        <div class="text-[11px] text-text-secondary mt-0.5">Tuesday · Latest available</div>
+      </div>
+    </div>
+    <!-- Frequency -->
+    <div class="flex items-center gap-2 px-4 border-r border-border">
+      <button class="text-sm font-semibold font-primary text-info hover:underline">Weekly</button>
+      <span class="text-[11px] text-text-secondary">Prior cut-off: Mar 24, 2026</span>
+    </div>
+    <!-- Trend range -->
+    <div id="cf-trend-wrap" class="flex items-center gap-2 pl-4">
+      <span class="text-[10px] font-bold uppercase tracking-wider text-text-secondary font-primary">Trend Range</span>
+      <div class="flex bg-bg border border-border rounded-lg p-0.5">
+        <button data-r="3M"  onclick="setCfRange('3M')"  class="cf-range-btn px-3 py-1 rounded-md text-xs font-bold font-primary text-text-secondary hover:text-text transition-colors">3M</button>
+        <button data-r="6M"  onclick="setCfRange('6M')"  class="cf-range-btn px-3 py-1 rounded-md text-xs font-bold font-primary bg-primary text-white shadow-sm">6M</button>
+        <button data-r="12M" onclick="setCfRange('12M')" class="cf-range-btn px-3 py-1 rounded-md text-xs font-bold font-primary text-text-secondary hover:text-text transition-colors">12M</button>
+        <button data-r="YTD" onclick="setCfRange('YTD')" class="cf-range-btn px-3 py-1 rounded-md text-xs font-bold font-primary text-text-secondary hover:text-text transition-colors">YTD</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Iframes + inline pane (only one visible at a time) -->
   <iframe id="frame-collection" class="cf-frame" src="./collection-chart.html" title="Collection Chart"></iframe>
   <iframe id="frame-history" class="cf-frame hidden" src="./payment-history.html" title="Payment History"></iframe>
@@ -399,6 +434,33 @@
       openLink.href = tab === 'collection' ? './collection-chart.html'
                     : tab === 'history'    ? './payment-history.html'
                     : './waterfall-chart.html';
+    }
+    // Trend Range only meaningful for collection, history, account
+    const trendWrap = document.getElementById('cf-trend-wrap');
+    if (trendWrap) trendWrap.style.opacity = tab === 'waterfall' ? '0.35' : '1';
+  }
+
+  let _cfRange = '6M';
+  function setCfRange(r) {
+    _cfRange = r;
+    document.querySelectorAll('.cf-range-btn').forEach(b => {
+      if (b.dataset.r === r) {
+        b.classList.add('bg-primary','text-white','shadow-sm');
+        b.classList.remove('text-text-secondary');
+      } else {
+        b.classList.remove('bg-primary','text-white','shadow-sm');
+        b.classList.add('text-text-secondary');
+      }
+    });
+    // postMessage to iframes
+    ['frame-collection','frame-history'].forEach(id => {
+      const f = document.getElementById(id);
+      if (f && f.contentWindow) f.contentWindow.postMessage({type:'setRange', range: r}, '*');
+    });
+    // Account Balance inline (abRange + abCurrent defined in the next script block)
+    if (typeof abRange !== 'undefined') {
+      abRange = r;
+      abRenderHistory(abCurrent);
     }
   }
 </script>
