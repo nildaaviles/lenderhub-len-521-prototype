@@ -169,40 +169,127 @@
     </a>
   </div>
 
-  <!-- Filter bar -->
-  <div id="cf-filterbar" class="flex flex-wrap items-center gap-y-2 bg-surface border border-border rounded-lg px-4 py-2.5 mb-4">
-    <!-- Currency -->
-    <div class="flex items-center gap-2 pr-4 border-r border-border">
-      <span class="text-[10px] font-bold uppercase tracking-wider text-text-secondary font-primary">Currency</span>
-      <button class="flex items-center gap-1.5 px-2.5 py-1 border border-border rounded-md bg-bg text-xs font-bold font-primary text-text hover:bg-border transition-colors">
-        <img src="https://flagcdn.com/16x12/mx.png" alt="MX" style="width:16px;height:12px;border-radius:2px;"/>
-        MXN
-        <i class="ph ph-caret-down text-[10px] text-text-muted ml-0.5"></i>
+  <!-- ════════ Filter bar · insights-style ════════ -->
+  <section class="flex items-center gap-3.5 flex-wrap p-3.5 bg-bg border border-border rounded-lg mb-4">
+
+    <!-- Currency selector -->
+    <currency-selector class="flex items-center gap-2 relative">
+      <span class="font-primary text-xs font-semibold text-text-secondary flex items-center gap-1">
+        Currency
+        <i class="ph ph-info text-text-muted cursor-help text-sm" data-tt="Reporting currency for this facility"></i>
+      </span>
+      <button type="button"
+              class="flex items-center gap-2 px-3 py-1.5 border border-border-strong rounded-md bg-surface hover:border-text-muted"
+              onclick="document.getElementById('cf-currency-panel').classList.toggle('hidden')">
+        <svg viewBox="0 0 60 40" class="w-5 h-3.5 rounded-sm overflow-hidden border border-border" aria-hidden="true">
+          <rect width="20" height="40" fill="#006847"/>
+          <rect x="20" width="20" height="40" fill="#FFFFFF"/>
+          <rect x="40" width="20" height="40" fill="#CE1126"/>
+          <circle cx="30" cy="20" r="4" fill="none" stroke="#8B4513" stroke-width="0.8"/>
+          <path d="M26 20 Q30 17 34 20 Q30 23 26 20" fill="#5C8A3A"/>
+        </svg>
+        <span class="text-sm font-semibold text-text">MXN</span>
+        <i class="ph ph-caret-down text-xs text-text-muted ml-0.5"></i>
       </button>
-    </div>
-    <!-- Cut-off date -->
-    <div class="flex items-center px-4 border-r border-border">
-      <div class="border border-border-strong rounded-md px-3 py-1.5 text-center leading-none">
-        <div class="font-primary text-sm font-bold text-text">March 31, 2026</div>
-        <div class="text-[11px] text-text-secondary mt-0.5">Tuesday · Latest available</div>
+      <div id="cf-currency-panel" class="hidden absolute top-full mt-1 bg-surface border border-border rounded-lg shadow-card min-w-[200px] p-1.5 z-30">
+        <div class="flex items-center gap-2 px-2.5 py-2 rounded-md bg-border font-semibold text-sm cursor-pointer">
+          <svg viewBox="0 0 60 40" class="w-5 h-3.5 rounded-sm overflow-hidden border border-border flex-shrink-0">
+            <rect width="20" height="40" fill="#006847"/>
+            <rect x="20" width="20" height="40" fill="#FFFFFF"/>
+            <rect x="40" width="20" height="40" fill="#CE1126"/>
+          </svg>
+          <span>MXN</span>
+          <span class="text-xs text-text-secondary ml-auto">Mexican Peso</span>
+        </div>
+        <div class="flex items-center gap-2 px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer">
+          <svg viewBox="0 0 60 40" class="w-5 h-3.5 rounded-sm overflow-hidden border border-border flex-shrink-0">
+            <rect width="60" height="40" fill="#B22234"/>
+            <rect y="3.08" width="60" height="3.08" fill="#FFFFFF"/>
+            <rect y="9.23" width="60" height="3.08" fill="#FFFFFF"/>
+            <rect y="15.38" width="60" height="3.08" fill="#FFFFFF"/>
+            <rect y="21.54" width="60" height="3.08" fill="#FFFFFF"/>
+            <rect y="27.69" width="60" height="3.08" fill="#FFFFFF"/>
+            <rect y="33.85" width="60" height="3.08" fill="#FFFFFF"/>
+            <rect width="24" height="21.54" fill="#3C3B6E"/>
+          </svg>
+          <span>USD</span>
+          <span class="text-xs text-text-secondary ml-auto">US Dollar</span>
+        </div>
       </div>
-    </div>
-    <!-- Frequency -->
-    <div class="flex items-center gap-2 px-4 border-r border-border">
-      <button class="text-sm font-semibold font-primary text-info hover:underline">Weekly</button>
-      <span class="text-[11px] text-text-secondary">Prior cut-off: Mar 24, 2026</span>
-    </div>
+    </currency-selector>
+
+    <!-- Cut-off date dropdown -->
+    <cut-off-dropdown class="ml-auto relative">
+      <button type="button"
+              class="flex items-center gap-2.5 px-3.5 py-2 border border-border-strong rounded-md bg-surface hover:border-text-muted text-left"
+              onclick="document.getElementById('cf-cutoff-panel').classList.toggle('hidden')">
+        <i class="ph ph-calendar-blank text-text-secondary"></i>
+        <span class="flex flex-col leading-tight">
+          <span class="text-base font-semibold text-text">March 31, 2026</span>
+          <span class="text-xs text-text-secondary">Tuesday · Latest available</span>
+        </span>
+        <i class="ph ph-caret-down text-xs text-text-muted ml-1.5"></i>
+      </button>
+      <div id="cf-cutoff-panel" class="hidden absolute top-full mt-1.5 bg-surface border border-border rounded-lg shadow-card min-w-[360px] z-30 right-0">
+        <div class="sticky top-0 bg-surface border-b border-border p-2.5 rounded-t-lg">
+          <div class="relative">
+            <i class="ph ph-magnifying-glass absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted text-sm"></i>
+            <input id="cf-cutoff-search" type="text" placeholder="Search cut-off…"
+                   class="w-full pl-8 pr-3 py-1.5 text-sm border border-border-strong rounded-md focus:border-secondary focus:outline-none"/>
+          </div>
+        </div>
+        <div class="max-h-[380px] overflow-y-auto p-2">
+          <details class="year-group py-1 border-t border-border" open>
+            <summary class="flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-bg rounded-md list-none">
+              <i class="ph ph-caret-down text-xs text-text-secondary cf-year-caret"></i>
+              <span class="w-1.5 h-1.5 rounded-full bg-warning"></span>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-text-secondary font-primary">2026</span>
+              <span id="cf-yr2026-count" class="ml-auto text-[10px] text-text-muted font-primary">13 cuts · 1 issue</span>
+            </summary>
+            <div id="cf-yr2026-list" class="pl-2 mt-1"></div>
+          </details>
+          <details class="year-group py-1 mt-1 border-t border-border">
+            <summary class="flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-bg rounded-md list-none">
+              <i class="ph ph-caret-right text-xs text-text-secondary cf-year-caret"></i>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-text-secondary font-primary">2025</span>
+              <span id="cf-yr2025-count" class="ml-auto text-[10px] text-text-muted font-primary">52 cuts</span>
+            </summary>
+            <div id="cf-yr2025-list" class="pl-2 mt-1"></div>
+          </details>
+          <div id="cf-cutoff-empty" class="hidden py-6 text-center text-text-secondary text-xs">
+            <i class="ph ph-magnifying-glass text-lg block mb-1"></i>
+            No cut-offs match your search
+          </div>
+        </div>
+      </div>
+    </cut-off-dropdown>
+
+    <!-- Reporting frequency badge -->
+    <reporting-frequency-badge>
+      <span class="flex flex-col items-start gap-0.5">
+        <span id="cf-freqBadge" onclick="cfCycleFreq()" role="button" tabindex="0"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-info-bg text-info text-xs font-bold font-primary cursor-pointer hover:brightness-95 select-none">
+          <i class="ph ph-clock-counter-clockwise text-xs"></i> <span id="cf-freqLabel">Weekly</span>
+        </span>
+        <span id="cf-freqPrior" class="text-[10px] text-text-muted pl-1 leading-none">Prior cut-off: Mar 24, 2026</span>
+      </span>
+    </reporting-frequency-badge>
+
     <!-- Trend range -->
-    <div id="cf-trend-wrap" class="flex items-center gap-2 pl-4">
-      <span class="text-[10px] font-bold uppercase tracking-wider text-text-secondary font-primary">Trend Range</span>
-      <div class="flex bg-bg border border-border rounded-lg p-0.5">
-        <button data-r="3M"  onclick="setCfRange('3M')"  class="cf-range-btn px-3 py-1 rounded-md text-xs font-bold font-primary text-text-secondary hover:text-text transition-colors">3M</button>
-        <button data-r="6M"  onclick="setCfRange('6M')"  class="cf-range-btn px-3 py-1 rounded-md text-xs font-bold font-primary bg-primary text-white shadow-sm">6M</button>
-        <button data-r="12M" onclick="setCfRange('12M')" class="cf-range-btn px-3 py-1 rounded-md text-xs font-bold font-primary text-text-secondary hover:text-text transition-colors">12M</button>
-        <button data-r="YTD" onclick="setCfRange('YTD')" class="cf-range-btn px-3 py-1 rounded-md text-xs font-bold font-primary text-text-secondary hover:text-text transition-colors">YTD</button>
+    <div id="cf-trend-wrap" class="flex items-center gap-2">
+      <span class="font-primary text-[10px] font-bold uppercase tracking-wider text-text-secondary flex items-center gap-1">
+        Trend range
+        <i class="ph ph-info text-text-muted cursor-help text-xs"></i>
+      </span>
+      <div class="inline-flex bg-bg border border-border rounded-md p-0.5" role="group">
+        <button type="button" data-r="3M"  onclick="setCfRange('3M')"  class="cf-range-btn px-2.5 py-1 text-xs rounded font-primary font-semibold text-text-secondary">3M</button>
+        <button type="button" data-r="6M"  onclick="setCfRange('6M')"  class="cf-range-btn px-2.5 py-1 text-xs rounded font-primary font-semibold bg-secondary text-white shadow-sm">6M</button>
+        <button type="button" data-r="12M" onclick="setCfRange('12M')" class="cf-range-btn px-2.5 py-1 text-xs rounded font-primary font-semibold text-text-secondary">12M</button>
+        <button type="button" data-r="YTD" onclick="setCfRange('YTD')" class="cf-range-btn px-2.5 py-1 text-xs rounded font-primary font-semibold text-text-secondary">YTD</button>
       </div>
     </div>
-  </div>
+
+  </section>
 
   <!-- Iframes + inline pane (only one visible at a time) -->
   <iframe id="frame-collection" class="cf-frame" src="./collection-chart.html" title="Collection Chart"></iframe>
@@ -445,24 +532,90 @@
     _cfRange = r;
     document.querySelectorAll('.cf-range-btn').forEach(b => {
       if (b.dataset.r === r) {
-        b.classList.add('bg-primary','text-white','shadow-sm');
+        b.classList.add('bg-secondary','text-white','shadow-sm');
         b.classList.remove('text-text-secondary');
       } else {
-        b.classList.remove('bg-primary','text-white','shadow-sm');
+        b.classList.remove('bg-secondary','text-white','shadow-sm');
         b.classList.add('text-text-secondary');
       }
     });
-    // postMessage to iframes
     ['frame-collection','frame-history'].forEach(id => {
       const f = document.getElementById(id);
       if (f && f.contentWindow) f.contentWindow.postMessage({type:'setRange', range: r}, '*');
     });
-    // Account Balance inline (abRange + abCurrent defined in the next script block)
-    if (typeof abRange !== 'undefined') {
-      abRange = r;
-      abRenderHistory(abCurrent);
-    }
+    if (typeof abRange !== 'undefined') { abRange = r; abRenderHistory(abCurrent); }
   }
+
+  // ── Close panels on outside click ──
+  document.addEventListener('click', e => {
+    if (!e.target.closest('currency-selector'))  document.getElementById('cf-currency-panel')?.classList.add('hidden');
+    if (!e.target.closest('cut-off-dropdown'))   document.getElementById('cf-cutoff-panel')?.classList.add('hidden');
+  });
+
+  // ── Cut-off search + caret toggle ──
+  (function(){
+    const search = document.getElementById('cf-cutoff-search');
+    const empty  = document.getElementById('cf-cutoff-empty');
+    if (!search) return;
+    const panel  = document.getElementById('cf-cutoff-panel');
+    panel.addEventListener('click', e => e.stopPropagation());
+    search.addEventListener('input', () => {
+      const q = search.value.toLowerCase().trim();
+      let hits = 0;
+      document.querySelectorAll('#cf-cutoff-panel .cutoff-item').forEach(el => {
+        const v = q === '' || (el.dataset.date||'').includes(q);
+        el.style.display = v ? '' : 'none';
+        if (v) hits++;
+      });
+      if (q) document.querySelectorAll('#cf-cutoff-panel .year-group').forEach(g => g.open = true);
+      empty.classList.toggle('hidden', hits > 0 || q === '');
+    });
+    document.querySelectorAll('#cf-cutoff-panel .year-group').forEach(g => {
+      g.addEventListener('toggle', () => {
+        const c = g.querySelector('.cf-year-caret');
+        if (!c) return;
+        c.classList.toggle('ph-caret-down', g.open);
+        c.classList.toggle('ph-caret-right', !g.open);
+      });
+    });
+  })();
+
+  // ── Reporting frequency cycle ──
+  (function(){
+    const $ = id => document.getElementById(id);
+    const FREQ = {
+      daily:   { label:'Daily',   prior:'Prior cut-off: Mar 30, 2026',
+                 y2026:{ count:'90 cuts · 1 issue', dates:['March 30, 2026','March 29, 2026','March 28, 2026','March 27, 2026'], more:'…and 85 more daily cuts in 2026' },
+                 y2025:{ count:'365 cuts', dates:['December 31, 2025','December 30, 2025','December 29, 2025'], more:'…and 361 more daily cuts in 2025' } },
+      weekly:  { label:'Weekly',  prior:'Prior cut-off: Mar 24, 2026',
+                 y2026:{ count:'13 cuts · 1 issue', dates:['March 24, 2026','March 17, 2026','March 10, 2026','March 3, 2026'], more:'…and 8 more weekly cuts in 2026' },
+                 y2025:{ count:'52 cuts', dates:['December 30, 2025','December 23, 2025','December 16, 2025'], more:'…and 48 more weekly cuts in 2025' } },
+      monthly: { label:'Monthly', prior:'Prior cut-off: Feb 28, 2026',
+                 y2026:{ count:'3 cuts · 1 issue', dates:['February 28, 2026','January 31, 2026'], more:'' },
+                 y2025:{ count:'9 cuts', dates:['December 31, 2025','November 30, 2025','October 31, 2025'], more:'…and 6 more cuts in 2025' } },
+    };
+    const ORDER = ['daily','weekly','monthly'];
+    let cur = 'weekly';
+    const latestItem = () =>
+      '<div class="cutoff-item flex items-center justify-between gap-2 px-2.5 py-2 rounded-md bg-border font-semibold text-sm cursor-pointer" data-date="march 31 2026 mar">'
+      +'<span>March 31, 2026</span>'
+      +'<span class="inline-block px-1.5 py-0.5 rounded bg-border text-primary text-[10px] font-bold tracking-wider font-primary">LATEST</span></div>';
+    const item = d => '<div class="cutoff-item flex items-center px-2.5 py-2 rounded-md hover:bg-bg text-sm cursor-pointer" data-date="'+d.toLowerCase()+'"><span>'+d+'</span></div>';
+    const more = t => t ? '<div class="text-[11px] italic text-text-muted px-2.5 py-1.5">'+t+'</div>' : '';
+    function render(f) {
+      const c = FREQ[f];
+      $('cf-freqLabel').textContent = c.label;
+      $('cf-freqPrior').textContent = c.prior;
+      $('cf-yr2026-count').textContent = c.y2026.count;
+      $('cf-yr2026-list').innerHTML = latestItem() + c.y2026.dates.map(item).join('') + more(c.y2026.more);
+      $('cf-yr2025-count').textContent = c.y2025.count;
+      $('cf-yr2025-list').innerHTML = c.y2025.dates.map(item).join('') + more(c.y2025.more);
+    }
+    window.cfCycleFreq = function() { cur = ORDER[(ORDER.indexOf(cur)+1)%ORDER.length]; render(cur); };
+    const badge = $('cf-freqBadge');
+    if (badge) { badge.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); cfCycleFreq(); } }); }
+    render(cur);
+  })();
 </script>
 
 <script>
