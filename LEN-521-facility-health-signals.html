@@ -990,8 +990,8 @@
 
         <!-- oc-callout · alternable breach ⇄ compliant -->
         <aside id="ocCallout" class="flex items-center gap-2.5 p-3 px-4 rounded-md border border-warning-border bg-warning-bg text-warning text-sm mt-3">
-          <i class="ph ph-x-circle text-lg"></i>
-          <span><strong>Breach: 3.8% below minimum · Deficit −0.05</strong> · Reported <span class="num">1.25</span> / Required <span class="num">1.30</span></span>
+          <i class="ph ph-warning-octagon text-lg"></i>
+          <span><strong>Critical: At emission floor · Cannot disburse · Deficit −0.05</strong> · Reported <span class="num">1.25</span> / Required <span class="num">1.30</span> / Minimum <span class="num">1.25</span></span>
         </aside>
 
         <!-- Show Data toggle -->
@@ -2371,17 +2371,17 @@
       pill:{cls:'bg-warning-bg text-warning', html:'<i class="ph ph-warning"></i> Non compliant'},
       delta:{cls:'bg-warning-bg text-warning', html:'<i class="ph ph-arrow-line-down text-xs"></i> −0.06 <span class="font-normal opacity-90">vs. prior month</span>'},
       card:{cls:'block bg-warning-bg border border-warning-border rounded-xl p-4 min-h-[118px]', tcls:'text-warning', vcls:'text-warning', val:'1.25', sub:'Actual OC ratio', tt:'Reported 1.25 por debajo del mínimo 1.30 — breach'},
-      aside:{cls:'border-warning-border bg-warning-bg text-warning', html:'<i class="ph ph-x-circle text-lg"></i><span><strong>Breach: 3.8% below minimum · Deficit −0.05</strong> · Reported <span class="num">1.25</span> / Required <span class="num">1.30</span></span>'} },
+      aside:{cls:'border-warning-border bg-warning-bg text-warning', html:'<i class="ph ph-warning-octagon text-lg"></i><span><strong>Critical: At emission floor · Cannot disburse · Deficit −0.05</strong> · Reported <span class="num">1.25</span> / Required <span class="num">1.30</span> / Minimum <span class="num">1.25</span></span>'} },
     ok:    { rep:[1.32,1.33,1.34,1.35,1.34,1.36,1.35,1.37,1.36,1.38,1.37,1.38],
       pill:{cls:'bg-success-bg text-success', html:'<i class="ph ph-check-circle"></i> Compliant'},
       delta:{cls:'bg-success-bg text-success', html:'<i class="ph ph-arrow-line-up text-xs"></i> +0.01 <span class="font-normal opacity-90">vs. prior month</span>'},
-      card:{cls:'block bg-success-bg border border-success/30 rounded-xl p-4 min-h-[118px]', tcls:'text-success', vcls:'text-success', val:'1.38', sub:'Actual OC ratio', tt:'Reported 1.38 por encima del mínimo 1.30 — compliant'},
-      aside:{cls:'border-success/30 bg-success-bg text-success', html:'<i class="ph ph-check-circle text-lg"></i><span><strong>Compliant: 6.2% above minimum · Cushion +0.08</strong> · Reported <span class="num">1.38</span> / Required <span class="num">1.30</span></span>'} },
+      card:{cls:'block bg-success-bg border border-success/30 rounded-xl p-4 min-h-[118px]', tcls:'text-success', vcls:'text-success', val:'1.38', sub:'Actual OC ratio', tt:'Reported 1.38 por encima del requerido 1.30 — compliant'},
+      aside:{cls:'border-success/30 bg-success-bg text-success', html:'<i class="ph ph-check-circle text-lg"></i><span><strong>Compliant: Cushion +0.08 above required</strong> · Reported <span class="num">1.38</span> / Required <span class="num">1.30</span> / Minimum <span class="num">1.25</span></span>'} },
     atmin: { rep:[1.34,1.33,1.33,1.32,1.31,1.31,1.30,1.30,1.30,1.31,1.30,1.30],
       pill:null,
       delta:{cls:'bg-bg text-text-secondary', html:'<i class="ph ph-arrow-right text-xs"></i> 0.00 <span class="font-normal opacity-90">vs. prior month</span>'},
-      card:{cls:'block bg-bg border border-border rounded-xl p-4 min-h-[118px]', tcls:'text-text-secondary', vcls:'text-text-secondary', val:'1.30', sub:'Actual OC ratio', tt:'Reported 1.30 igual al mínimo 1.30 — sin cushion'},
-      aside:{cls:'border-border bg-bg text-text-secondary', html:'<i class="ph ph-warning-circle text-lg"></i><span><strong>At minimum: 0.0% margin · Cushion 0.00</strong> · Reported <span class="num">1.30</span> / Required <span class="num">1.30</span></span>'} },
+      card:{cls:'block bg-bg border border-border rounded-xl p-4 min-h-[118px]', tcls:'text-text-secondary', vcls:'text-text-secondary', val:'1.30', sub:'Actual OC ratio', tt:'Reported 1.30 igual al requerido 1.30 — sin cushion'},
+      aside:{cls:'border-border bg-bg text-text-secondary', html:'<i class="ph ph-warning-circle text-lg"></i><span><strong>At required minimum · No disbursement cushion</strong> · Reported <span class="num">1.30</span> / Required <span class="num">1.30</span> / Minimum <span class="num">1.25</span></span>'} },
   };
   const oc1 = initOCChart({ dynId:'ocDynamic', reportedCardId:'ocReportedCard', deltaId:'ocDelta', pillId:'ocPill', calloutId:'ocCallout', tableId:'ocTable', req:1.30, min:1.25, data:OC_DATA_PL, initial:'nc' });
   window.toggleOC = e => oc1.toggle(e);
@@ -2392,17 +2392,17 @@
       pill:{cls:'bg-warning-bg text-warning', html:'<i class="ph ph-warning"></i> Non compliant'},
       delta:{cls:'bg-warning-bg text-warning', html:'<i class="ph ph-arrow-line-down text-xs"></i> −0.02 <span class="font-normal opacity-90">vs. prior month</span>'},
       card:{cls:'block bg-warning-bg border border-warning-border rounded-xl p-4 min-h-[118px]', tcls:'text-warning', vcls:'text-warning', val:'1.27', sub:'Actual OC ratio', tt:'Reported 1.27 por debajo del mínimo 1.30 — breach'},
-      aside:{cls:'border-warning-border bg-warning-bg text-warning', html:'<i class="ph ph-x-circle text-lg"></i><span><strong>Breach: 2.3% below minimum · Deficit −0.03</strong> · Reported <span class="num">1.27</span> / Required <span class="num">1.30</span></span>'} },
+      aside:{cls:'border-warning-border bg-warning-bg text-warning', html:'<i class="ph ph-x-circle text-lg"></i><span><strong>Breach: Cannot disburse · Deficit −0.03 · Above floor</strong> · Reported <span class="num">1.27</span> / Required <span class="num">1.30</span> / Minimum <span class="num">1.25</span></span>'} },
     ok:    { rep:[1.38,1.39,1.40,1.41,1.42,1.41,1.43,1.42,1.44,1.43,1.42,1.44],
       pill:{cls:'bg-success-bg text-success', html:'<i class="ph ph-check-circle"></i> Compliant'},
       delta:{cls:'bg-success-bg text-success', html:'<i class="ph ph-arrow-line-up text-xs"></i> +0.02 <span class="font-normal opacity-90">vs. prior month</span>'},
-      card:{cls:'block bg-success-bg border border-success/30 rounded-xl p-4 min-h-[118px]', tcls:'text-success', vcls:'text-success', val:'1.44', sub:'Actual OC ratio', tt:'Reported 1.44 por encima del mínimo 1.30 — compliant'},
-      aside:{cls:'border-success/30 bg-success-bg text-success', html:'<i class="ph ph-check-circle text-lg"></i><span><strong>Compliant: 10.8% above minimum · Cushion +0.14</strong> · Reported <span class="num">1.44</span> / Required <span class="num">1.30</span></span>'} },
+      card:{cls:'block bg-success-bg border border-success/30 rounded-xl p-4 min-h-[118px]', tcls:'text-success', vcls:'text-success', val:'1.44', sub:'Actual OC ratio', tt:'Reported 1.44 por encima del requerido 1.30 — compliant'},
+      aside:{cls:'border-success/30 bg-success-bg text-success', html:'<i class="ph ph-check-circle text-lg"></i><span><strong>Compliant: Cushion +0.14 above required</strong> · Reported <span class="num">1.44</span> / Required <span class="num">1.30</span> / Minimum <span class="num">1.25</span></span>'} },
     atmin: { rep:[1.38,1.37,1.36,1.35,1.34,1.33,1.33,1.32,1.32,1.31,1.31,1.30],
       pill:null,
       delta:{cls:'bg-bg text-text-secondary', html:'<i class="ph ph-arrow-right text-xs"></i> 0.00 <span class="font-normal opacity-90">vs. prior month</span>'},
-      card:{cls:'block bg-bg border border-border rounded-xl p-4 min-h-[118px]', tcls:'text-text-secondary', vcls:'text-text-secondary', val:'1.30', sub:'Actual OC ratio', tt:'Reported 1.30 igual al mínimo 1.30 — sin cushion'},
-      aside:{cls:'border-border bg-bg text-text-secondary', html:'<i class="ph ph-warning-circle text-lg"></i><span><strong>At minimum: 0.0% margin · Cushion 0.00</strong> · Reported <span class="num">1.30</span> / Required <span class="num">1.30</span></span>'} },
+      card:{cls:'block bg-bg border border-border rounded-xl p-4 min-h-[118px]', tcls:'text-text-secondary', vcls:'text-text-secondary', val:'1.30', sub:'Actual OC ratio', tt:'Reported 1.30 igual al requerido 1.30 — sin cushion'},
+      aside:{cls:'border-border bg-bg text-text-secondary', html:'<i class="ph ph-warning-circle text-lg"></i><span><strong>At required minimum · No disbursement cushion</strong> · Reported <span class="num">1.30</span> / Required <span class="num">1.30</span> / Minimum <span class="num">1.25</span></span>'} },
   };
   const oc2 = initOCChart({ dynId:'ocDynamic2', reportedCardId:'ocReportedCard2', deltaId:'ocDelta2', pillId:'ocPill2', calloutId:'ocCallout2', tableId:'ocTable2', req:1.30, min:1.25, data:OC_DATA_AL, initial:'ok' });
   window.toggleOC2 = e => oc2.toggle(e);
