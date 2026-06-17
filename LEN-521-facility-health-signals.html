@@ -946,14 +946,14 @@
         </header>
 
         <div class="grid grid-cols-3 gap-3 mb-3">
-          <kpi-card id="ocReportedCard" class="block bg-warning-bg border border-warning-border rounded-xl p-4 min-h-[118px]" data-tt="Reported 1.28 por debajo del mínimo 1.35 — breach">
+          <kpi-card id="ocReportedCard" class="block bg-warning-bg border border-warning-border rounded-xl p-4 min-h-[118px]" data-tt="Reported 1.25 por debajo del mínimo 1.30 — breach">
             <h4 class="font-primary text-sm font-medium text-warning m-0 mb-2">Reported</h4>
-            <div class="num text-3xl font-bold leading-tight text-warning">1.28</div>
+            <div class="num text-3xl font-bold leading-tight text-warning">1.25</div>
             <div class="text-xs text-text-secondary mt-1">Actual OC ratio · below minimum</div>
           </kpi-card>
           <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[118px]">
             <h4 class="font-primary text-sm font-medium text-text-secondary m-0 mb-2">Required</h4>
-            <div class="num text-3xl font-bold leading-tight">1.35</div>
+            <div class="num text-3xl font-bold leading-tight">1.30</div>
             <div class="text-xs text-text-secondary mt-1">Contractual minimum</div>
           </kpi-card>
           <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[118px]">
@@ -975,8 +975,8 @@
               <linearGradient id="ocGreen" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#16A34A" stop-opacity=".15"/><stop offset="100%" stop-color="#16A34A" stop-opacity=".05"/></linearGradient>
               <pattern id="ocAmber" patternUnits="userSpaceOnUse" width="6" height="6"><rect width="6" height="6" fill="rgba(217,119,6,0.10)"/></pattern>
             </defs>
-            <g stroke="#E2E8F0"><line x1="40" y1="30" x2="470" y2="30"/><line x1="40" y1="80" x2="470" y2="80"/><line x1="40" y1="130" x2="470" y2="130"/><line x1="40" y1="170" x2="470" y2="170" stroke="#CBD5E1"/><line x1="40" y1="195" x2="470" y2="195" stroke="#CBD5E1" stroke-dasharray="2 2"/></g>
-            <g font-family="Space Mono" font-size="9" fill="#64748B"><text x="36" y="33" text-anchor="end">1.45</text><text x="36" y="83" text-anchor="end">1.40</text><text x="36" y="133" text-anchor="end">1.35</text><text x="36" y="173" text-anchor="end">1.28</text><text x="36" y="198" text-anchor="end">1.25</text></g>
+            <g stroke="#E2E8F0"><line x1="40" y1="30" x2="470" y2="30"/><line x1="40" y1="70" x2="470" y2="70"/><line x1="40" y1="110" x2="470" y2="110"/><line x1="40" y1="150" x2="470" y2="150" stroke="#CBD5E1"/><line x1="40" y1="190" x2="470" y2="190" stroke="#CBD5E1" stroke-dasharray="2 2"/></g>
+            <g font-family="Space Mono" font-size="9" fill="#64748B"><text x="36" y="33" text-anchor="end">1.45</text><text x="36" y="73" text-anchor="end">1.40</text><text x="36" y="113" text-anchor="end">1.35</text><text x="36" y="153" text-anchor="end">1.30</text><text x="36" y="193" text-anchor="end">1.25</text></g>
             <g id="ocDynamic">
             <polygon points="60,140 160,120 260,120 360,140 360,130 260,130 160,130 60,130" fill="url(#ocGreen)"/>
             <polygon points="360,140 460,170 460,130 360,130" fill="url(#ocAmber)"/>
@@ -991,7 +991,7 @@
         <!-- oc-callout · alternable breach ⇄ compliant -->
         <aside id="ocCallout" class="flex items-center gap-2.5 p-3 px-4 rounded-md border border-warning-border bg-warning-bg text-warning text-sm mt-3">
           <i class="ph ph-x-circle text-lg"></i>
-          <span><strong>Breach: 5.2% below minimum · Deficit −0.07</strong> · Reported <span class="num">1.28</span> / Required <span class="num">1.35</span></span>
+          <span><strong>Breach: 3.8% below minimum · Deficit −0.05</strong> · Reported <span class="num">1.25</span> / Required <span class="num">1.30</span></span>
         </aside>
 
         <!-- Show Data toggle -->
@@ -1012,11 +1012,11 @@
               <th class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Status</th>
             </tr></thead>
             <tbody>
-              <tr><td class="p-3 border-b border-border">Nov 30, 2025</td><td class="p-3 border-b border-border text-right num">1.34</td><td class="p-3 border-b border-border text-right num">1.35</td><td class="p-3 border-b border-border text-right num text-warning">−0.01</td><td class="p-3 border-b border-border"><span class="text-warning text-xs font-semibold">Non compliant</span></td></tr>
-              <tr><td class="p-3 border-b border-border">Dec 31, 2025</td><td class="p-3 border-b border-border text-right num">1.40</td><td class="p-3 border-b border-border text-right num">1.35</td><td class="p-3 border-b border-border text-right num text-success">+0.05</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
-              <tr><td class="p-3 border-b border-border">Jan 31, 2026</td><td class="p-3 border-b border-border text-right num">1.40</td><td class="p-3 border-b border-border text-right num">1.35</td><td class="p-3 border-b border-border text-right num text-success">+0.05</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
-              <tr><td class="p-3 border-b border-border">Feb 28, 2026</td><td class="p-3 border-b border-border text-right num">1.34</td><td class="p-3 border-b border-border text-right num">1.35</td><td class="p-3 border-b border-border text-right num text-warning">−0.01</td><td class="p-3 border-b border-border"><span class="text-warning text-xs font-semibold">Non compliant</span></td></tr>
-              <tr class="bg-bg"><td class="p-3"><strong>Mar 31, 2026 · latest</strong></td><td class="p-3 text-right num font-bold">1.28</td><td class="p-3 text-right num font-bold">1.35</td><td class="p-3 text-right num font-bold text-warning">−0.07</td><td class="p-3"><span class="text-warning text-xs font-bold">Non compliant</span></td></tr>
+              <tr><td class="p-3 border-b border-border">Nov 30, 2025</td><td class="p-3 border-b border-border text-right num">1.31</td><td class="p-3 border-b border-border text-right num">1.30</td><td class="p-3 border-b border-border text-right num text-success">+0.01</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
+              <tr><td class="p-3 border-b border-border">Dec 31, 2025</td><td class="p-3 border-b border-border text-right num">1.35</td><td class="p-3 border-b border-border text-right num">1.30</td><td class="p-3 border-b border-border text-right num text-success">+0.05</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
+              <tr><td class="p-3 border-b border-border">Jan 31, 2026</td><td class="p-3 border-b border-border text-right num">1.33</td><td class="p-3 border-b border-border text-right num">1.30</td><td class="p-3 border-b border-border text-right num text-success">+0.03</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
+              <tr><td class="p-3 border-b border-border">Feb 28, 2026</td><td class="p-3 border-b border-border text-right num">1.31</td><td class="p-3 border-b border-border text-right num">1.30</td><td class="p-3 border-b border-border text-right num text-success">+0.01</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
+              <tr class="bg-bg"><td class="p-3"><strong>Mar 31, 2026 · latest</strong></td><td class="p-3 text-right num font-bold">1.25</td><td class="p-3 text-right num font-bold">1.30</td><td class="p-3 text-right num font-bold text-warning">−0.05</td><td class="p-3"><span class="text-warning text-xs font-bold">Non compliant</span></td></tr>
             </tbody>
           </table>
           </div>
@@ -2311,7 +2311,7 @@
   if (!window.TR) return;
 
   /* ─── Overcollateralization · factory — soporta múltiples instancias por asset type ─── */
-  const ocY = r => +Math.max(30, Math.min(196, 30 + (1.45 - r) * 823.5)).toFixed(1);
+  const ocY = r => +Math.max(30, Math.min(190, 30 + (1.45 - r) * 800)).toFixed(1);
   const OC_UP = '#16A34A', OC_DN = '#B45309';
 
   function initOCChart({ dynId, reportedCardId, deltaId, pillId, calloutId, tableId, req, min, data, initial }) {
@@ -2365,25 +2365,25 @@
     return { toggle(e) { if (e && e.target.closest('label, .data-switch, #'+tableId)) return; cur = {nc:'ok',ok:'atmin',atmin:'nc'}[cur]; setScenario(); } };
   }
 
-  // ── Chart 1 · Personal Loan (req 1.35, starts Non compliant) ──
+  // ── Chart 1 · Personal Loan (req 1.30, min 1.25, starts Non compliant) ──
   const OC_DATA_PL = {
-    nc:    { rep:[1.41,1.40,1.42,1.39,1.41,1.40,1.38,1.34,1.40,1.40,1.34,1.28],
+    nc:    { rep:[1.38,1.37,1.36,1.35,1.37,1.36,1.34,1.32,1.35,1.33,1.31,1.25],
       pill:{cls:'bg-warning-bg text-warning', html:'<i class="ph ph-warning"></i> Non compliant'},
       delta:{cls:'bg-warning-bg text-warning', html:'<i class="ph ph-arrow-line-down text-xs"></i> −0.06 <span class="font-normal opacity-90">vs. prior month</span>'},
-      card:{cls:'block bg-warning-bg border border-warning-border rounded-xl p-4 min-h-[118px]', tcls:'text-warning', vcls:'text-warning', val:'1.28', sub:'Actual OC ratio · below minimum', tt:'Reported 1.28 por debajo del mínimo 1.35 — breach'},
-      aside:{cls:'border-warning-border bg-warning-bg text-warning', html:'<i class="ph ph-x-circle text-lg"></i><span><strong>Breach: 5.2% below minimum · Deficit −0.07</strong> · Reported <span class="num">1.28</span> / Required <span class="num">1.35</span></span>'} },
-    ok:    { rep:[1.38,1.39,1.40,1.41,1.40,1.42,1.41,1.43,1.42,1.44,1.43,1.45],
+      card:{cls:'block bg-warning-bg border border-warning-border rounded-xl p-4 min-h-[118px]', tcls:'text-warning', vcls:'text-warning', val:'1.25', sub:'Actual OC ratio · below minimum', tt:'Reported 1.25 por debajo del mínimo 1.30 — breach'},
+      aside:{cls:'border-warning-border bg-warning-bg text-warning', html:'<i class="ph ph-x-circle text-lg"></i><span><strong>Breach: 3.8% below minimum · Deficit −0.05</strong> · Reported <span class="num">1.25</span> / Required <span class="num">1.30</span></span>'} },
+    ok:    { rep:[1.32,1.33,1.34,1.35,1.34,1.36,1.35,1.37,1.36,1.38,1.37,1.38],
       pill:{cls:'bg-success-bg text-success', html:'<i class="ph ph-check-circle"></i> Compliant'},
-      delta:{cls:'bg-success-bg text-success', html:'<i class="ph ph-arrow-line-up text-xs"></i> +0.02 <span class="font-normal opacity-90">vs. prior month</span>'},
-      card:{cls:'block bg-success-bg border border-success/30 rounded-xl p-4 min-h-[118px]', tcls:'text-success', vcls:'text-success', val:'1.45', sub:'Actual OC ratio · above minimum', tt:'Reported 1.45 por encima del mínimo 1.35 — compliant'},
-      aside:{cls:'border-success/30 bg-success-bg text-success', html:'<i class="ph ph-check-circle text-lg"></i><span><strong>Compliant: 7.4% above minimum · Cushion +0.10</strong> · Reported <span class="num">1.45</span> / Required <span class="num">1.35</span></span>'} },
-    atmin: { rep:[1.42,1.41,1.40,1.40,1.39,1.38,1.38,1.37,1.37,1.36,1.36,1.35],
+      delta:{cls:'bg-success-bg text-success', html:'<i class="ph ph-arrow-line-up text-xs"></i> +0.01 <span class="font-normal opacity-90">vs. prior month</span>'},
+      card:{cls:'block bg-success-bg border border-success/30 rounded-xl p-4 min-h-[118px]', tcls:'text-success', vcls:'text-success', val:'1.38', sub:'Actual OC ratio · above minimum', tt:'Reported 1.38 por encima del mínimo 1.30 — compliant'},
+      aside:{cls:'border-success/30 bg-success-bg text-success', html:'<i class="ph ph-check-circle text-lg"></i><span><strong>Compliant: 6.2% above minimum · Cushion +0.08</strong> · Reported <span class="num">1.38</span> / Required <span class="num">1.30</span></span>'} },
+    atmin: { rep:[1.34,1.33,1.33,1.32,1.31,1.31,1.30,1.30,1.30,1.31,1.30,1.30],
       pill:null,
       delta:{cls:'bg-bg text-text-secondary', html:'<i class="ph ph-arrow-right text-xs"></i> 0.00 <span class="font-normal opacity-90">vs. prior month</span>'},
-      card:{cls:'block bg-bg border border-border rounded-xl p-4 min-h-[118px]', tcls:'text-text-secondary', vcls:'text-text-secondary', val:'1.35', sub:'Actual OC ratio · at minimum', tt:'Reported 1.35 igual al mínimo 1.35 — sin cushion'},
-      aside:{cls:'border-border bg-bg text-text-secondary', html:'<i class="ph ph-warning-circle text-lg"></i><span><strong>At minimum: 0.0% margin · Cushion 0.00</strong> · Reported <span class="num">1.35</span> / Required <span class="num">1.35</span></span>'} },
+      card:{cls:'block bg-bg border border-border rounded-xl p-4 min-h-[118px]', tcls:'text-text-secondary', vcls:'text-text-secondary', val:'1.30', sub:'Actual OC ratio · at minimum', tt:'Reported 1.30 igual al mínimo 1.30 — sin cushion'},
+      aside:{cls:'border-border bg-bg text-text-secondary', html:'<i class="ph ph-warning-circle text-lg"></i><span><strong>At minimum: 0.0% margin · Cushion 0.00</strong> · Reported <span class="num">1.30</span> / Required <span class="num">1.30</span></span>'} },
   };
-  const oc1 = initOCChart({ dynId:'ocDynamic', reportedCardId:'ocReportedCard', deltaId:'ocDelta', pillId:'ocPill', calloutId:'ocCallout', tableId:'ocTable', req:1.35, min:1.25, data:OC_DATA_PL, initial:'nc' });
+  const oc1 = initOCChart({ dynId:'ocDynamic', reportedCardId:'ocReportedCard', deltaId:'ocDelta', pillId:'ocPill', calloutId:'ocCallout', tableId:'ocTable', req:1.30, min:1.25, data:OC_DATA_PL, initial:'nc' });
   window.toggleOC = e => oc1.toggle(e);
 
   // ── Chart 2 · Auto Loan (req 1.30, starts Compliant) ──
