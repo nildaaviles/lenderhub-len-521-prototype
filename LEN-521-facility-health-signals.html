@@ -988,12 +988,6 @@
           </svg>
         </div>
 
-        <!-- oc-callout · alternable breach ⇄ compliant -->
-        <aside id="ocCallout" class="flex items-center gap-2.5 p-3 px-4 rounded-md border border-warning-border bg-warning-bg text-warning text-sm mt-3">
-          <i class="ph ph-warning-octagon text-lg"></i>
-          <span><strong>Breach · Cannot disburse · Deficit −0.05</strong> · Reported <span class="num">1.25</span> / Required <span class="num">1.30</span></span>
-        </aside>
-
         <!-- Show Data toggle -->
         <div class="mt-3">
           <label class="inline-flex items-center gap-2 cursor-pointer select-none">
@@ -1071,11 +1065,6 @@
             <g id="ocDynamic2"></g>
           </svg>
         </div>
-
-        <aside id="ocCallout2" class="flex items-center gap-2.5 p-3 px-4 rounded-md border border-success/30 bg-success-bg text-success text-sm mt-3">
-          <i class="ph ph-check-circle text-lg"></i>
-          <span><strong>Compliant: 10.8% above minimum · Cushion +0.14</strong> · Reported <span class="num">1.44</span> / Required <span class="num">1.30</span></span>
-        </aside>
 
         <div class="mt-3">
           <label class="inline-flex items-center gap-2 cursor-pointer select-none">
@@ -2356,8 +2345,6 @@
       else { ocp.style.display = 'none'; }
       $(deltaId).className = 'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold font-primary ' + c.delta.cls;
       $(deltaId).innerHTML = c.delta.html;
-      $(calloutId).className = 'flex items-center gap-2.5 p-3 px-4 rounded-md border text-sm mt-3 ' + c.aside.cls;
-      $(calloutId).innerHTML = c.aside.html;
       render(window.TR.n());
     }
     window.TR.register(render);
@@ -2378,7 +2365,7 @@
       card:{cls:'block bg-success-bg border border-success/30 rounded-xl p-4 min-h-[118px]', tcls:'text-success', vcls:'text-success', val:'1.38', sub:'Actual OC ratio', tt:'Reported 1.38 por encima del requerido 1.30 — compliant'},
       aside:{cls:'border-success/30 bg-success-bg text-success', html:'<i class="ph ph-check-circle text-lg"></i><span><strong>Compliant · Cushion +0.08 above required</strong> · Reported <span class="num">1.38</span> / Required <span class="num">1.30</span></span>'} },
   };
-  const oc1 = initOCChart({ dynId:'ocDynamic', reportedCardId:'ocReportedCard', deltaId:'ocDelta', pillId:'ocPill', calloutId:'ocCallout', tableId:'ocTable', req:1.30, min:1.25, data:OC_DATA_PL, initial:'nc' });
+  const oc1 = initOCChart({ dynId:'ocDynamic', reportedCardId:'ocReportedCard', deltaId:'ocDelta', pillId:'ocPill', tableId:'ocTable', req:1.30, min:1.25, data:OC_DATA_PL, initial:'nc' });
   window.toggleOC = e => oc1.toggle(e);
 
   // ── Chart 2 · Auto Loan (req 1.30, starts Compliant) ──
@@ -2394,7 +2381,7 @@
       card:{cls:'block bg-success-bg border border-success/30 rounded-xl p-4 min-h-[118px]', tcls:'text-success', vcls:'text-success', val:'1.44', sub:'Actual OC ratio', tt:'Reported 1.44 por encima del requerido 1.30 — compliant'},
       aside:{cls:'border-success/30 bg-success-bg text-success', html:'<i class="ph ph-check-circle text-lg"></i><span><strong>Compliant · Cushion +0.14 above required</strong> · Reported <span class="num">1.44</span> / Required <span class="num">1.30</span></span>'} },
   };
-  const oc2 = initOCChart({ dynId:'ocDynamic2', reportedCardId:'ocReportedCard2', deltaId:'ocDelta2', pillId:'ocPill2', calloutId:'ocCallout2', tableId:'ocTable2', req:1.30, min:1.25, data:OC_DATA_AL, initial:'ok' });
+  const oc2 = initOCChart({ dynId:'ocDynamic2', reportedCardId:'ocReportedCard2', deltaId:'ocDelta2', pillId:'ocPill2', tableId:'ocTable2', req:1.30, min:1.25, data:OC_DATA_AL, initial:'ok' });
   window.toggleOC2 = e => oc2.toggle(e);
 
   /* ─── Assets evolution (Total vs Eligible) ─── */
