@@ -961,16 +961,17 @@
         <div class="flex justify-center gap-4 text-xs text-text-secondary mb-1.5">
           <span class="text-success"><span class="inline-block w-4 h-0.5 bg-current mr-1 align-middle"></span>Reported</span>
           <span class="text-text-muted"><span class="inline-block w-4 h-0.5 bg-current mr-1 align-middle" style="background:repeating-linear-gradient(to right,currentColor 0 4px,transparent 4px 7px)"></span>Required</span>
+          <span class="text-slate-500"><span class="inline-block w-4 h-0.5 mr-1 align-middle" style="background:repeating-linear-gradient(to right,#475569 0 3px,transparent 3px 5px)"></span>Minimum / Emission Req.</span>
         </div>
 
         <div class="bg-bg border border-border rounded-lg p-3.5 mt-2">
-          <svg viewBox="0 0 480 200" class="w-full h-[200px]">
+          <svg viewBox="0 0 480 215" class="w-full h-[215px]">
             <defs>
               <linearGradient id="ocGreen" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#16A34A" stop-opacity=".15"/><stop offset="100%" stop-color="#16A34A" stop-opacity=".05"/></linearGradient>
               <pattern id="ocAmber" patternUnits="userSpaceOnUse" width="6" height="6"><rect width="6" height="6" fill="rgba(217,119,6,0.10)"/></pattern>
             </defs>
-            <g stroke="#E2E8F0"><line x1="40" y1="30" x2="470" y2="30"/><line x1="40" y1="80" x2="470" y2="80"/><line x1="40" y1="130" x2="470" y2="130"/><line x1="40" y1="170" x2="470" y2="170" stroke="#CBD5E1"/></g>
-            <g font-family="Space Mono" font-size="9" fill="#64748B"><text x="36" y="33" text-anchor="end">1.45</text><text x="36" y="83" text-anchor="end">1.40</text><text x="36" y="133" text-anchor="end">1.35</text><text x="36" y="173" text-anchor="end">1.28</text></g>
+            <g stroke="#E2E8F0"><line x1="40" y1="30" x2="470" y2="30"/><line x1="40" y1="80" x2="470" y2="80"/><line x1="40" y1="130" x2="470" y2="130"/><line x1="40" y1="170" x2="470" y2="170" stroke="#CBD5E1"/><line x1="40" y1="195" x2="470" y2="195" stroke="#CBD5E1" stroke-dasharray="2 2"/></g>
+            <g font-family="Space Mono" font-size="9" fill="#64748B"><text x="36" y="33" text-anchor="end">1.45</text><text x="36" y="83" text-anchor="end">1.40</text><text x="36" y="133" text-anchor="end">1.35</text><text x="36" y="173" text-anchor="end">1.28</text><text x="36" y="198" text-anchor="end">1.25</text></g>
             <g id="ocDynamic">
             <polygon points="60,140 160,120 260,120 360,140 360,130 260,130 160,130 60,130" fill="url(#ocGreen)"/>
             <polygon points="360,140 460,170 460,130 360,130" fill="url(#ocAmber)"/>
@@ -2224,7 +2225,9 @@
 
   /* ─── Overcollateralization · clickeable: Compliant (verde) ⇄ Non compliant (naranja) ─── */
   const OC_REQ = 1.35;
-  const ocY = r => +Math.max(30, Math.min(195, 30 + (1.45 - r) * 823.5)).toFixed(1);
+  const OC_MIN = 1.25;
+  const OC_EMISION_REQ = 1.25;
+  const ocY = r => +Math.max(30, Math.min(196, 30 + (1.45 - r) * 823.5)).toFixed(1);
   const OC_UP = '#16A34A', OC_DN = '#B45309'; // ≥ mínimo = verde (compliant) / < mínimo = naranja (breach)
   const OC_DATA = {
     nc: { rep:[1.41,1.40,1.42,1.39,1.41,1.40,1.38,1.34,1.40,1.40,1.34,1.28], tag:'Non compliant',
@@ -2249,6 +2252,8 @@
     const rep = tail(OC_DATA[ocCur].rep, n), ms = tail(MONTHS, n), N = rep.length;
     const X0 = 60, X1 = 460, step = N > 1 ? (X1 - X0) / (N - 1) : 0, xb = i => +(X0 + i*step).toFixed(1);
     const reqY = ocY(OC_REQ);
+    const minY = ocY(OC_MIN);
+    const emisReqY = ocY(OC_EMISION_REQ);
     const P = i => ({ x: xb(i), y: ocY(rep[i]), below: rep[i] < OC_REQ });
     let bands = '', lines = '';
     for (let i = 0; i < N - 1; i++){
@@ -2264,10 +2269,13 @@
     }
     let dots = '';
     for (let i = 0; i < N; i++){ const p = P(i); dots += `<circle cx="${p.x}" cy="${p.y}" r="${i===N-1?3.5:3}" fill="${p.below?OC_DN:OC_UP}"${i===N-1?' stroke="#fff" stroke-width="1.5"':''}/>`; }
-    const labels = '<g font-family="Sofia Sans" font-size="'+(N>7?'8':'10')+'" fill="#64748B">' + ms.map((m,i)=>`<text x="${xb(i)}" y="190" text-anchor="middle">${m}</text>`).join('') + '</g>';
+    const labels = '<g font-family="Sofia Sans" font-size="'+(N>7?'8':'10')+'" fill="#64748B">' + ms.map((m,i)=>`<text x="${xb(i)}" y="210" text-anchor="middle">${m}</text>`).join('') + '</g>';
     $('ocDynamic').innerHTML = bands
       + `<line x1="${X0}" y1="${reqY}" x2="${X1}" y2="${reqY}" stroke="#94A3B8" stroke-width="2" stroke-dasharray="5 3"/>`
       + `<text x="${X1}" y="${reqY-4}" text-anchor="end" font-family="Space Mono" font-size="8" fill="#94A3B8">Required 1.35</text>`
+      + `<line x1="${X0}" y1="${minY}" x2="${X1}" y2="${minY}" stroke="#475569" stroke-width="1.5" stroke-dasharray="3 2"/>`
+      + `<text x="${X0+2}" y="${minY-3}" text-anchor="start" font-family="Space Mono" font-size="7.5" fill="#475569">Minimum</text>`
+      + `<text x="${X1}" y="${minY-3}" text-anchor="end" font-family="Space Mono" font-size="7.5" fill="#475569">Emission Req. · 1.25</text>`
       + lines + dots + labels;
   }
   function setOCScenario(){
