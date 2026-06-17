@@ -936,7 +936,7 @@
     <overcollateralization-section class="order-1 block">
       <article id="ocCard" onclick="toggleOC(event)" class="bg-surface border border-border rounded-xl p-4 cursor-pointer hover:border-border-strong transition-colors" title="Click para alternar Compliant ⇄ Non compliant">
         <header class="flex items-center gap-2.5 mb-3 flex-wrap">
-          <h3 class="font-primary text-base font-bold uppercase tracking-wider text-text m-0">Overcollateralization</h3>
+          <h3 class="font-primary text-base font-bold uppercase tracking-wider text-text m-0">Overcollateralization <span class="normal-case font-medium text-sm text-text-secondary tracking-normal">(Personal Loan)</span></h3>
           <delta-chip id="ocDelta" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-warning-bg text-warning text-xs font-semibold font-primary">
             <i class="ph ph-arrow-line-down text-xs"></i> −0.06 <span class="font-normal opacity-90">vs. prior month</span>
           </delta-chip>
@@ -1017,6 +1017,88 @@
               <tr><td class="p-3 border-b border-border">Jan 31, 2026</td><td class="p-3 border-b border-border text-right num">1.40</td><td class="p-3 border-b border-border text-right num">1.35</td><td class="p-3 border-b border-border text-right num text-success">+0.05</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
               <tr><td class="p-3 border-b border-border">Feb 28, 2026</td><td class="p-3 border-b border-border text-right num">1.34</td><td class="p-3 border-b border-border text-right num">1.35</td><td class="p-3 border-b border-border text-right num text-warning">−0.01</td><td class="p-3 border-b border-border"><span class="text-warning text-xs font-semibold">Non compliant</span></td></tr>
               <tr class="bg-bg"><td class="p-3"><strong>Mar 31, 2026 · latest</strong></td><td class="p-3 text-right num font-bold">1.28</td><td class="p-3 text-right num font-bold">1.35</td><td class="p-3 text-right num font-bold text-warning">−0.07</td><td class="p-3"><span class="text-warning text-xs font-bold">Non compliant</span></td></tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+      </article>
+
+      <!-- ── OC chart 2 · Auto Loan ── -->
+      <div class="mt-4 border-t border-border"></div>
+      <article id="ocCard2" onclick="toggleOC2(event)" class="bg-surface border border-border rounded-xl p-4 mt-4 cursor-pointer hover:border-border-strong transition-colors" title="Click para alternar Compliant ⇄ Non compliant">
+        <header class="flex items-center gap-2.5 mb-3 flex-wrap">
+          <h3 class="font-primary text-base font-bold uppercase tracking-wider text-text m-0">Overcollateralization <span class="normal-case font-medium text-sm text-text-secondary tracking-normal">(Auto Loan)</span></h3>
+          <delta-chip id="ocDelta2" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-success-bg text-success text-xs font-semibold font-primary">
+            <i class="ph ph-arrow-line-up text-xs"></i> +0.02 <span class="font-normal opacity-90">vs. prior month</span>
+          </delta-chip>
+          <span id="ocPill2" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success-bg text-success text-xs font-bold font-primary">
+            <i class="ph ph-check-circle"></i> Compliant
+          </span>
+        </header>
+
+        <div class="grid grid-cols-3 gap-3 mb-3">
+          <kpi-card id="ocReportedCard2" class="block bg-success-bg border border-success/30 rounded-xl p-4 min-h-[118px]">
+            <h4 class="font-primary text-sm font-medium text-success m-0 mb-2">Reported</h4>
+            <div class="num text-3xl font-bold leading-tight text-success">1.44</div>
+            <div class="text-xs text-text-secondary mt-1">Actual OC ratio · above minimum</div>
+          </kpi-card>
+          <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[118px]">
+            <h4 class="font-primary text-sm font-medium text-text-secondary m-0 mb-2">Required</h4>
+            <div class="num text-3xl font-bold leading-tight">1.30</div>
+            <div class="text-xs text-text-secondary mt-1">Contractual minimum</div>
+          </kpi-card>
+          <kpi-card class="block bg-bg border border-border rounded-xl p-4 min-h-[118px]">
+            <h4 class="font-primary text-sm font-medium text-text-secondary m-0 mb-2">Minimum / Emission Req.</h4>
+            <div class="num text-3xl font-bold leading-tight">1.25</div>
+            <div class="text-xs text-text-secondary mt-1">Floor · issuance threshold</div>
+          </kpi-card>
+        </div>
+
+        <div class="flex justify-center gap-4 text-xs text-text-secondary mb-1.5">
+          <span class="text-success"><span class="inline-block w-4 h-0.5 bg-current mr-1 align-middle"></span>Reported</span>
+          <span class="text-text-muted"><span class="inline-block w-4 h-0.5 bg-current mr-1 align-middle" style="background:repeating-linear-gradient(to right,currentColor 0 4px,transparent 4px 7px)"></span>Required</span>
+          <span class="text-slate-500"><span class="inline-block w-4 h-0.5 mr-1 align-middle" style="background:repeating-linear-gradient(to right,#475569 0 3px,transparent 3px 5px)"></span>Minimum / Emission Req.</span>
+        </div>
+
+        <div class="bg-bg border border-border rounded-lg p-3.5 mt-2">
+          <svg viewBox="0 0 480 215" class="w-full h-[215px]">
+            <defs>
+              <linearGradient id="ocGreen2" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#16A34A" stop-opacity=".15"/><stop offset="100%" stop-color="#16A34A" stop-opacity=".05"/></linearGradient>
+              <pattern id="ocAmber2" patternUnits="userSpaceOnUse" width="6" height="6"><rect width="6" height="6" fill="rgba(217,119,6,0.10)"/></pattern>
+            </defs>
+            <g stroke="#E2E8F0"><line x1="40" y1="30" x2="470" y2="30"/><line x1="40" y1="80" x2="470" y2="80"/><line x1="40" y1="130" x2="470" y2="130"/><line x1="40" y1="170" x2="470" y2="170" stroke="#CBD5E1"/><line x1="40" y1="195" x2="470" y2="195" stroke="#CBD5E1" stroke-dasharray="2 2"/></g>
+            <g font-family="Space Mono" font-size="9" fill="#64748B"><text x="36" y="33" text-anchor="end">1.45</text><text x="36" y="83" text-anchor="end">1.40</text><text x="36" y="133" text-anchor="end">1.35</text><text x="36" y="173" text-anchor="end">1.30</text><text x="36" y="198" text-anchor="end">1.25</text></g>
+            <g id="ocDynamic2"></g>
+          </svg>
+        </div>
+
+        <aside id="ocCallout2" class="flex items-center gap-2.5 p-3 px-4 rounded-md border border-success/30 bg-success-bg text-success text-sm mt-3">
+          <i class="ph ph-check-circle text-lg"></i>
+          <span><strong>Compliant: 10.8% above minimum · Cushion +0.14</strong> · Reported <span class="num">1.44</span> / Required <span class="num">1.30</span></span>
+        </aside>
+
+        <div class="mt-3">
+          <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+            <button type="button" role="switch" aria-checked="false" onclick="toggleData(this,'ocTable2')" class="data-switch relative w-9 h-5 rounded-full bg-border-strong transition-colors flex-shrink-0">
+              <span class="knob absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"></span>
+            </button>
+            <span class="text-xs font-primary font-semibold text-text-secondary">Show Data</span>
+          </label>
+          <div id="ocTable2" class="hidden mt-2">
+          <table class="w-full border-collapse text-sm mt-2">
+            <thead><tr class="bg-bg">
+              <th class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Cut-off</th>
+              <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Reported</th>
+              <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Required</th>
+              <th class="text-right p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Margin</th>
+              <th class="text-left p-2.5 font-primary text-[10px] uppercase tracking-wider text-text-secondary font-bold border-b border-border">Status</th>
+            </tr></thead>
+            <tbody>
+              <tr><td class="p-3 border-b border-border">Nov 30, 2025</td><td class="p-3 border-b border-border text-right num">1.39</td><td class="p-3 border-b border-border text-right num">1.30</td><td class="p-3 border-b border-border text-right num text-success">+0.09</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
+              <tr><td class="p-3 border-b border-border">Dec 31, 2025</td><td class="p-3 border-b border-border text-right num">1.40</td><td class="p-3 border-b border-border text-right num">1.30</td><td class="p-3 border-b border-border text-right num text-success">+0.10</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
+              <tr><td class="p-3 border-b border-border">Jan 31, 2026</td><td class="p-3 border-b border-border text-right num">1.41</td><td class="p-3 border-b border-border text-right num">1.30</td><td class="p-3 border-b border-border text-right num text-success">+0.11</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
+              <tr><td class="p-3 border-b border-border">Feb 28, 2026</td><td class="p-3 border-b border-border text-right num">1.42</td><td class="p-3 border-b border-border text-right num">1.30</td><td class="p-3 border-b border-border text-right num text-success">+0.12</td><td class="p-3 border-b border-border"><span class="text-success text-xs font-semibold">Compliant</span></td></tr>
+              <tr class="bg-bg"><td class="p-3"><strong>Mar 31, 2026 · latest</strong></td><td class="p-3 text-right num font-bold">1.44</td><td class="p-3 text-right num font-bold">1.30</td><td class="p-3 text-right num font-bold text-success">+0.14</td><td class="p-3"><span class="text-success text-xs font-bold">Compliant</span></td></tr>
             </tbody>
           </table>
           </div>
@@ -2228,84 +2310,102 @@
   const tail = (arr, n) => arr.slice(arr.length - Math.min(n, arr.length));
   if (!window.TR) return;
 
-  /* ─── Overcollateralization · clickeable: Compliant (verde) ⇄ Non compliant (naranja) ─── */
-  const OC_REQ = 1.35;
-  const OC_MIN = 1.25;
-  const OC_EMISION_REQ = 1.25;
+  /* ─── Overcollateralization · factory — soporta múltiples instancias por asset type ─── */
   const ocY = r => +Math.max(30, Math.min(196, 30 + (1.45 - r) * 823.5)).toFixed(1);
-  const OC_UP = '#16A34A', OC_DN = '#B45309'; // ≥ mínimo = verde (compliant) / < mínimo = naranja (breach)
-  const OC_DATA = {
-    nc: { rep:[1.41,1.40,1.42,1.39,1.41,1.40,1.38,1.34,1.40,1.40,1.34,1.28], tag:'Non compliant',
+  const OC_UP = '#16A34A', OC_DN = '#B45309';
+
+  function initOCChart({ dynId, reportedCardId, deltaId, pillId, calloutId, tableId, req, min, data, initial }) {
+    let cur = initial;
+    function render(n) {
+      const rep = tail(data[cur].rep, n), ms = tail(MONTHS, n), N = rep.length;
+      const X0 = 60, X1 = 460, step = N > 1 ? (X1 - X0) / (N - 1) : 0, xb = i => +(X0 + i*step).toFixed(1);
+      const reqY = ocY(req), minY = ocY(min);
+      const P = i => ({ x: xb(i), y: ocY(rep[i]), below: rep[i] < req });
+      let bands = '', lines = '';
+      for (let i = 0; i < N - 1; i++) {
+        const a = P(i), b = P(i+1), segs = [];
+        if (a.below === b.below) segs.push({x0:a.x,y0:a.y,x1:b.x,y1:b.y,below:a.below});
+        else { const t = (reqY - a.y) / (b.y - a.y), xc = +(a.x + t*(b.x - a.x)).toFixed(1);
+          segs.push({x0:a.x,y0:a.y,x1:xc,y1:reqY,below:a.below}); segs.push({x0:xc,y0:reqY,x1:b.x,y1:b.y,below:b.below}); }
+        segs.forEach(s => {
+          const col = s.below ? OC_DN : OC_UP, bf = s.below ? '#B45309' : '#16A34A', op = s.below ? '0.20' : '0.12';
+          bands += `<polygon points="${s.x0},${s.y0} ${s.x1},${s.y1} ${s.x1},${reqY} ${s.x0},${reqY}" fill="${bf}" opacity="${op}"/>`;
+          lines += `<polyline points="${s.x0},${s.y0} ${s.x1},${s.y1}" fill="none" stroke="${col}" stroke-width="2.5"/>`;
+        });
+      }
+      let dots = '';
+      for (let i = 0; i < N; i++) { const p = P(i); dots += `<circle cx="${p.x}" cy="${p.y}" r="${i===N-1?3.5:3}" fill="${p.below?OC_DN:OC_UP}"${i===N-1?' stroke="#fff" stroke-width="1.5"':''}/>`; }
+      const lbls = '<g font-family="Sofia Sans" font-size="'+(N>7?'8':'10')+'" fill="#64748B">' + ms.map((m,i)=>`<text x="${xb(i)}" y="210" text-anchor="middle">${m}</text>`).join('') + '</g>';
+      $(dynId).innerHTML = bands
+        + `<line x1="${X0}" y1="${reqY}" x2="${X1}" y2="${reqY}" stroke="#94A3B8" stroke-width="2" stroke-dasharray="5 3"/>`
+        + `<text x="${X1}" y="${reqY-4}" text-anchor="end" font-family="Space Mono" font-size="8" fill="#94A3B8">Required ${req.toFixed(2)}</text>`
+        + `<line x1="${X0}" y1="${minY}" x2="${X1}" y2="${minY}" stroke="#475569" stroke-width="1.5" stroke-dasharray="3 2"/>`
+        + `<text x="${X0+2}" y="${minY-3}" text-anchor="start" font-family="Space Mono" font-size="7.5" fill="#475569">Minimum</text>`
+        + `<text x="${X1}" y="${minY-3}" text-anchor="end" font-family="Space Mono" font-size="7.5" fill="#475569">Emission Req. · ${min.toFixed(2)}</text>`
+        + lines + dots + lbls;
+    }
+    function setScenario() {
+      const c = data[cur];
+      const card = $(reportedCardId);
+      card.className = c.card.cls; card.setAttribute('data-tt', c.card.tt);
+      card.innerHTML = '<h4 class="font-primary text-sm font-medium '+c.card.tcls+' m-0 mb-2">Reported</h4>'
+        + '<div class="num text-3xl font-bold leading-tight '+c.card.vcls+'">'+c.card.val+'</div>'
+        + '<div class="text-xs text-text-secondary mt-1">'+c.card.sub+'</div>';
+      const ocp = $(pillId);
+      if (c.pill) { ocp.style.display = ''; ocp.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold font-primary ' + c.pill.cls; ocp.innerHTML = c.pill.html; }
+      else { ocp.style.display = 'none'; }
+      $(deltaId).className = 'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold font-primary ' + c.delta.cls;
+      $(deltaId).innerHTML = c.delta.html;
+      $(calloutId).className = 'flex items-center gap-2.5 p-3 px-4 rounded-md border text-sm mt-3 ' + c.aside.cls;
+      $(calloutId).innerHTML = c.aside.html;
+      render(window.TR.n());
+    }
+    window.TR.register(render);
+    setScenario();
+    return { toggle(e) { if (e && e.target.closest('label, .data-switch, #'+tableId)) return; cur = {nc:'ok',ok:'atmin',atmin:'nc'}[cur]; setScenario(); } };
+  }
+
+  // ── Chart 1 · Personal Loan (req 1.35, starts Non compliant) ──
+  const OC_DATA_PL = {
+    nc:    { rep:[1.41,1.40,1.42,1.39,1.41,1.40,1.38,1.34,1.40,1.40,1.34,1.28],
       pill:{cls:'bg-warning-bg text-warning', html:'<i class="ph ph-warning"></i> Non compliant'},
       delta:{cls:'bg-warning-bg text-warning', html:'<i class="ph ph-arrow-line-down text-xs"></i> −0.06 <span class="font-normal opacity-90">vs. prior month</span>'},
       card:{cls:'block bg-warning-bg border border-warning-border rounded-xl p-4 min-h-[118px]', tcls:'text-warning', vcls:'text-warning', val:'1.28', sub:'Actual OC ratio · below minimum', tt:'Reported 1.28 por debajo del mínimo 1.35 — breach'},
       aside:{cls:'border-warning-border bg-warning-bg text-warning', html:'<i class="ph ph-x-circle text-lg"></i><span><strong>Breach: 5.2% below minimum · Deficit −0.07</strong> · Reported <span class="num">1.28</span> / Required <span class="num">1.35</span></span>'} },
-    ok: { rep:[1.38,1.39,1.40,1.41,1.40,1.42,1.41,1.43,1.42,1.44,1.43,1.45], tag:'Compliant',
+    ok:    { rep:[1.38,1.39,1.40,1.41,1.40,1.42,1.41,1.43,1.42,1.44,1.43,1.45],
       pill:{cls:'bg-success-bg text-success', html:'<i class="ph ph-check-circle"></i> Compliant'},
       delta:{cls:'bg-success-bg text-success', html:'<i class="ph ph-arrow-line-up text-xs"></i> +0.02 <span class="font-normal opacity-90">vs. prior month</span>'},
       card:{cls:'block bg-success-bg border border-success/30 rounded-xl p-4 min-h-[118px]', tcls:'text-success', vcls:'text-success', val:'1.45', sub:'Actual OC ratio · above minimum', tt:'Reported 1.45 por encima del mínimo 1.35 — compliant'},
       aside:{cls:'border-success/30 bg-success-bg text-success', html:'<i class="ph ph-check-circle text-lg"></i><span><strong>Compliant: 7.4% above minimum · Cushion +0.10</strong> · Reported <span class="num">1.45</span> / Required <span class="num">1.35</span></span>'} },
-    // Escenario de igualdad · Reported = Required → margin 0.00 · cushion cero (gris/neutral)
-    atmin: { rep:[1.42,1.41,1.40,1.40,1.39,1.38,1.38,1.37,1.37,1.36,1.36,1.35], tag:'At minimum',
+    atmin: { rep:[1.42,1.41,1.40,1.40,1.39,1.38,1.38,1.37,1.37,1.36,1.36,1.35],
       pill:null,
       delta:{cls:'bg-bg text-text-secondary', html:'<i class="ph ph-arrow-right text-xs"></i> 0.00 <span class="font-normal opacity-90">vs. prior month</span>'},
       card:{cls:'block bg-bg border border-border rounded-xl p-4 min-h-[118px]', tcls:'text-text-secondary', vcls:'text-text-secondary', val:'1.35', sub:'Actual OC ratio · at minimum', tt:'Reported 1.35 igual al mínimo 1.35 — sin cushion'},
       aside:{cls:'border-border bg-bg text-text-secondary', html:'<i class="ph ph-warning-circle text-lg"></i><span><strong>At minimum: 0.0% margin · Cushion 0.00</strong> · Reported <span class="num">1.35</span> / Required <span class="num">1.35</span></span>'} },
   };
-  let ocCur = 'nc';
-  function renderOC(n){
-    const rep = tail(OC_DATA[ocCur].rep, n), ms = tail(MONTHS, n), N = rep.length;
-    const X0 = 60, X1 = 460, step = N > 1 ? (X1 - X0) / (N - 1) : 0, xb = i => +(X0 + i*step).toFixed(1);
-    const reqY = ocY(OC_REQ);
-    const minY = ocY(OC_MIN);
-    const emisReqY = ocY(OC_EMISION_REQ);
-    const P = i => ({ x: xb(i), y: ocY(rep[i]), below: rep[i] < OC_REQ });
-    let bands = '', lines = '';
-    for (let i = 0; i < N - 1; i++){
-      const a = P(i), b = P(i+1), segs = [];
-      if (a.below === b.below) segs.push({x0:a.x,y0:a.y,x1:b.x,y1:b.y,below:a.below});
-      else { const t = (reqY - a.y) / (b.y - a.y), xc = +(a.x + t*(b.x - a.x)).toFixed(1);
-        segs.push({x0:a.x,y0:a.y,x1:xc,y1:reqY,below:a.below}); segs.push({x0:xc,y0:reqY,x1:b.x,y1:b.y,below:b.below}); }
-      segs.forEach(s => {
-        const col = s.below ? OC_DN : OC_UP, bf = s.below ? '#B45309' : '#16A34A', op = s.below ? '0.20' : '0.12';
-        bands += `<polygon points="${s.x0},${s.y0} ${s.x1},${s.y1} ${s.x1},${reqY} ${s.x0},${reqY}" fill="${bf}" opacity="${op}"/>`;
-        lines += `<polyline points="${s.x0},${s.y0} ${s.x1},${s.y1}" fill="none" stroke="${col}" stroke-width="2.5"/>`;
-      });
-    }
-    let dots = '';
-    for (let i = 0; i < N; i++){ const p = P(i); dots += `<circle cx="${p.x}" cy="${p.y}" r="${i===N-1?3.5:3}" fill="${p.below?OC_DN:OC_UP}"${i===N-1?' stroke="#fff" stroke-width="1.5"':''}/>`; }
-    const labels = '<g font-family="Sofia Sans" font-size="'+(N>7?'8':'10')+'" fill="#64748B">' + ms.map((m,i)=>`<text x="${xb(i)}" y="210" text-anchor="middle">${m}</text>`).join('') + '</g>';
-    $('ocDynamic').innerHTML = bands
-      + `<line x1="${X0}" y1="${reqY}" x2="${X1}" y2="${reqY}" stroke="#94A3B8" stroke-width="2" stroke-dasharray="5 3"/>`
-      + `<text x="${X1}" y="${reqY-4}" text-anchor="end" font-family="Space Mono" font-size="8" fill="#94A3B8">Required 1.35</text>`
-      + `<line x1="${X0}" y1="${minY}" x2="${X1}" y2="${minY}" stroke="#475569" stroke-width="1.5" stroke-dasharray="3 2"/>`
-      + `<text x="${X0+2}" y="${minY-3}" text-anchor="start" font-family="Space Mono" font-size="7.5" fill="#475569">Minimum</text>`
-      + `<text x="${X1}" y="${minY-3}" text-anchor="end" font-family="Space Mono" font-size="7.5" fill="#475569">Emission Req. · 1.25</text>`
-      + lines + dots + labels;
-  }
-  function setOCScenario(){
-    const c = OC_DATA[ocCur];
-    const card = $('ocReportedCard');
-    card.className = c.card.cls; card.setAttribute('data-tt', c.card.tt);
-    card.innerHTML = '<h4 class="font-primary text-sm font-medium '+c.card.tcls+' m-0 mb-2">Reported</h4>'
-      + '<div class="num text-3xl font-bold leading-tight '+c.card.vcls+'">'+c.card.val+'</div>'
-      + '<div class="text-xs text-text-secondary mt-1">'+c.card.sub+'</div>';
-    const ocp = $('ocPill');
-    if (c.pill){ ocp.style.display = ''; ocp.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold font-primary ' + c.pill.cls; ocp.innerHTML = c.pill.html; }
-    else { ocp.style.display = 'none'; }
-    $('ocDelta').className = 'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold font-primary ' + c.delta.cls;
-    $('ocDelta').innerHTML = c.delta.html;
-    $('ocCallout').className = 'flex items-center gap-2.5 p-3 px-4 rounded-md border text-sm mt-3 ' + c.aside.cls;
-    $('ocCallout').innerHTML = c.aside.html;
-    renderOC(window.TR.n());
-  }
-  window.toggleOC = function(e){
-    if (e && e.target.closest('label, .data-switch, #ocTable')) return; // no alternar al usar Show Data / tabla
-    ocCur = { nc:'ok', ok:'atmin', atmin:'nc' }[ocCur];
-    setOCScenario();
+  const oc1 = initOCChart({ dynId:'ocDynamic', reportedCardId:'ocReportedCard', deltaId:'ocDelta', pillId:'ocPill', calloutId:'ocCallout', tableId:'ocTable', req:1.35, min:1.25, data:OC_DATA_PL, initial:'nc' });
+  window.toggleOC = e => oc1.toggle(e);
+
+  // ── Chart 2 · Auto Loan (req 1.30, starts Compliant) ──
+  const OC_DATA_AL = {
+    nc:    { rep:[1.36,1.35,1.34,1.35,1.33,1.32,1.31,1.30,1.32,1.31,1.29,1.27],
+      pill:{cls:'bg-warning-bg text-warning', html:'<i class="ph ph-warning"></i> Non compliant'},
+      delta:{cls:'bg-warning-bg text-warning', html:'<i class="ph ph-arrow-line-down text-xs"></i> −0.02 <span class="font-normal opacity-90">vs. prior month</span>'},
+      card:{cls:'block bg-warning-bg border border-warning-border rounded-xl p-4 min-h-[118px]', tcls:'text-warning', vcls:'text-warning', val:'1.27', sub:'Actual OC ratio · below minimum', tt:'Reported 1.27 por debajo del mínimo 1.30 — breach'},
+      aside:{cls:'border-warning-border bg-warning-bg text-warning', html:'<i class="ph ph-x-circle text-lg"></i><span><strong>Breach: 2.3% below minimum · Deficit −0.03</strong> · Reported <span class="num">1.27</span> / Required <span class="num">1.30</span></span>'} },
+    ok:    { rep:[1.38,1.39,1.40,1.41,1.42,1.41,1.43,1.42,1.44,1.43,1.42,1.44],
+      pill:{cls:'bg-success-bg text-success', html:'<i class="ph ph-check-circle"></i> Compliant'},
+      delta:{cls:'bg-success-bg text-success', html:'<i class="ph ph-arrow-line-up text-xs"></i> +0.02 <span class="font-normal opacity-90">vs. prior month</span>'},
+      card:{cls:'block bg-success-bg border border-success/30 rounded-xl p-4 min-h-[118px]', tcls:'text-success', vcls:'text-success', val:'1.44', sub:'Actual OC ratio · above minimum', tt:'Reported 1.44 por encima del mínimo 1.30 — compliant'},
+      aside:{cls:'border-success/30 bg-success-bg text-success', html:'<i class="ph ph-check-circle text-lg"></i><span><strong>Compliant: 10.8% above minimum · Cushion +0.14</strong> · Reported <span class="num">1.44</span> / Required <span class="num">1.30</span></span>'} },
+    atmin: { rep:[1.38,1.37,1.36,1.35,1.34,1.33,1.33,1.32,1.32,1.31,1.31,1.30],
+      pill:null,
+      delta:{cls:'bg-bg text-text-secondary', html:'<i class="ph ph-arrow-right text-xs"></i> 0.00 <span class="font-normal opacity-90">vs. prior month</span>'},
+      card:{cls:'block bg-bg border border-border rounded-xl p-4 min-h-[118px]', tcls:'text-text-secondary', vcls:'text-text-secondary', val:'1.30', sub:'Actual OC ratio · at minimum', tt:'Reported 1.30 igual al mínimo 1.30 — sin cushion'},
+      aside:{cls:'border-border bg-bg text-text-secondary', html:'<i class="ph ph-warning-circle text-lg"></i><span><strong>At minimum: 0.0% margin · Cushion 0.00</strong> · Reported <span class="num">1.30</span> / Required <span class="num">1.30</span></span>'} },
   };
-  window.TR.register(renderOC);
-  setOCScenario();
+  const oc2 = initOCChart({ dynId:'ocDynamic2', reportedCardId:'ocReportedCard2', deltaId:'ocDelta2', pillId:'ocPill2', calloutId:'ocCallout2', tableId:'ocTable2', req:1.30, min:1.25, data:OC_DATA_AL, initial:'ok' });
+  window.toggleOC2 = e => oc2.toggle(e);
 
   /* ─── Assets evolution (Total vs Eligible) ─── */
   const AS_TOT = [210,218,226,233,240,246,250,254.2,263.8,273.5,281.97,299.37];
