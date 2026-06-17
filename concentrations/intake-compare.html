@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Concentration Criteria · Intake — V1 vs V2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+<style>
+:root{--secondary:#910057;--bg:#F8FAFC;--surface:#FFFFFF;--border:#E2E8F0;--border-strong:#CBD5E1;--text:#334155;--text-secondary:#64748B;--text-muted:#94A3B8;--green:#16A34A;--green-bg:#F0FDF4;--green-b:#BBF7D0;--amber:#B45309;--amber-bg:#FFFBEB;--amber-b:#FCD34D;--purple:#7C3AED;--purple-bg:#F5F3FF;--purple-b:#DDD6FE;--gray-bg:#F1F5F9;--blue:#0284C7;--blue-bg:#F0F9FF;--blue-b:#BAE6FD;--radius:8px;--radius-lg:12px;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);padding:28px 32px 90px;line-height:1.5}
+.container{max-width:1480px;margin:0 auto}
+h1{font-family:'Nunito',sans-serif;font-size:20px;font-weight:700;margin-bottom:4px}
+.sub{font-size:13px;color:var(--text-secondary);margin-bottom:22px}
+.mono{font-family:'Space Mono';font-size:11px}
+.step{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:18px}
+.step-hd{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.step-n{width:24px;height:24px;border-radius:50%;background:var(--secondary);color:#fff;font-family:'Nunito';font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center}
+.step-t{font-family:'Nunito';font-size:14px;font-weight:700}
+textarea{width:100%;min-height:180px;border:1px solid var(--border-strong);border-radius:var(--radius);padding:12px 14px;font-family:'DM Sans';font-size:13px;color:var(--text);resize:vertical}
+.btn{display:inline-flex;align-items:center;gap:7px;background:var(--secondary);color:#fff;border:0;border-radius:var(--radius);padding:9px 16px;font-family:'DM Sans';font-weight:700;font-size:13px;cursor:pointer;margin-top:12px}
+.hint{font-size:11.5px;color:var(--text-muted);margin-top:8px}
+.ai-tag{display:inline-flex;align-items:center;gap:4px;background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-b);border-radius:99px;padding:1px 7px;font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.plain-tag{display:inline-flex;align-items:center;gap:4px;background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-b);border-radius:99px;padding:1px 7px;font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.crit{border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;background:var(--bg)}
+.crit-top{display:grid;grid-template-columns:24px 1fr auto;gap:12px;align-items:start;margin-bottom:12px}
+.crit-n{width:22px;height:22px;border-radius:50%;background:#FDF2F8;color:var(--secondary);font-family:'Nunito';font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.crit-text{font-size:12.5px;color:var(--text);line-height:1.45}
+.chip-prev{background:var(--gray-bg);color:var(--text-secondary);border:1px solid var(--border-strong);border-radius:99px;padding:4px 11px;font-size:11px;font-weight:700;white-space:nowrap}
+.meta{display:grid;grid-template-columns:1.2fr 1fr 1.3fr;gap:10px;padding-top:12px;border-top:1px dashed var(--border)}
+.f label{display:block;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px}
+.f select,.f input{width:100%;border:1px solid var(--border-strong);border-radius:6px;padding:7px 9px;font-family:'DM Sans';font-size:12px;color:var(--text);background:var(--surface)}
+.f.sugg select,.f.sugg input{border-color:var(--purple-b);background:var(--purple-bg)}
+.limits{margin-top:12px}
+.limits-hd{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.lrow{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 28px;gap:8px;margin-bottom:6px;align-items:center}
+.lrow select,.lrow input{width:100%;border:1px solid var(--border-strong);border-radius:6px;padding:6px 8px;font-size:11.5px;background:var(--surface);font-family:'DM Sans'}
+.lrow .xx{border:0;background:transparent;color:var(--text-muted);cursor:pointer;font-size:15px}
+.addl{background:var(--surface);border:1px dashed var(--border-strong);color:var(--secondary);border-radius:6px;padding:6px 10px;font-size:11.5px;font-weight:600;cursor:pointer}
+.tag-exc{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-b);border-radius:99px;padding:1px 6px;font-size:9px;font-weight:700}
+.note{border-radius:var(--radius);padding:10px 14px;font-size:12px;margin-top:10px;display:flex;gap:9px}
+.note.purple{background:var(--purple-bg);border:1px solid var(--purple-b);color:#5b21b6}
+.note.purple i{color:var(--purple)}
+.note.blue{background:var(--blue-bg);border:1px solid var(--blue-b);color:#075985}
+.note.blue i{color:var(--blue)}
+.note i{font-size:16px;flex-shrink:0}
+.save-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.status-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:99px;font-size:11px;font-weight:700;background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-b)}
+.status-pill.done{background:var(--green-bg);color:var(--green);border-color:var(--green-b)}
+pre{background:#1E293B;color:#E2E8F0;border-radius:var(--radius);padding:14px;font-family:'Space Mono';font-size:11px;overflow:auto;max-height:280px;margin-top:12px}
+
+/* comparativa */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.panel-hd{padding:14px 18px;border-bottom:1px solid var(--border)}
+.panel-hd.v1{background:linear-gradient(0deg,#fff,var(--purple-bg))}
+.panel-hd.v2{background:linear-gradient(0deg,#fff,var(--blue-bg))}
+.panel-title{font-family:'Nunito';font-size:14px;font-weight:700;display:flex;align-items:center;gap:9px}
+.panel-desc{font-size:11.5px;color:var(--text-secondary);margin-top:5px}
+.panel-body{padding:16px 18px}
+.empty{font-size:12px;color:var(--text-muted);text-align:center;padding:30px 10px}
+.txt-edit{width:100%;border:1px solid var(--border-strong);border-radius:6px;padding:9px 11px;font-family:'DM Sans';font-size:12.5px;color:var(--text);line-height:1.45;resize:vertical;min-height:54px;background:var(--surface)}
+@media(max-width:1100px){.cols{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Concentration Criteria · Intake — V1 vs V2</h1>
+  <div class="sub">Dos flujos distintos. <b>Un contrato</b>: cargas el clausulado de una facility y lo estructuras (V1) / extraes (V2). <b>Lote</b>: N contratos de una pasada con tablero de portafolio. (Prototipo · LEN-664)</div>
+
+  <div style="display:flex;gap:8px;margin-bottom:18px">
+    <button id="tabSingle" onclick="switchFlow('single')" style="border:1px solid var(--border-strong);border-radius:8px;padding:9px 16px;font-family:'DM Sans';font-weight:700;font-size:13px;cursor:pointer"><i class="ph ph-file-text"></i> Un contrato</button>
+    <button id="tabBatch" onclick="switchFlow('batch')" style="border:1px solid var(--border-strong);border-radius:8px;padding:9px 16px;font-family:'DM Sans';font-weight:700;font-size:13px;cursor:pointer"><i class="ph ph-stack"></i> Lote — N contratos</button>
+  </div>
+
+  <div id="flowSingle">
+  <div class="step">
+    <div class="step-hd">
+      <div class="step-n">1</div><div class="step-t">Cargar clausulado del contrato</div>
+      <select id="caseSel" onchange="loadCase(this.value)" style="margin-left:auto;border:1px solid var(--border-strong);border-radius:6px;padding:7px 10px;font-family:'DM Sans';font-size:12px;color:var(--text);background:var(--surface);max-width:300px">
+        <option value="">▼ Cargar caso…</option>
+      </select>
+      <button class="addl" onclick="addCurrentAsCase()" title="Guardar el clausulado de arriba como un caso nuevo" style="margin:0"><i class="ph ph-plus"></i> Guardar caso</button>
+    </div>
+    <textarea id="src">Concentración del Patrimonio del Fideicomiso. En cualquier fecha de determinación:
+f) El valor de los Derechos de Crédito derivados de ningún Contrato de Arrendamiento y los demás Documentos del Arrendamiento relacionados con el mismo podrá representar más del 8.00% (ocho por ciento) del valor total del Patrimonio del Fideicomiso, en el entendido de que cualquier cantidad en exceso de dicho 8.00% (ocho por ciento) no computará para el cálculo del Aforo.
+g) El valor de los Derechos de Crédito cuyo deudor sea un mismo Obligado, agregando el total de los Documentos de los Arrendamientos celebrados con o suscritos por dicho Obligado, no podrán representar más del 10.00% (diez por ciento) del valor total del Patrimonio del Fideicomiso, en el entendido de que cualquier cantidad en exceso de dicho 10.00% (diez por ciento) no computará para el cálculo del Aforo.
+h) Que la suma del valor de los Derechos de Crédito que individualmente representen los 5 Derechos de Crédito con los mayores flujos no represente más del 25.00% (veinticinco por ciento) del valor total del Patrimonio del Fideicomiso, en el entendido de que cualquier cantidad en exceso de dicho 25.00% (veinticinco por ciento) no computará para el cálculo del Aforo.
+i) Que el Valor Residual no represente más del 15.00% (quince por ciento) del valor de facturación del equipo correspondiente.</textarea>
+    <button class="btn" onclick="run()"><i class="ph ph-scissors"></i> Auto-segmentar criterios</button>
+    <div class="hint">Normaliza primero los saltos escapados (<b>\r\n</b> / <b>\t</b>) y punto y coma — así reconoce listas reales. Parte por <b>1. a) A. i)</b> · <b>(a) (i)</b> · bullets <b>•</b> — alimenta ambas versiones a la vez.</div>
+  </div>
+
+  <div class="cols">
+    <!-- ============ V1 ============ -->
+    <div class="panel">
+      <div class="panel-hd v1">
+        <div class="panel-title"><span class="ai-tag"><i class="ph ph-sparkle"></i> V1</span> Estructuración completa</div>
+        <div class="panel-desc">El texto es <b>lenguaje natural</b>: la IA solo arma un <b>borrador de primera instancia</b> para que un humano lo revise con <b>todos los elementos</b> a la vista y parametrice bien.</div>
+      </div>
+      <div class="panel-body">
+        <div id="catalog1" style="display:none"></div>
+        <div id="cov1" style="display:none"></div>
+        <div id="crits1"><div class="empty">Segmenta el clausulado para ver los criterios estructurados.</div></div>
+        <div id="proposals1" style="display:none"></div>
+        <div class="note purple" id="note1" style="display:none"><i class="ph ph-warning"></i><div><b>Borrador para revisión humana.</b> Los campos morados son <b>sugerencias</b> de la IA, no verdad — el <b>texto legal es la fuente</b>. Cada criterio muestra los <b>elementos detectados</b> para que tengas todo a la mano; marca <b>"revisado"</b> al validarlo.</div></div>
+        <div class="save-bar" id="save1" style="display:none;margin-top:14px">
+          <button class="btn" style="margin-top:0" onclick="save1()"><i class="ph ph-check"></i> Guardar estructurado</button>
+          <span id="status1" class="status-pill"><i class="ph ph-clock"></i> pending</span>
+        </div>
+        <pre id="out1" style="display:none"></pre>
+      </div>
+    </div>
+
+    <!-- ============ V2 ============ -->
+    <div class="panel">
+      <div class="panel-hd v2">
+        <div class="panel-title"><span class="plain-tag"><i class="ph ph-text-aa"></i> V2</span> Solo extracción de texto</div>
+        <div class="panel-desc">Únicamente separa el clausulado en criterios individuales. Sin tipo, unidad ni cálculo de límites — solo el texto verbatim, editable.</div>
+      </div>
+      <div class="panel-body">
+        <div id="crits2"><div class="empty">Segmenta el clausulado para ver los criterios extraídos.</div></div>
+        <div style="margin-top:6px" id="addbar2"></div>
+        <div class="note blue" id="note2" style="display:none"><i class="ph ph-info"></i><div>Alcance acotado: <b>solo el texto</b>. La estructuración (tipo, unidad, límites) se hace después, fuera de este paso. Cada criterio queda como cadena verbatim editable.</div></div>
+        <div class="save-bar" id="save2" style="display:none;margin-top:14px">
+          <button class="btn" style="margin-top:0" onclick="save2()"><i class="ph ph-check"></i> Guardar criterios (texto)</button>
+          <span id="status2" class="status-pill"><i class="ph ph-clock"></i> pending</span>
+        </div>
+        <pre id="out2" style="display:none"></pre>
+      </div>
+    </div>
+  </div>
+  </div><!-- /flowSingle -->
+
+  <div id="flowBatch" style="display:none">
+    <div class="step">
+      <div class="step-hd"><div class="step-n" style="background:var(--blue)">N</div><div class="step-t">Ingesta en lote — N contratos de una pasada</div> <span style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:6px">· separa cada facility con una línea <code>### &lt;id&gt;</code></span></div>
+      <textarea id="batchSrc" style="min-height:160px">### F/4870
+F. Que el saldo insoluto de los Créditos de una misma entidad federativa no represente más del 15% (quince por ciento), salvo CDMX y Estado de México que podrán representar el 30% (treinta por ciento).
+### F/1631
+h) Que la suma del valor de los 5 Derechos de Crédito con los mayores flujos no represente más del 25.00% (veinticinco por ciento) del valor total del Patrimonio del Fideicomiso.
+i) Que el Valor Residual no represente más del 15.00% (quince por ciento) del valor de facturación del equipo.
+### CIB/4009
+ii. Que la TIR del Arrendamiento PCH no sea menor al 20% (veinte por ciento).
+iii. El monto principal por Cliente no será mayor a $5,250,000.00 M.N.</textarea>
+      <button class="btn" onclick="processBatch()"><i class="ph ph-play"></i> Procesar lote</button>
+      <div class="hint">Cada bloque tras <code>### id</code> se segmenta y estructura por separado. Sale un tablero de cobertura del portafolio.</div>
+      <div id="batchOut" style="display:none;margin-top:16px"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== shared segmentation ===== */
+// Normaliza el texto crudo de la BD: el 88% de las celdas prod guardan los saltos
+// como TEXTO LITERAL escapado ("\r\n", "\t") en vez de saltos reales. Sin esto el
+// marcador queda pegado a la palabra anterior y no se reconoce el inicio de lista.
+function normalize(text){
+  return text
+    .replace(/\\r\\n/g,'\n').replace(/\\n/g,'\n').replace(/\\t/g,'\t')  // escapados literales → real (\t = tab REAL)
+    .replace(/\r\n/g,'\n').replace(/\r/g,'\n')                          // CRLF reales → \n
+    .replace(/;\s*(?=\(?(?:\d{1,2}|[a-zA-Z]|[ivxIVX]{1,4})[.\)])/g,'\n');// ";" antes de un marcador → salto
+  // NOTA: el TAB NO se convierte aquí — se usa como señal de marcador en splitItems()
+}
+// MARK_TAB: marcador seguido de TAB. El tab confirma que es marcador, así que se aceptan
+//   marcadores SIN puntuación con seguridad: bare dígitos y romano 1-4 ("iii⇥", "v⇥"). NO bullets ni letra sola.
+const MARK_TAB=/^[ \xa0]*(\((?:\d{1,2}|[A-Za-z]|[ivxIVX]{1,4})\)|(?:\d{1,2}|[A-Za-z]|[ivxIVX]{1,4})[.\)\-]|(?:\d{1,2}|[ivxIVX]{1,4}))\t/;
+// MARK: marcador con puntuación + espacio (sin tab): 1. · 1- · a) · A. · i) · (a) · (i)
+// (bullets • y sub-niveles "o" NO parten: son sub-condiciones del criterio padre, se conservan en su texto)
+const MARK=/^\s*(\(?(?:\d{1,2}|[a-zA-Z]|[ivxIVX]{1,4})\)|\d{1,2}[.\)-]|(?:[A-Za-z]|[ivxIVX]{1,4})[.\)])\s+/;
+
+function splitItems(text){
+  const norm=normalize(text);
+  // 1) Por renglones normalizados (cubre listas multinivel, tabs, ; y escapados)
+  const lines=norm.split(/\n+/).filter(l=>l.trim());
+  let items=[], cur=null, preamble=true;  // preamble = texto antes del 1er marcador (suele ser un título)
+  for(const ln of lines){
+    const mt=ln.match(MARK_TAB), mk=mt?null:ln.match(MARK);
+    if(mt||mk){
+      if(cur!==null) items.push({t:cur, pre:preamble});
+      cur=ln.slice((mt||mk)[0].length).replace(/\t/g,' ').trim(); preamble=false;
+    } else {
+      const c=ln.replace(/\t/g,' ').trim();
+      cur=(cur!==null)?cur+' '+c:c;
+    }
+  }
+  if(cur!==null) items.push({t:cur, pre:preamble});
+  items=items.map(o=>({t:o.t.trim(), pre:o.pre})).filter(o=>o.t)
+    // descarta el título de sección (preámbulo sin cifra) y encabezados sueltos terminados en ":"
+    .filter(o=>!(o.pre && !/[\d%$]/.test(o.t)))
+    .filter(o=>!(/[:：]\s*$/.test(o.t) && !/[\d%$]/.test(o.t)))
+    .map(o=>o.t);
+  if(items.length>1) return items;
+
+  // 2) Fallback: marcadores EN LÍNEA dentro de un párrafo corrido ("f) … g) … h)")
+  const flat=norm.replace(/\s+/g,' ').trim();
+  const re=/(?:^|\s)(\(?(?:\d{1,2}|[a-zA-Z]|[ivxIVX]{1,4})[.\)])\s+/g;  // admite (a) (i) además de a) i. 1.
+  const marks=[]; let m;
+  while((m=re.exec(flat))){ marks.push({start:m.index+m[0].indexOf(m[1]), content:re.lastIndex}); }
+  if(marks.length>1){
+    const inl=[];
+    for(let i=0;i<marks.length;i++){
+      const to=(i+1<marks.length)?marks[i+1].start:flat.length;
+      const seg=flat.slice(marks[i].content,to).trim();
+      if(seg) inl.push(seg);
+    }
+    const clean=inl.filter(t=>!(/[:：]\s*$/.test(t) && !/[\d%$]/.test(t)));
+    if((clean.length>1?clean:inl).length>1) return clean.length>1?clean:inl;
+  }
+  return [flat || text.trim()];
+}
+function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+function hasException(t){ return /excepci|excepto|salvo|no obstante/i.test(t); }
+
+/* ===== V1 — full structuring (modelo EXTENDIDO: cubre el 100% de los cálculos) ===== */
+const KINDS=[['concentration_max','Concentración máx por sujeto'],['aggregate_cap','Tope agregado'],['composition_floor','Piso de composición'],['count_limit','Límite de conteo'],['eligibility','Elegibilidad'],['informative','Informativo']];
+const UNITS=[['%','%'],['$','$ (monto)'],['dias','días'],['meses','meses'],['conteo','conteo'],['pts','puntos'],['x','x (aforo)']];
+const LTYPES=[['base','base'],['excepcion','excepción']];
+const EFFECTS=[['breach','Breach · computa exceso'],['haircut','Haircut · exceso no computa'],['eligibility_filter','Filtro · saca el préstamo']];
+const MEASURES=[['saldo_insoluto','Saldo insoluto'],['monto_principal','Monto principal'],['valor_presente_neto','Valor presente neto'],['flujos','Flujos'],['valor_residual','Valor residual'],['count','Conteo'],['atributo','Atributo (p/ promedio)']];
+const AGGS=[['sum','Suma'],['count','Conteo'],['weighted_avg','Prom. ponderado'],['max_over_group','Máx por grupo'],['topn_sum','Suma top-N'],['per_loan','Por préstamo']];
+const BASES=[['patrimonio','Patrimonio fideicomiso'],['base_calculo','Base de cálculo'],['cartera_total','Cartera total'],['derechos_cobro','Derechos de cobro'],['none','— (abs / conteo)']];
+const GROUPS=[['none','Sin agrupar'],['subject','Por sujeto'],['attribute','Por atributo']];
+const LIMTYPES=[['scalar','Escalar'],['max_of','El mayor de (%, $)'],['tiered','Por tramo de rank'],['conditional','Por rango de métrica'],['per_attribute','Por atributo (excepción)']];
+let CRITS=[];
+const sel=(opts,val,fn,cls='')=>`<select class="${cls}" onchange="${fn}">${opts.map(o=>`<option value="${o[0]}" ${o[0]===val?'selected':''}>${esc(o[1])}</option>`).join('')}</select>`;
+const num=v=>(v===''||v==null)?null:(isNaN(Number(v))?v:Number(v));
+
+function detectLimits(t){
+  const out=[];
+  for(const m of t.matchAll(/\$\s?([\d.,]+)/g)){ out.push({value:m[1].replace(/,/g,'').replace(/\.00$/,''), unit:'$'}); }
+  for(const m of t.matchAll(/(\d+(?:\.\d+)?)\s*%/g)){ out.push({value:m[1], unit:'%'}); }
+  for(const m of t.matchAll(/(\d+)\s*\(?[a-záéíóú]*\)?\s*d[ií]as/gi)){ out.push({value:m[1], unit:'dias'}); }
+  for(const m of t.matchAll(/(\d+)\s*\(?[a-záéíóú]*\)?\s*mes(?:es)?/gi)){ out.push({value:m[1], unit:'meses'}); }
+  for(const m of t.matchAll(/(\d+)\s*\(?[a-záéíóú]*\)?\s*(?:coacreditad|pagos|cr[eé]ditos\b)/gi)){ out.push({value:m[1], unit:'conteo'}); }
+  for(const m of t.matchAll(/(\d+)\s*puntos|b-?score[^0-9]*(\d+)/gi)){ out.push({value:m[1]||m[2], unit:'pts'}); }
+  const seen=new Set(), uniq=[];
+  for(const o of out){ const k=o.value+'|'+o.unit; if(!seen.has(k)){seen.add(k);uniq.push(o);} }
+  return uniq;
+}
+function suggestOp(t){ const s=t.toLowerCase(); if(/al menos|por lo menos|mayor o igual|no menor|cuando menos/.test(s)) return 'min'; return 'max'; }
+function suggestKind(t){ const s=t.toLowerCase();
+  if(/d[ií]as|morosidad|score|puntaje|bur[oó]|plazo|tir|seguro|garant[ií]a/.test(s)) return 'eligibility';
+  if(/al menos|por lo menos|deberá corresponder|mayor o igual/.test(s)) return 'composition_floor';
+  if(/coacreditad|no podr[aá] (haber|tener) m[aá]s de/.test(s)) return 'count_limit';
+  return 'concentration_max';
+}
+function suggestAgg(t){ const s=t.toLowerCase();
+  if(/promedio ponderado/.test(s)) return 'weighted_avg';
+  if(/(principales|primeros|los)\s+\d+.*(clientes|mayores|derechos)|con los mayores/.test(s)) return 'topn_sum';
+  if(/coacreditad|no podr[aá] (haber|tener) m[aá]s de \d+/.test(s)) return 'count';
+  if(/ning[uú]n|cualquier|un mismo|una misma|por cliente|por deudor|mismo obligado|cada cliente/.test(s)) return 'max_over_group';
+  return 'sum';
+}
+function suggestMeasure(t,agg){ const s=t.toLowerCase();
+  if(agg==='count') return 'count';
+  if(agg==='weighted_avg') return 'atributo';
+  if(/valor residual/.test(s)) return 'valor_residual';
+  if(/valor presente/.test(s)) return 'valor_presente_neto';
+  if(/flujos/.test(s)) return 'flujos';
+  if(/monto principal|principal otorgado/.test(s)) return 'monto_principal';
+  return 'saldo_insoluto';
+}
+function suggestBase(t,agg){ const s=t.toLowerCase();
+  if(agg==='count') return 'none';
+  if(/patrimonio del fideicomiso/.test(s)) return 'patrimonio';
+  if(/base de c[aá]lculo/.test(s)) return 'base_calculo';
+  if(/cartera total/.test(s)) return 'cartera_total';
+  if(/derechos de (cobro|cr[eé]dito)/.test(s)) return 'derechos_cobro';
+  if(/\$/.test(t)&&!/%/.test(t)) return 'none';
+  return 'patrimonio';
+}
+function suggestGroup(t){ const s=t.toLowerCase();
+  if(/entidad federativa|por estado|sector|industr|sucursal|producto|por ciclo|ciudad/.test(s)){
+    const key=(s.match(/entidad federativa|estado|sector|industr\w*|sucursal|producto|ciclo|ciudad/)||[''])[0];
+    return {type:'attribute', key};
+  }
+  if(/cliente|deudor|obligado|coacreditad|un mismo|una misma|contrato de arrendamiento|arrendamiento/.test(s)){
+    const key=(s.match(/contrato de arrendamiento|arrendamiento|cliente|deudor|obligado/)||['sujeto'])[0];
+    return {type:'subject', key};
+  }
+  return {type:'none', key:''};
+}
+function suggestEffect(t,kind){ const s=t.toLowerCase();
+  if(/no computar[aá] para el (c[aá]lculo del )?aforo|computar[aá]n? por hasta|[uú]nicamente computar/.test(s)) return 'haircut';
+  if(kind==='eligibility') return 'eligibility_filter';
+  return 'breach';
+}
+function suggestLimitType(t){ const s=t.toLowerCase();
+  if(/lo que resulte mayor|el mayor de|the greater of/.test(s)) return 'max_of';
+  if(/primeros \d+.*siguientes \d+/.test(s)) return 'tiered';
+  if(/mayor a .*y menor o igual|\(i\).*\(ii\).*\(iii\)/.test(s)) return 'conditional';
+  if(/(salvo|excepto|con excepci[oó]n).{0,45}(estado|ciudad|veracruz|michoac|\d+\s*%)/.test(s)) return 'per_attribute';
+  return 'scalar';
+}
+function suggestTopN(t){ const m=t.match(/(?:principales|primeros|los)\s+(\d+)/i); return {n:m?Number(m[1]):5, rank_by:/flujos/i.test(t)?'flujos':'saldo_insoluto'}; }
+function suggestCondition(t){ const m=t.match(/(?:con|que)\s+\d+\s*\([^)]*\)?\s*o más[^.,;]*/i); return m? m[0].trim():''; }
+
+function fmtLimit(l){
+  if(!l.value) return '—';
+  let v=l.value;
+  if(l.unit==='$') v='$'+Number(l.value).toLocaleString('en-US');
+  else if(l.unit==='%') v=l.value+'%';
+  else if(l.unit==='dias') v=l.value+'d';
+  else if(l.unit==='meses') v=l.value+'m';
+  else if(l.unit==='pts') v=l.value+' pts';
+  else if(l.unit==='x') v=l.value+'x';
+  const op=l.operator==='max'?'MAX':l.operator==='min'?'MIN':'';
+  return (op?op+' ':'')+v;
+}
+function chipFor(c){
+  if(c.kind==='informative') return 'INFO';
+  if(c.effect==='eligibility_filter'||c.kind==='eligibility') return 'ELEGIBILIDAD';
+  if(c.effect==='haircut') return 'HAIRCUT'+(c.limits[0]?.value?' '+fmtLimit(c.limits[0]):'');
+  if(c.limitType==='max_of') return 'MAX(%, $)';
+  if(c.limitType==='per_attribute') return 'POR ATRIBUTO';
+  if(c.limitType==='tiered') return 'POR TRAMO';
+  if(c.limitType==='conditional') return 'POR RANGO';
+  if(c.measure?.aggregation==='topn_sum') return 'TOP-'+(c.topn?.n||'N')+(c.limits[0]?.value?' '+fmtLimit(c.limits[0]):'');
+  if(c.measure?.aggregation==='weighted_avg') return 'W-AVG'+(c.limits[0]?.value?' '+fmtLimit(c.limits[0]):'');
+  if(!c.limits.length || !c.limits[0].value) return 'N/A';
+  if(c.limits.length===1) return fmtLimit(c.limits[0]);
+  return 'MULTI · '+c.limits.length;
+}
+/* ===== Fórmula Excel (el modelo mental del operador) — generada del modelo estructurado ===== */
+function colName(field,c){ const m={saldo_insoluto:'saldo_insoluto',monto_principal:'principal',valor_presente_neto:'VPN',flujos:'flujos',valor_residual:'valor_residual',count:'registros',atributo:(c.weightField?'atributo':'atributo'),tir:'TIR',duration:'duración',rating:'rating'}; return '['+(m[field]||field)+']'; }
+function baseExpr(c){ const m={patrimonio:'patrimonio',base_calculo:'base_cálculo',cartera_total:'cartera_total',derechos_cobro:'derechos_cobro'}; return (c.base&&c.base!=='none')?'SUMA(['+(m[c.base]||c.base)+'])':null; }
+// literal honesto para fórmula: % es válido en Excel; $/pts/días/meses/x → número crudo (sin símbolo ni comas)
+function fxVal(l){ if(!l||l.value===''||l.value==null) return '?'; return l.unit==='%' ? l.value+'%' : ''+l.value; }
+function numExpr(c){ const M=colName(c.measure.field,c), g='['+(c.groupKey||'grupo')+']', agg=c.measure.aggregation;
+  if(agg==='count') return 'CONTAR('+M+')';
+  if(agg==='weighted_avg') return 'SUMAPRODUCTO('+M+'; ['+(c.weightField||'peso')+']) / SUMA(['+(c.weightField||'peso')+'])';
+  if(agg==='topn_sum'){ const n=Number(c.topn?.n)||0; const arr=n>0?'{'+Array.from({length:n},(_,k)=>k+1).join(';')+'}':'{1;…;N}'; return 'SUMA(K.ESIMO.MAYOR('+colName(c.topn?.rank_by||'flujos',c)+'; '+arr+'))'; }
+  if(agg==='max_over_group') return 'MAX(SUMAR.SI.CONJUNTO('+M+'; '+g+'; grupo))';   // máx de la suma por grupo
+  return 'SUMA('+M+')'; }
+function limExpr(c){ const L=c.limits||[];
+  if(c.limitType==='max_of') return 'MAX('+L.map(l=>l.unit==='%'?fxVal(l)+'*'+(baseExpr(c)||'base'):fxVal(l)).join('; ')+')';
+  if(c.limitType==='per_attribute') return 'BUSCARV(['+(c.groupKey||'atributo')+']; tabla_límites; 2; FALSO)';
+  if(c.limitType==='tiered') return 'ELEGIR(tramo; '+L.map(l=>fxVal(l)).join('; ')+')';      // un límite por tramo
+  if(c.limitType==='conditional') return 'ELEGIR(rango; '+L.map(l=>fxVal(l)).join('; ')+')';  // un límite por rango
+  return fxVal(L[0]); }
+function excelFormula(c){
+  if(c.kind==='informative') return "'  informativo — sin cálculo";
+  const min=(c.limits[0]?.operator==='min');
+  if(c.effect==='eligibility_filter'||c.kind==='eligibility'){
+    const l=c.limits[0], lhs=(c.measure.aggregation==='weighted_avg')?numExpr(c):colName(c.measure.field,c);
+    return l&&l.value!==''&&l.value!=null ? '=SI( '+lhs+' '+(min?'>=':'<=')+' '+fxVal(l)+' ; "ELEGIBLE" ; "EXCLUIR" )' : '=SI( <predicado del texto> ; "ELEGIBLE" ; "EXCLUIR" )';
+  }
+  const pct=(c.limits[0]?.unit==='%'), base=baseExpr(c);
+  // solo se divide entre la base cuando el numerador es un monto agregado (no en promedio ponderado ni conteo)
+  const needsBase=pct&&base&&['sum','max_over_group','topn_sum'].includes(c.measure.aggregation);
+  if(c.effect==='haircut') return '=MIN( '+numExpr(c)+' ; '+limExpr(c)+(needsBase?'*'+base:'')+' )   → excedente NO computa para aforo';
+  const actual=numExpr(c)+(needsBase?' / '+base:'');
+  return '=SI( '+actual+' '+(min?'<':'>')+' '+limExpr(c)+' ; "INCUMPLE" ; "OK" )';
+}
+function copyFx(i){ const f=excelFormula(CRITS[i]); if(navigator.clipboard) navigator.clipboard.writeText(f); }
+// QA por completitud: un "?" o <predicado> en la fórmula = parametrización incompleta
+function formulaIncomplete(c){ const f=excelFormula(c); return f.includes('?')||f.includes('<predicado'); }
+// QA por consistencia: que agregación/forma y sus campos requeridos no se contradigan
+function consistencyIssue(c){
+  const agg=c.measure.aggregation;
+  if((agg==='max_over_group'||agg==='topn_sum'||c.limitType==='per_attribute') && c.groupType==='none')
+    return '“'+(agg==='topn_sum'?'Suma top-N':c.limitType==='per_attribute'?'Límite por atributo':'Máx por grupo')+'” requiere “Agrupar por” (hoy: Sin agrupar).';
+  if(agg==='topn_sum' && (!c.topn || !c.topn.n)) return 'Top-N requiere especificar N.';
+  if(agg==='weighted_avg' && !c.weightField) return 'Promedio ponderado requiere el campo “Ponderar por”.';
+  return null;
+}
+// QA por sanity test: el operador teclea un valor y ve OK/INCUMPLE (no re-renderiza, escribe en el span)
+const UNIT_SYM={'%':'%','$':'$','pts':'pts','dias':'días','meses':'meses','x':'x','conteo':'#'};
+function sbExample(u){ return ({'%':'7.4','$':'5000000','pts':'590','dias':'30','meses':'24','x':'1.25','conteo':'10'})[u]||'0'; }
+function fmtUnit(v,u){ v=Math.round(v*100)/100; if(u==='$') return '$'+Number(v).toLocaleString('en-US'); if(u==='%') return v+'%'; if(u==='pts') return v+' pts'; if(u==='dias') return v+' días'; if(u==='meses') return v+' meses'; if(u==='x') return v+'x'; return ''+v; }
+function sandboxEval(i){
+  const c=CRITS[i], aEl=document.getElementById('sbA'+i), lEl=document.getElementById('sbL'+i), rEl=document.getElementById('sbR'+i), xEl=document.getElementById('sbX'+i);
+  if(!aEl||!lEl||!rEl) return;
+  const op=c.limits[0]?.operator||'max', unit=c.limits[0]?.unit||'';
+  const a=parseFloat(aEl.value), l=parseFloat(lEl.value);
+  const pill=(txt,col,bg)=>{ rEl.textContent=txt; rEl.style.color=col; rEl.style.background=bg; rEl.style.border='1px solid '+(bg==='transparent'?'transparent':col); };
+  if(isNaN(a)||isNaN(l)){ pill('teclea un valor →','#64748B','transparent'); if(xEl) xEl.textContent=''; return; }
+  let ok, exceso=0;
+  if(op==='max'||op==='lte'){ ok=a<=l; exceso=Math.max(0,a-l); }
+  else if(op==='min'||op==='gte'){ ok=a>=l; exceso=Math.max(0,l-a); }
+  else { pill('requiere 2 límites','#64748B','transparent'); if(xEl) xEl.textContent=''; return; }
+  if(ok){ pill('✓ OK','#052E16','#4ADE80'); if(xEl) xEl.textContent=''; }
+  else { pill('✕ INCUMPLE','#450A0A','#F87171'); if(xEl) xEl.textContent='exceso '+fmtUnit(exceso,unit); }
+}
+
+// primera columna del límite, depende de la forma
+function limitFirstCol(i,j,l,lt){
+  if(lt==='scalar') return sel(LTYPES,l.ltype||'base',`updL(${i},${j},'ltype',this.value)`);
+  if(lt==='max_of') return `<input value="opción ${j+1}" disabled style="color:var(--text-muted)">`;
+  const ph = lt==='tiered'?'tramo (ej. primeros 5)':lt==='conditional'?'cuando (ej. mora >10%)':'atributo (ej. CDMX / default)';
+  return `<input value="${esc(l.key||'')}" placeholder="${ph}" oninput="updL(${i},${j},'key',this.value)">`;
+}
+function limitRow(i,j,l,lt){
+  return `<div class="lrow">
+    ${limitFirstCol(i,j,l,lt)}
+    ${sel([['max','MAX (tope)'],['min','MIN (piso)'],['between','BETWEEN'],['gte','≥'],['lte','≤']],l.operator||'max',`updL(${i},${j},'operator',this.value)`)}
+    <input value="${l.value||''}" placeholder="valor" oninput="updL(${i},${j},'value',this.value)">
+    ${sel(UNITS,l.unit||'%',`updL(${i},${j},'unit',this.value)`)}
+    <button class="xx" title="Quitar" onclick="rmL(${i},${j})"><i class="ph ph-x"></i></button>
+  </div>`;
+}
+function limitHint(lt){
+  return ({scalar:'tipo · operador · valor · unidad', max_of:'el límite es el MAYOR de las opciones', tiered:'un límite por tramo de rank', conditional:'un límite por rango de otra métrica', per_attribute:'default + overrides por valor'})[lt]||'';
+}
+function aggExtra(c,i){ // tercera celda de la fila de cálculo: topn / weight según agregación
+  if(c.measure.aggregation==='topn_sum') return `<div class="f sugg"><label>Top-N · rank by</label><div style="display:flex;gap:6px"><input style="width:46px" value="${c.topn?.n||''}" placeholder="N" oninput="updTopN(${i},'n',this.value)"><input value="${esc(c.topn?.rank_by||'')}" placeholder="flujos / saldo" oninput="updTopN(${i},'rank_by',this.value)"></div></div>`;
+  if(c.measure.aggregation==='weighted_avg') return `<div class="f sugg"><label>Ponderar por</label><input value="${esc(c.weightField||'')}" placeholder="saldo_insoluto" oninput="upd(${i},'weightField',this.value)"></div>`;
+  return `<div class="f"><label>Condición (opc.)</label><input value="${esc(c.condition||'')}" placeholder="ej. con 6+ pagos" oninput="upd(${i},'condition',this.value)"></div>`;
+}
+function renderCrits(){
+  const wrap=document.getElementById('crits1'); wrap.innerHTML='';
+  CRITS.forEach((c,i)=>{
+    const div=document.createElement('div'); div.className='crit';
+    const cov=coverage(c);
+    div.style.borderLeft='3px solid '+(cov.level==='unmapped'?'var(--purple-b)':(!c.reviewed?'var(--amber-b)':'var(--green-b)'));
+    const exc=hasException(c.t)?'<span class="tag-exc">excepción detectada</span>':'';
+    const els=detectLimits(c.t);
+    const elChip=e=>`<span style="background:var(--gray-bg);border:1px solid var(--border-strong);border-radius:99px;padding:2px 8px;font-size:10.5px;font-family:'Space Mono';color:var(--text-secondary)">${fmtLimit({value:e.value,unit:e.unit})}</span>`;
+    const elStrip=`<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:-2px 0 12px 34px">
+        <span style="font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-muted)">Elementos del texto:</span>
+        ${els.length?els.map(elChip).join(''):'<span style="font-size:11px;color:var(--text-muted)">ninguno numérico — clasificar a mano</span>'}
+      </div>`;
+    div.innerHTML=`
+      <div class="crit-top">
+        <div class="crit-n">${i+1}</div>
+        <div class="crit-text">${esc(c.t)} ${exc}</div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="chip-prev" id="chip${i}">${chipFor(c)}</div>
+            <button title="Eliminar criterio" onclick="removeCrit(${i})" style="border:0;background:transparent;color:var(--text-muted);cursor:pointer;font-size:16px"><i class="ph ph-x"></i></button>
+          </div>
+          ${covBadge(cov)}
+          <label style="display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;color:${c.reviewed?'var(--green)':'var(--amber)'};cursor:pointer"><input type="checkbox" ${c.reviewed?'checked':''} onchange="toggleReview(${i})"> ${c.reviewed?'revisado':'por revisar'}</label>
+        </div>
+      </div>
+      ${elStrip}
+      <div class="meta">
+        <div class="f sugg"><label>Tipo (kind)</label>${sel(KINDS,c.kind,`upd(${i},'kind',this.value)`)}</div>
+        <div class="f sugg"><label>Efecto</label>${sel(EFFECTS,c.effect,`upd(${i},'effect',this.value)`)}</div>
+        <div class="f"><label>Agrupar por</label><div style="display:flex;gap:6px">${sel(GROUPS,c.groupType,`upd(${i},'groupType',this.value)`)}<input value="${esc(c.groupKey||'')}" placeholder="cliente/estado…" oninput="upd(${i},'groupKey',this.value)" ${c.groupType==='none'?'disabled':''}></div></div>
+      </div>
+      <div class="meta">
+        <div class="f sugg"><label>Métrica (numerador)</label>${sel(MEASURES,c.measure.field,`updM(${i},'field',this.value)`)}</div>
+        <div class="f sugg"><label>Agregación</label>${sel(AGGS,c.measure.aggregation,`updM(${i},'aggregation',this.value)`)}</div>
+        <div class="f sugg"><label>Base (denominador)</label>${sel(BASES,c.base,`upd(${i},'base',this.value)`)}</div>
+      </div>
+      <div class="meta">
+        <div class="f sugg"><label>Forma del límite</label>${sel(LIMTYPES,c.limitType,`upd(${i},'limitType',this.value)`)}</div>
+        <div class="f" style="grid-column:span 2">${aggExtra(c,i)}</div>
+      </div>
+      <div class="limits">
+        <div class="limits-hd">Límite(s) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-muted)">· ${limitHint(c.limitType)}</span></div>
+        <div id="limits${i}">${c.limits.map((l,j)=>limitRow(i,j,l,c.limitType)).join('')||'<div style="font-size:11.5px;color:var(--text-muted);margin-bottom:6px">Sin límite — agrega uno.</div>'}</div>
+        <button class="addl" onclick="addL(${i})">+ Agregar ${({scalar:'límite',max_of:'opción',tiered:'tramo',conditional:'rango',per_attribute:'override'})[c.limitType]||'límite'}</button>
+      </div>
+      <div style="margin-top:10px;background:#0F172A;border-radius:6px;padding:8px 11px">
+        <div style="display:flex;align-items:center;gap:9px">
+          <span title="Pseudo-fórmula que comunica la lógica — no es Excel ejecutable literal (los rangos/grupos dependen del layout de datos)" style="font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#64748B;flex-shrink:0">lógica (estilo Excel)</span>
+          <code style="flex:1;color:#E2E8F0;font-family:'Space Mono';font-size:10.5px;overflow-x:auto;white-space:nowrap">${esc(excelFormula(c))}</code>
+          <button onclick="copyFx(${i})" title="Copiar fórmula" style="border:0;background:#1E293B;color:#94A3B8;border-radius:4px;padding:3px 8px;cursor:pointer;font-size:12px;flex-shrink:0"><i class="ph ph-copy"></i></button>
+        </div>
+        <div style="margin-top:7px;padding-top:7px;border-top:1px solid #1E293B;font-size:11px">
+          ${consistencyIssue(c)
+            ? '<span style="color:#F87171;font-weight:700"><i class="ph ph-warning-circle"></i> inconsistente — '+esc(consistencyIssue(c))+' (no puede pasar a revisado)</span>'
+            : formulaIncomplete(c)
+            ? '<span style="color:#FCD34D;font-weight:700"><i class="ph ph-warning"></i> incompleta — faltan valores (no puede pasar a revisado)</span>'
+            : '<span style="color:#4ADE80;font-weight:700"><i class="ph ph-check-circle"></i> completa y consistente</span>'}
+        </div>
+        <div style="display:flex;align-items:center;gap:7px;margin-top:8px;font-size:11px;flex-wrap:wrap;color:#94A3B8">
+          <span style="font-weight:700;color:#CBD5E1"><i class="ph ph-flask-fill" style="color:#7C3AED"></i> QA rápido</span>
+          <span>— prueba un valor:  si</span>
+          ${(()=>{ const u=c.limits[0]?.unit||'', sym=UNIT_SYM[u]||'', lv=(c.limits[0]&&c.limits[0].value!=null)?c.limits[0].value:'';
+            const inp=(id,val,ph)=>`<span style="display:inline-flex;align-items:center;background:#1E293B;border:1px solid #334155;border-radius:5px;padding:0 7px"><input id="${id}" ${val!==undefined?`value="${val}"`:''} ${ph?`placeholder="${ph}"`:''} oninput="sandboxEval(${i})" style="width:74px;background:transparent;border:0;color:#E2E8F0;padding:3px 0;font-family:'Space Mono';font-size:11px;outline:none">${sym?`<span style="color:#64748B;font-size:10px;margin-left:3px">${sym}</span>`:''}</span>`;
+            return `<span style="color:#CBD5E1">actual</span> ${inp('sbA'+i,undefined,sbExample(u))} <span style="color:#64748B">${c.limits[0]?.operator==='min'||c.limits[0]?.operator==='gte'?'≥':'≤'} límite</span> ${inp('sbL'+i,lv,'')}`;
+          })()}
+          <span style="color:#475569">→</span>
+          <span id="sbR${i}" style="font-weight:700;color:#64748B;border-radius:99px;padding:2px 9px;border:1px solid transparent">teclea un valor →</span>
+          <span id="sbX${i}" style="color:#FBBF24;font-size:10.5px;font-family:'Space Mono'"></span>
+        </div>
+      </div>
+      ${cov.level==='unmapped'?`<div style="margin-top:12px;background:var(--purple-bg);border:1px solid var(--purple-b);border-radius:var(--radius);padding:10px 13px;font-size:12px;color:#5b21b6">
+        <div style="display:flex;align-items:center;gap:7px;font-weight:700;margin-bottom:5px"><i class="ph ph-lightbulb" style="color:var(--purple)"></i> El sistema no sabe calcular esto todavía</div>
+        <div style="margin-bottom:8px">${esc(cov.reason)}</div>
+        <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap">
+          <span style="color:var(--text-secondary)">${cov.add==='review'?'Acción:':'Ajuste sugerido:'}</span>
+          <code style="background:#fff;border:1px solid var(--purple-b);border-radius:4px;padding:1px 7px;font-size:11px">${cov.add==='review'?'':'+ '}${esc(cov.add)}: ${esc(cov.value)}</code>
+          ${cov.add==='review'?'<span style="color:var(--text-secondary);font-style:italic">→ clasifícalo a mano arriba</span>':`<button onclick="proposeAdjust(${i})" style="background:var(--purple);color:#fff;border:0;border-radius:6px;padding:5px 11px;font-size:11px;font-weight:700;cursor:pointer">➕ Agregar al catálogo (versiona)</button>`}
+        </div></div>`:''}`;
+    wrap.appendChild(div);
+  });
+  updateCoverageBar();
+}
+function refreshChip(i){ document.getElementById('chip'+i).textContent=chipFor(CRITS[i]); }
+function upd(i,k,v){ CRITS[i][k]=v; if(k==='limitType'||k==='effect'||k==='kind'){ renderCrits(); } else { refreshChip(i); } reset1(); }
+function updM(i,k,v){ CRITS[i].measure[k]=v; renderCrits(); reset1(); }
+function updTopN(i,k,v){ CRITS[i].topn=CRITS[i].topn||{}; CRITS[i].topn[k]=v; refreshChip(i); reset1(); }
+function toggleReview(i){
+  const iss=consistencyIssue(CRITS[i]);
+  if(!CRITS[i].reviewed && (iss||formulaIncomplete(CRITS[i]))){ alert('No puede pasar a "revisado": '+(iss||'la fórmula está incompleta (tiene "?" / faltan valores).')+' Corrige primero.'); renderCrits(); return; }
+  CRITS[i].reviewed=!CRITS[i].reviewed; renderCrits(); reset1();
+}
+
+/* ===== Cobertura del sistema: ¿el catálogo actual sabe calcular esto? ===== */
+let CATALOG={version:1, changelog:[]};   // catálogo de reglas versionado
+const APPROVED=new Set();                 // extensiones aprobadas por humano (add:value)
+// Conceptos NOVEDOSOS fuera del catálogo → unmapped + ajuste sugerido
+const NOVEL=[
+  {re:/\bmediana\b|percentil|desviaci[oó]n est[aá]ndar|varianza/, add:'aggregation', value:'median_over_group | percentile', why:'Agregación estadística no soportada (hoy: sum/count/weighted_avg/max_over_group/topn_sum).'},
+  {re:/\btir\b|tasa interna de retorno|\birr\b/, add:'measure.field', value:'tir', why:'Métrica TIR/IRR no está en el catálogo de métricas.'},
+  {re:/duraci[oó]n|duration|plazo promedio ponderado/, add:'measure.field', value:'duration', why:'Métrica de duración no soportada.'},
+  {re:/calificaci[oó]n crediticia|rating\b|grado de riesgo/, add:'measure.field', value:'rating', why:'Métrica de rating/calificación no soportada.'},
+  {re:/sobretasa|spread|puntos? base|\bbps\b/, add:'unit', value:'bps', why:'Unidad puntos base (bps) no está en el enum de unidades.'},
+  {re:/\ba[nñ]os?\b/, add:'unit', value:'anios', why:'Unidad "años" no está (hoy solo días/meses).'},
+  {re:/periodo de gracia|curaci[oó]n|subsanar|cure period/, add:'effect', value:'cure_period', why:'Efecto de periodo de gracia/curación no modelado.'},
+];
+function coverage(c){
+  const s=c.t.toLowerCase();
+  // salta extensiones YA aprobadas (el catálogo creció) → dejan de ser unmapped
+  for(const n of NOVEL){ if(n.re.test(s) && !APPROVED.has(n.add+':'+n.value)) return {level:'unmapped', reason:n.why, add:n.add, value:n.value}; }
+  const hasLimit=c.limits.some(l=>l.value!=='' && l.value!=null);
+  if(c.kind!=='eligibility' && c.kind!=='informative' && c.effect!=='eligibility_filter' && !hasLimit && detectLimits(c.t).length===0)
+    return {level:'unmapped', reason:'No se detectó ningún límite numérico y no es elegibilidad/informativo — el sistema no puede derivar el cálculo.', add:'review', value:'clasificar a mano o marcar informativo'};
+  if(['max_of','tiered','conditional','per_attribute'].includes(c.limitType) || ['topn_sum','weighted_avg'].includes(c.measure.aggregation))
+    return {level:'low_confidence', reason:'Forma de cálculo compleja — el catálogo la soporta, pero los valores requieren validación humana.'};
+  return {level:'mapped', reason:''};
+}
+const COVMETA={mapped:['mapped','var(--green)','var(--green-bg)','var(--green-b)'],low_confidence:['low-confidence','var(--amber)','var(--amber-bg)','var(--amber-b)'],unmapped:['unmapped','var(--purple)','var(--purple-bg)','var(--purple-b)']};
+function covBadge(cov){const m=COVMETA[cov.level];return `<span title="${esc(cov.reason)}" style="background:${m[2]};color:${m[1]};border:1px solid ${m[3]};border-radius:99px;padding:1px 8px;font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase">${m[0]}</span>`;}
+
+let PROPOSALS=[];
+// Aplica una extensión al catálogo: lo agrega al enum, versiona, audita y reclasifica el criterio
+function applyCatalogExtension(add, value, fromIdx){
+  const targets={'measure.field':MEASURES,'unit':UNITS,'aggregation':AGGS,'effect':EFFECTS,'limit_type':LIMTYPES};
+  const arr=targets[add];
+  const vals=String(value).split('|').map(v=>v.trim()).filter(Boolean);
+  vals.forEach(v=>{ const slug=v.replace(/\s+/g,'_'); if(arr && !arr.some(o=>o[0]===slug)) arr.push([slug, v]); APPROVED.add(add+':'+v); });
+  APPROVED.add(add+':'+value);
+  const v0=vals[0].replace(/\s+/g,'_'), c=CRITS[fromIdx];
+  if(c){ if(add==='measure.field') c.measure.field=v0; else if(add==='aggregation') c.measure.aggregation=v0; else if(add==='effect') c.effect=v0; else if(add==='unit' && c.limits[0]) c.limits[0].unit=v0; }
+  CATALOG.version++; CATALOG.changelog.push({v:CATALOG.version, change:'+ '+add+': '+value, at:new Date().toLocaleString('es-MX')});
+  renderCrits(); renderCatalog();   // re-evalúa cobertura → el criterio deja de ser unmapped al instante
+}
+// Un clic en "Agregar al catálogo" = se acciona la extensión (el clic ES el gate humano)
+function proposeAdjust(i){
+  const cov=coverage(CRITS[i]); if(cov.level!=='unmapped' || cov.add==='review') return;
+  applyCatalogExtension(cov.add, cov.value, i);
+}
+function renderProposals(){
+  const box=document.getElementById('proposals1');
+  if(!PROPOSALS.length){ box.style.display='none'; return; }
+  box.style.cssText='display:block;margin-top:14px;background:var(--blue-bg);border:1px solid var(--blue-b);border-radius:var(--radius);padding:12px 14px';
+  box.innerHTML=`<div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#075985;margin-bottom:8px"><i class="ph ph-git-pull-request"></i> Cola de propuestas de catálogo (${PROPOSALS.length}) · <span style="color:var(--amber)">gate humano</span> — aprobar = versión nueva</div>`
+    + PROPOSALS.map((p,k)=>`<div style="display:flex;align-items:center;gap:8px;font-size:11.5px;color:#075985;padding:5px 0;border-top:1px solid var(--blue-b)">
+        <code style="background:#fff;border:1px solid var(--blue-b);border-radius:4px;padding:1px 6px;white-space:nowrap">+ ${esc(p.add)}: ${esc(p.value)}</code>
+        <span style="color:var(--text-secondary);flex:1">${esc(p.why)} <span style="color:var(--text-muted)">(criterio ${p.from})</span></span>
+        <button onclick="applyProposal(${k})" style="background:var(--green);color:#fff;border:0;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap"><i class="ph ph-check"></i> Aprobar y versionar</button>
+        <button onclick="rejectProposal(${k})" style="background:#fff;color:var(--text-secondary);border:1px solid var(--border-strong);border-radius:6px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer">Rechazar</button>
+      </div>`).join('');
+}
+function rejectProposal(k){ PROPOSALS.splice(k,1); renderProposals(); }
+function applyProposal(k){
+  const p=PROPOSALS[k]; if(!p) return;
+  const targets={'measure.field':MEASURES,'unit':UNITS,'aggregation':AGGS,'effect':EFFECTS,'limit_type':LIMTYPES};
+  const arr=targets[p.add];
+  const vals=String(p.value).split('|').map(v=>v.trim()).filter(Boolean);
+  vals.forEach(v=>{ const slug=v.replace(/\s+/g,'_'); if(arr && !arr.some(o=>o[0]===slug)) arr.push([slug, v]); APPROVED.add(p.add+':'+v); });
+  APPROVED.add(p.add+':'+p.value);                       // el valor original de la sugerencia (para que coverage deje de marcarlo)
+  const v0=vals[0].replace(/\s+/g,'_'); const c=CRITS[p.from-1];
+  if(c){ if(p.add==='measure.field') c.measure.field=v0; else if(p.add==='aggregation') c.measure.aggregation=v0; else if(p.add==='effect') c.effect=v0; else if(p.add==='unit' && c.limits[0]) c.limits[0].unit=v0; }
+  CATALOG.version++; CATALOG.changelog.push({v:CATALOG.version, change:'+ '+p.add+': '+p.value, at:new Date().toLocaleString('es-MX')});
+  PROPOSALS.splice(k,1);
+  renderCrits(); renderProposals(); renderCatalog();     // re-evalúa cobertura → el criterio deja de ser unmapped
+}
+function renderCatalog(){
+  const box=document.getElementById('catalog1'); if(!box) return;
+  box.style.cssText='display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;font-size:11px';
+  const log=CATALOG.changelog.map(e=>`<code title="${esc(e.at)}" style="background:var(--green-bg);border:1px solid var(--green-b);color:var(--green);border-radius:4px;padding:1px 6px">v${e.v} ${esc(e.change)}</code>`).join(' ');
+  box.innerHTML=`<span style="text-transform:uppercase;letter-spacing:.05em;font-size:10px;color:var(--text-muted)">Catálogo de reglas</span>`
+    +`<span style="background:var(--secondary);color:#fff;border-radius:99px;padding:2px 9px;font-weight:700">v${CATALOG.version}</span>`
+    +(CATALOG.changelog.length?`<span style="color:var(--text-secondary)">· ${CATALOG.changelog.length} extensión(es) aplicada(s):</span> ${log}`:'<span style="color:var(--text-muted)">· base, sin extensiones</span>');
+}
+function updateCoverageBar(){
+  const bar=document.getElementById('cov1'); if(!CRITS.length){bar.style.display='none';return;}
+  const c={mapped:0,low_confidence:0,unmapped:0}; CRITS.forEach(x=>c[coverage(x).level]++);
+  bar.style.cssText='display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;font-size:11px;font-weight:700';
+  const pill=(n,lvl)=>`<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;background:${COVMETA[lvl][2]};color:${COVMETA[lvl][1]};border:1px solid ${COVMETA[lvl][3]}">${n} ${COVMETA[lvl][0]}</span>`;
+  bar.innerHTML=`<span style="color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;font-size:10px">Cobertura del sistema</span>`
+    + pill(c.mapped,'mapped')+pill(c.low_confidence,'low_confidence')+pill(c.unmapped,'unmapped')
+    + (c.unmapped?`<span style="color:var(--purple);font-weight:600">← ${c.unmapped} criterio(s) que el catálogo aún no sabe calcular</span>`:'');
+}
+function updL(i,j,k,v){ CRITS[i].limits[j][k]=v; refreshChip(i); reset1(); }
+function addL(i){ CRITS[i].limits.push({ltype:'base',key:'',operator:'max',value:'',unit:'%'}); renderCrits(); reset1(); }
+function rmL(i,j){ CRITS[i].limits.splice(j,1); renderCrits(); reset1(); }
+function removeCrit(i){ CRITS.splice(i,1); renderCrits(); reset1(); }
+function reset1(){ const s=document.getElementById('status1'); s.className='status-pill'; s.innerHTML='<i class="ph ph-clock"></i> pending'; document.getElementById('out1').style.display='none'; }
+function buildLimit(c){
+  const L=c.limits, op=L[0]?.operator||'max';
+  if(c.limitType==='max_of') return {type:'max_of', operator:op, options:L.map(l=>({value:num(l.value),unit:l.unit}))};
+  if(c.limitType==='tiered') return {type:'tiered', operator:op, tiers:L.map(l=>({bucket:l.key||null,value:num(l.value),unit:l.unit}))};
+  if(c.limitType==='conditional') return {type:'conditional', operator:op, conditions:L.map(l=>({when:l.key||null,value:num(l.value),unit:l.unit}))};
+  if(c.limitType==='per_attribute'){
+    const def=L.find(l=>(l.key||'').toLowerCase()==='default')||L[0];
+    const ov={}; L.filter(l=>l!==def && l.key).forEach(l=>ov[l.key]={value:num(l.value),unit:l.unit});
+    return {type:'per_attribute', operator:op, default:def?{value:num(def.value),unit:def.unit}:null, overrides:ov};
+  }
+  // scalar
+  if(L.length<=1) return {type:'scalar', operator:op, value:num(L[0]?.value), unit:L[0]?.unit||null};
+  return {type:'scalar', operator:op, limits:L.map(l=>({ltype:l.ltype,value:num(l.value),unit:l.unit}))};
+}
+function save1(){
+  const payload={ criteria_status:'defined', criterias_concentration: CRITS.map((c,i)=>({
+    index:i+1, legal_text:c.t, kind:c.kind, effect:c.effect,
+    measure:{field:c.measure.field, aggregation:c.measure.aggregation},
+    base:c.base==='none'?null:c.base,
+    group_by:c.groupType==='none'?null:{type:c.groupType, key:c.groupKey||null},
+    topn:c.measure.aggregation==='topn_sum'?{n:num(c.topn?.n), rank_by:c.topn?.rank_by||null}:null,
+    weight_field:c.measure.aggregation==='weighted_avg'?(c.weightField||null):null,
+    condition:c.condition||null,
+    limit:buildLimit(c),
+    formula_excel:excelFormula(c),
+    review_status:c.reviewed?'reviewed':'needs_review'
+  })) };
+  const out=document.getElementById('out1'); out.style.display='block'; out.textContent=JSON.stringify(payload,null,2);
+  const nrev=CRITS.filter(c=>c.reviewed).length;
+  const allrev=nrev===CRITS.length;
+  const s=document.getElementById('status1'); s.className='status-pill'+(allrev?' done':'');
+  s.innerHTML=allrev?'<i class="ph ph-check-circle"></i> defined · '+CRITS.length+' revisados':'<i class="ph ph-warning"></i> draft · '+nrev+'/'+CRITS.length+' revisados';
+}
+
+/* ===== V2 — text-only extraction ===== */
+let TEXTS=[];
+function renderTexts(){
+  const wrap=document.getElementById('crits2'); wrap.innerHTML='';
+  if(!TEXTS.length){ wrap.innerHTML='<div class="empty">Segmenta el clausulado para ver los criterios extraídos.</div>'; document.getElementById('addbar2').innerHTML=''; return; }
+  TEXTS.forEach((t,i)=>{
+    const div=document.createElement('div'); div.className='crit';
+    div.innerHTML=`
+      <div class="crit-top">
+        <div class="crit-n">${i+1}</div>
+        <textarea class="txt-edit" oninput="updT(${i},this.value)">${esc(t)}</textarea>
+        <button title="Eliminar criterio" onclick="rmT(${i})" style="border:0;background:transparent;color:var(--text-muted);cursor:pointer;font-size:16px;margin-top:2px"><i class="ph ph-x"></i></button>
+      </div>`;
+    wrap.appendChild(div);
+  });
+  document.getElementById('addbar2').innerHTML='<button class="addl" onclick="addT()">+ Agregar criterio</button>';
+}
+function updT(i,v){ TEXTS[i]=v; reset2(); }
+function rmT(i){ TEXTS.splice(i,1); renderTexts(); reset2(); }
+function addT(){ TEXTS.push(''); renderTexts(); reset2(); }
+function reset2(){ const s=document.getElementById('status2'); s.className='status-pill'; s.innerHTML='<i class="ph ph-clock"></i> pending'; document.getElementById('out2').style.display='none'; }
+function save2(){
+  const payload={ criteria_status:'extracted', criterias_concentration: TEXTS.map((t,i)=>({ index:i+1, legal_text:t })) };
+  const out=document.getElementById('out2'); out.style.display='block'; out.textContent=JSON.stringify(payload,null,2);
+  const s=document.getElementById('status2'); s.className='status-pill done'; s.innerHTML='<i class="ph ph-check-circle"></i> extracted · '+TEXTS.length+' criterios';
+}
+
+/* ===== run both ===== */
+// Construye un criterio estructurado (borrador) desde su texto — reutilizable en single y lote
+function buildCriterion(t){
+  const cands=detectLimits(t), op=suggestOp(t), kind=suggestKind(t);
+  const agg=suggestAgg(t), measure={field:suggestMeasure(t,agg), aggregation:agg};
+  const base=suggestBase(t,agg), g=suggestGroup(t);
+  const effect=suggestEffect(t,kind), limitType=suggestLimitType(t);
+  const topn=agg==='topn_sum'?suggestTopN(t):null;
+  const weightField=agg==='weighted_avg'?'saldo_insoluto':'';
+  let limits=[];
+  if(limitType==='max_of'){ cands.slice(0,2).forEach(c=>limits.push({operator:op,value:c.value,unit:c.unit})); }
+  else if(limitType==='per_attribute'){ if(cands[0])limits.push({key:'default',operator:op,value:cands[0].value,unit:cands[0].unit}); if(cands[1])limits.push({key:'',operator:op,value:cands[1].value,unit:cands[1].unit}); }
+  else if(limitType==='tiered'||limitType==='conditional'){ cands.forEach(c=>limits.push({key:'',operator:op,value:c.value,unit:c.unit})); }
+  else { if(cands[0])limits.push({ltype:'base',operator:op,value:cands[0].value,unit:cands[0].unit}); if(hasException(t)&&cands[1])limits.push({ltype:'excepcion',operator:op,value:cands[1].value,unit:cands[1].unit}); }
+  return {t, kind, effect, measure, base, groupType:g.type, groupKey:g.key, topn, weightField, condition:suggestCondition(t), limitType, limits, reviewed:false};
+}
+function run(){
+  const items=splitItems(document.getElementById('src').value);
+  // V1 — pre-llenado del modelo extendido
+  CRITS=items.map(buildCriterion);
+  PROPOSALS=[]; renderProposals(); renderCatalog();
+  renderCrits();
+  document.getElementById('note1').style.display='flex';
+  document.getElementById('save1').style.display='flex';
+  reset1();
+  // V2
+  TEXTS=items.slice();
+  renderTexts();
+  document.getElementById('note2').style.display='flex';
+  document.getElementById('save2').style.display='flex';
+  reset2();
+}
+
+/* ===== Ingesta en lote: N contratos → tablero de cobertura del portafolio ===== */
+function parseBatch(raw){
+  const facs=[]; let cur=null;
+  raw.split(/\n/).forEach(ln=>{ const m=ln.match(/^\s*###\s*(.+?)\s*$/); if(m){ cur={id:m[1], text:''}; facs.push(cur); } else if(cur){ cur.text+=ln+'\n'; } });
+  return facs.filter(f=>f.text.trim());
+}
+function processBatch(){
+  const facs=parseBatch(document.getElementById('batchSrc').value);
+  if(!facs.length){ alert('Formato: cada contrato debe ir tras una línea "### <id>".'); return; }
+  const rows=facs.map(f=>{
+    const crits=splitItems(f.text).map(buildCriterion);
+    const cov={mapped:0,low_confidence:0,unmapped:0}, concepts=[];
+    crits.forEach(c=>{ const cv=coverage(c); cov[cv.level]++; if(cv.level==='unmapped'&&cv.add!=='review') concepts.push(cv.add+': '+cv.value); });
+    return {id:f.id, n:crits.length, ...cov, complete:crits.filter(c=>!formulaIncomplete(c)&&!consistencyIssue(c)).length, concepts};
+  });
+  renderBatch(rows);
+}
+function renderBatch(rows){
+  const box=document.getElementById('batchOut'); box.style.display='block';
+  const tot={fac:rows.length,n:0,mapped:0,low_confidence:0,unmapped:0,complete:0};
+  rows.forEach(r=>{tot.n+=r.n;tot.mapped+=r.mapped;tot.low_confidence+=r.low_confidence;tot.unmapped+=r.unmapped;tot.complete+=r.complete;});
+  const cc={}; rows.forEach(r=>r.concepts.forEach(c=>cc[c]=(cc[c]||0)+1));
+  const concepts=Object.entries(cc).sort((a,b)=>b[1]-a[1]);
+  const pct=n=>tot.n?Math.round(100*n/tot.n):0;
+  let h=`<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;font-size:12px;font-weight:700">
+     <span style="background:var(--secondary);color:#fff;border-radius:99px;padding:3px 11px">${tot.fac} facilities · ${tot.n} criterios</span>
+     <span style="background:var(--green-bg);color:var(--green);border:1px solid var(--green-b);border-radius:99px;padding:3px 11px">${pct(tot.mapped)}% mapped</span>
+     <span style="background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-b);border-radius:99px;padding:3px 11px">${pct(tot.low_confidence)}% low-conf</span>
+     <span style="background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-b);border-radius:99px;padding:3px 11px">${pct(tot.unmapped)}% unmapped</span>
+     <span style="color:var(--text-secondary);font-weight:400">· ${tot.complete}/${tot.n} con fórmula completa</span></div>`;
+  h+=`<table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="text-align:left;color:var(--text-muted);font-size:10px;text-transform:uppercase;letter-spacing:.05em">
+     <th style="padding:6px 8px">Facility</th><th>Criterios</th><th>mapped</th><th>low-conf</th><th>unmapped</th><th>listo</th></tr></thead><tbody>`;
+  rows.forEach(r=>{ h+=`<tr style="border-top:1px solid var(--border)">
+     <td style="padding:6px 8px;font-family:'Space Mono'">${esc(r.id)}</td><td style="text-align:center">${r.n}</td>
+     <td style="text-align:center;color:var(--green);font-weight:700">${r.mapped||''}</td>
+     <td style="text-align:center;color:var(--amber);font-weight:700">${r.low_confidence||''}</td>
+     <td style="text-align:center;color:var(--purple);font-weight:700">${r.unmapped||''}</td>
+     <td style="text-align:center">${r.complete}/${r.n}</td></tr>`; });
+  h+=`</tbody></table>`;
+  if(concepts.length) h+=`<div style="margin-top:12px;background:var(--purple-bg);border:1px solid var(--purple-b);border-radius:var(--radius);padding:10px 13px;font-size:12px;color:#5b21b6">
+     <b><i class="ph ph-lightbulb"></i> Extensiones de catálogo que desbloquearían más criterios:</b> ${concepts.map(([c,n])=>`<code style="background:#fff;border:1px solid var(--purple-b);border-radius:4px;padding:1px 6px">+ ${esc(c)} ×${n}</code>`).join(' ')}</div>`;
+  box.innerHTML=h;
+}
+
+/* ===== banco de casos reales (data prod) — con el escaping LITERAL tal cual viene de la BD ===== */
+const CASES=[
+ {id:'A1', label:'A1 · A.B.C. + tabs + excepción x estado (F/4870)',
+  text:'D.\\tQue el saldo insoluto de los Créditos a Clientes Transferidos en su primer ciclo no representen más del 30% (treinta por ciento) del saldo insoluto total de los Créditos a Clientes Transferidos. En el entendido de que aquellos Créditos a Clientes que correspondan créditos en primer ciclo según corresponda;\\r\\n\\r\\nE.\\tQue el saldo insoluto del principal de los Créditos a Clientes de la sucursal con el mayor saldo insoluto no excedan del 5% (cinco por ciento) del saldo insoluto de principal total; y\\r\\n\\r\\nF.\\tQue el saldo insoluto de los Créditos a Clientes Transferidos de una misma entidad federativa no represente más del 15% (quince por ciento), salvo en el caso de Veracruz, Michoacán, la Ciudad de México y el Estado de México, en los cuales no representen más del 20% (veinte por ciento) (Veracruz y Michoacán) y 30% (treinta por ciento) (Ciudad de México y Estado de México) respectivamente.'},
+ {id:'A2', label:'A2 · 1./2. con sub-incisos (a)/(i) anidados (F/1435)',
+  text:'5. Que el promedio ponderado conforme al puntaje de Buró de Crédito (B-Score) de los Clientes sea mayor o igual a 587 puntos, bajo el entendido de que aquellos Clientes cuyo B-Score sea 0 (cero), se considerará un puntaje de 400 (cuatrocientos) puntos.\\r\\n7. Que el promedio ponderado de tasa de interés anual de los Contratos de Crédito Vexi sea por lo menos de 80% (ochenta por ciento).\\r\\n8. Que los Contratos de Crédito Vexi transmitidos al Patrimonio del Fideicomiso:\\r\\na) Cuyos Clientes tengan domicilio en la Ciudad de México o el Estado de México, con Razón de Cartera Vencida promedio en los últimos 3 (tres) meses: (i) mayor a 10.0% (diez por ciento), no representen más del 5.0% (cinco por ciento), (ii) mayor a 7.5% (siete punto cinco por ciento) y menor o igual a 10.0%, no representen más del 15.0% (quince por ciento), y (iii) menor o igual a 7.5%, no representen más del 25% (veinticinco por ciento) del saldo principal insoluto, y\\r\\nb) Cuyos Clientes tengan domicilio en otra Entidad Federativa: (i) mayor a 10.0%, no más del 2.5%, (ii) mayor a 3.0% y menor o igual a 10%, no más del 10.0%, y (iii) menor o igual a 3.0%, no más del 20%.\\r\\n9. Que el promedio ponderado de Clientes revolventes sea menor o igual a 67% (sesenta y siete por ciento).'},
+ {id:'A3', label:'A3 · 1./2. + párrafo "Asimismo" sin marcador (F/1364)',
+  text:'1. El total conjunto del valor presente neto del valor residual de los activos no podrá representar más del 27.5% (veintisiete punto cinco por ciento) de la Cartera Total.\\r\\n2. El total conjunto de los flujos derivados de la totalidad de los Contratos de Arrendamiento celebrados con una misma persona no deberá ser mayor al 3% (tres por ciento) del total de los flujos de la Cartera Total.\\r\\nAsimismo, de tiempo en tiempo, los Acreditantes definirán límites de concentración adicionales en función de las ciudades de donde sea originado el Contrato de Arrendamiento. En tanto no se establezcan, la cartera únicamente deberá ser originada en Guadalajara, Jalisco o Monterrey, Nuevo León.'},
+ {id:'A4', label:'A4 · INGLÉS (a)(b)(c) con (i)(ii) anidado (F/12340)',
+  text:'(a) not more than thirty percent (30%) of the aggregate Receivable Balance of Transferred Receivables shall have a credit limit greater than $1,500,000 U.S. Dollars;\\r\\n(b) the obligations of any single Account Debtor and its Affiliates is equal to or less than (i) 7.50% of the aggregate Receivable Balance if less than $40,000,000 U.S. Dollars, or (ii) the greater of $3,000,000 U.S. Dollars or five percent (5.00%) otherwise;\\r\\n(c) the obligations of the largest three Account Debtors is equal to or less than (i) fifteen percent (15%) if less than $40,000,000, or (ii) the greater of $6,000,000 or ten percent (10.00%) otherwise;\\r\\n(d) not more than five percent (5%) consists of Account Debtors with a Jeeves Unified Risk Score of D;\\r\\n(e) obligations of Start-Ups is no more than twenty percent (20.00%);\\r\\n(f) obligations in a single industry is equal to or less than twenty-five percent (25.00%).'},
+ {id:'A5', label:'A5 · Multinivel i. / bullet • / sub-o + escalonado (CIB/4009)',
+  text:'Requisitos aplicables a los Arrendamientos PCH.\\r\\ni.\\tQue la suma del valor presente neto descontando los flujos a una tasa anual equivalente a la TIIE más 8 (ocho) puntos porcentuales:\\r\\n•\\tNo rebase el límite máximo de concentración por Cliente equivalente a:\\r\\no\\tLo que resulte mayor entre 6.0% (seis por ciento) de los Derechos de Cobro o $5,250,000.00 para los primeros 5 (cinco) Clientes.\\r\\no\\tLo que resulte mayor entre 5.0% (cinco por ciento) o $4,375,000.00 para los siguientes 5 (cinco) Clientes.\\r\\no\\tLo que resulte mayor entre 3.5% (tres punto cinco por ciento) o $3,062,500.00 para el resto de Clientes.\\r\\n•\\tNo rebase el límite máximo de concentración por sector equivalente al 35% (treinta y cinco por ciento).\\r\\nii.\\tQue la TIR del Arrendamiento PCH no sea menor al 20% (veinte por ciento).\\r\\niii.\\tQue los Derechos de Cobro consideren rentas mensuales o semanales.\\r\\niv.\\tQue el bien arrendado cuente con una póliza de seguro vigente.'},
+ {id:'A6', label:'A6 · Párrafo corrido f) g) h) i) (F/1631)',
+  text:'f) El valor de los Derechos de Crédito derivados de ningún Contrato de Arrendamiento no podrá representar más del 8.00% (ocho por ciento) del valor total del Patrimonio del Fideicomiso, en el entendido de que cualquier cantidad en exceso de dicho 8.00% (ocho por ciento) no computará para el cálculo del Aforo. g) El valor de los Derechos de Crédito cuyo deudor sea un mismo Obligado no podrán representar más del 10.00% (diez por ciento) del valor total del Patrimonio del Fideicomiso. h) Que la suma del valor de los Derechos de Crédito que individualmente representen los 5 Derechos de Crédito con los mayores flujos no represente más del 25.00% (veinticinco por ciento) del valor total del Patrimonio del Fideicomiso. i) Que el Valor Residual no represente más del 15.00% (quince por ciento) del valor de facturación del equipo correspondiente.'},
+ {id:'A7', label:'A7 · Romano SIN puntuación + tab (iii⇥) (F/5040)',
+  text:'Criterios de Concentración \\r\\niii\tLa tasa mensual aplicable del Crédito Podemos respectivo deberá ser de al menos 5.0% (cinco por ciento) mensual sobre saldos insolutos;\\r\\niv\tEl monto principal otorgado de los Créditos Podemos no deberá ser mayor a $40,000.00 M.N. por Cliente; no obstante, como excepción, la Acreditada podrá otorgar Créditos Podemos hasta por un monto máximo de $75,000.00 M.N., siempre que la suma de los que excedan el Monto Base no exceda de un 20% (veinte por ciento) del total de los Créditos Podemos;\\r\\nv\tPor lo menos el 66.67% (sesenta y seis punto sesenta y siete por ciento) de la Base de Cálculo deberá estar conformada por Créditos Elegibles cuyo monto principal no sea mayor a $35,000.00 por Cliente;\\r\\nvi\tEl saldo insoluto de los Créditos Podemos Grupales represente al menos el 90% (noventa por ciento) de la Base de Cálculo;\\r\\nvii\tCuando se trate de Créditos Podemos Grupales, por regla general no podrá haber más de 25 (veinticinco) coacreditados dentro de un mismo Crédito Podemos Grupal; y\\r\\nviii\tEl saldo insoluto de los Créditos Elegibles originados en una misma unidad de la Acreditada no deberá exceder del 22.5% (veintidós punto cinco por ciento) de la Base de Cálculo.'}
+];
+function initCases(){
+  const sel=document.getElementById('caseSel');
+  sel.innerHTML='<option value="">▼ Cargar caso…</option>';
+  const prod=CASES.filter(c=>!c.user), mine=CASES.filter(c=>c.user);
+  const grp=(label,arr)=>{ if(!arr.length) return; const g=document.createElement('optgroup'); g.label=label; arr.forEach(c=>{ const o=document.createElement('option'); o.value=c.id; o.textContent=c.label; g.appendChild(o); }); sel.appendChild(g); };
+  grp('Casos reales (data prod)', prod);
+  grp('Mis casos', mine);
+}
+function loadCase(id){
+  const c=CASES.find(x=>x.id===id); if(!c) return;
+  document.getElementById('src').value=c.text;  // texto con escaping literal, como en la BD
+  run();
+}
+// Agregar N casos nuevos: guarda el clausulado actual como caso propio
+let USERCASE=0;
+function addCurrentAsCase(){
+  const text=document.getElementById('src').value.trim();
+  if(!text){ alert('Pega primero un clausulado en el área de texto.'); return; }
+  const name=prompt('Nombre del caso nuevo:', 'Mi caso '+(USERCASE+1));
+  if(name===null) return;
+  USERCASE++;
+  const id='U'+USERCASE;
+  CASES.push({id, label:'★ '+(name.trim()||('Mi caso '+USERCASE)), text, user:true});
+  initCases();
+  document.getElementById('caseSel').value=id;
+  run();
+}
+initCases();
+// Tabs: separa el flujo de un contrato del de lote (flujos distintos)
+function switchFlow(m){
+  document.getElementById('flowSingle').style.display = m==='single'?'block':'none';
+  document.getElementById('flowBatch').style.display  = m==='batch' ?'block':'none';
+  [['tabSingle','single'],['tabBatch','batch']].forEach(([id,mm])=>{
+    const b=document.getElementById(id), on=mm===m;
+    b.style.background=on?'var(--secondary)':'var(--surface)';
+    b.style.color=on?'#fff':'var(--text-secondary)';
+    b.style.borderColor=on?'var(--secondary)':'var(--border-strong)';
+  });
+}
+switchFlow('single');
+</script>
+</body>
+</html>

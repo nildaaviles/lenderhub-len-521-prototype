@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Concentration Criteria — LenderHub</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d24; --muted:#6b7280; --line:#e6e8eb;
+    --gray:#eef0f3; --gray-ink:#4b5563;
+    --green:#15803d; --green-bg:#e8f5ec;
+    --red:#b42318; --red-bg:#fdeceb;
+    --blue:#1d4ed8; --blue-bg:#eaf0fe;
+    --amber:#92600a; --amber-bg:#fcf3e3;
+    --brand:#7a1f5c;
+    --radius:12px;
+    font-synthesis:none;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:28px 24px 80px}
+
+  /* Header */
+  .top{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:20px}
+  h1{font-size:22px;margin:0 0 4px;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:13px}
+  .selector{display:flex;flex-direction:column;gap:6px;min-width:300px}
+  .selector label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  select{font:inherit;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);cursor:pointer}
+
+  .meta{display:flex;gap:18px;flex-wrap:wrap;margin:0 0 22px;padding:14px 18px;background:var(--card);
+    border:1px solid var(--line);border-radius:var(--radius)}
+  .meta div{font-size:13px}
+  .meta b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600;margin-bottom:2px}
+
+  /* Compliance Overview */
+  .overview{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px}
+  .stat .n{font-size:26px;font-weight:700;letter-spacing:-.02em}
+  .stat .l{font-size:12px;color:var(--muted);margin-top:2px}
+  .stat.breach .n{color:var(--red)}
+
+  /* Accordion */
+  .group{margin-bottom:14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--card);overflow:hidden}
+  .group > summary{list-style:none;cursor:pointer;padding:14px 18px;display:flex;align-items:center;gap:10px;
+    font-weight:600;font-size:14px;user-select:none}
+  .group > summary::-webkit-details-marker{display:none}
+  .chev{transition:transform .15s;color:var(--muted)}
+  details[open] > summary .chev{transform:rotate(90deg)}
+  .gcount{margin-left:auto;font-weight:500;font-size:12px;color:var(--muted)}
+
+  table{width:100%;border-collapse:collapse}
+  thead th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);
+    font-weight:600;padding:8px 14px;border-top:1px solid var(--line);background:#fafbfc}
+  thead th.num{text-align:right}
+  tbody td{padding:13px 14px;border-top:1px solid var(--line);vertical-align:top}
+  tbody tr:hover{background:#fcfcfd}
+  .idx{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600}
+  .legal{max-width:540px;color:var(--ink)}
+  .legal .kindtag{display:inline-block;margin-top:5px;font-size:10.5px;color:var(--gray-ink);
+    background:var(--gray);padding:1px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+  td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .actual{font-weight:600}
+
+  /* Limit chip — neutral by design */
+  .limit-chip{display:inline-flex;align-items:center;gap:4px;background:var(--gray);color:var(--gray-ink);
+    padding:3px 9px;border-radius:7px;font-weight:600;font-variant-numeric:tabular-nums}
+  .limit-chip .op{font-size:10px;opacity:.7;font-weight:700}
+
+  /* Status badges */
+  .badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:7px;font-size:12px;font-weight:600;white-space:nowrap}
+  .b-ok{background:var(--green-bg);color:var(--green)}
+  .b-fail{background:var(--red-bg);color:var(--red)}
+  .b-info{background:var(--blue-bg);color:var(--blue)}
+  .b-var{background:var(--amber-bg);color:var(--amber)}
+  .b-na{background:var(--gray);color:var(--gray-ink)}
+  .b-inactive{background:var(--gray);color:var(--gray-ink)}
+  .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+
+  .excess{font-weight:600;color:var(--red)}
+  .excess.none{color:var(--muted);font-weight:400}
+
+  /* Cohort sub-table (VARIABLE) */
+  .cohort-toggle{margin-top:7px;font-size:12px;color:var(--blue);background:none;border:none;cursor:pointer;padding:0;font-weight:600}
+  .cohort{margin-top:10px;border:1px solid var(--line);border-radius:8px;overflow:hidden;display:none}
+  .cohort.open{display:block}
+  .cohort table{font-size:12px}
+  .cohort thead th{background:#f4f5f7;padding:6px 10px}
+  .cohort td{padding:6px 10px}
+  .cohort .b-ok,.cohort .b-fail{font-size:11px;padding:1px 6px}
+
+  .empty{padding:48px;text-align:center;color:var(--muted)}
+  footer{margin-top:30px;font-size:12px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  .btn{font:inherit;font-size:12px;font-weight:600;padding:8px 14px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;color:var(--ink)}
+  @media(max-width:720px){.overview{grid-template-columns:repeat(2,1fr)}.legal{max-width:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div>
+      <h1>Concentration Criteria</h1>
+      <div class="sub">Compliance overview — backup servicer monthly report</div>
+    </div>
+    <div class="selector">
+      <label for="trust">Trust / Fideicomiso</label>
+      <select id="trust"></select>
+    </div>
+  </div>
+
+  <div class="meta" id="meta"></div>
+
+  <div class="overview" id="overview"></div>
+
+  <div id="criteria"></div>
+
+  <footer>
+    <span id="src"></span>
+    <button class="btn" onclick="downloadCSV()">Download CSV</button>
+  </footer>
+
+</div>
+
+<script>
+/* =========================================================================
+   DECLARATIVE ENGINE — one engine, N trusts via selector.
+   Rule kinds: concentration_max · composition_floor · aggregate_cap
+               · count_limit · eligibility · informative · conditional · variable
+   Design rules (locked LEN-664):
+     - limit chip is ALWAYS neutral gray (a defined limit is not an alarm)
+     - red is reserved for breach / excess only
+     - legal_text is verbatim, in the language of the CONTRACT (here: English)
+     - chrome/UI is English
+   ========================================================================= */
+
+const DATA = {
+  "cib3305": {
+    name: "CIB/3305 — Red Amigo DAL (Konfío)",
+    originator: "Red Amigo Dal, S.A.P.I. de C.V., SOFOM, E.N.R.",
+    agent: "Goldman Sachs Bank USA (Admin & Collateral Agent)",
+    cutoff: "30/06/2025",
+    src: "CIB/3305 Borrowing Base & Backup Servicer monthly report",
+    groups: [
+      { title: "Concentration Limitations — SME Loan", rules: [
+        {idx:"(i)",  kind:"concentration_max", op:"max", actual:19.60, limit:50,   unit:"%", legal:"(B) Not more than 50% consists of Encumbered Receivables originated from an SME Sole Proprietor Loan."},
+        {idx:"(ii)", kind:"concentration_max", op:"max", actual:13.00, limit:15,   unit:"%", legal:"Not more than 15% consists of Encumbered Receivables provided to Obligors conducting their business in tourism/lodging or construction."},
+        {idx:"(iii)",kind:"concentration_max", op:"max", actual:0.83,  limit:5,    unit:"%", legal:"(A) Not more than 5% consists of Encumbered Receivables provided to Obligors with a Konfío Score B."},
+        {idx:"(iii)",kind:"concentration_max", op:"max", actual:11.59, limit:25,   unit:"%", legal:"(B) Not more than 25% consists of Encumbered Receivables provided to Obligors domiciled in any state in Mexico except for Mexico City."},
+        {idx:"(iii)",kind:"concentration_max", op:"max", actual:20.73, limit:40,   unit:"%", legal:"(C) Not more than 40% consists of Encumbered Receivables provided to Obligors domiciled in Mexico City."},
+        {idx:"(v)",  kind:"concentration_max", op:"max", actual:5.74,  limit:10,   unit:"%", legal:"Not more than 10% consists of Encumbered Receivables provided to Obligors with a credit score assigned by any Credit Information Company of 450."},
+        {idx:"(vi)", kind:"concentration_max", op:"max", actual:47.27, limit:57.5, unit:"%", legal:"Not more than 57.5% consists of Encumbered Receivables with respect to which the relevant Obligors are non-Profitable."},
+        {idx:"(vii)",kind:"concentration_max", op:"max", actual:0.09,  limit:35,   unit:"%", legal:"Not more than 35% consists of Encumbered Receivables with respect to which either the relevant Obligors have conducted business for nine months or less."},
+        {idx:"(ix)", kind:"concentration_max", op:"max", actual:4.23,  limit:8,    unit:"%", legal:"With respect to Encumbered Receivables, not more than 8% of such Encumbered Receivables are one (1) to thirty (30) days delinquent."},
+        {idx:"(x)",  kind:"concentration_max", op:"max", actual:24.06, limit:30,   unit:"%", legal:"Not more than 30% of SME Loans shall have an original principal balance between MXP3,000,000 and MXP5,000,000."},
+        {idx:"(xi)", kind:"concentration_max", op:"max", actual:16.87, limit:35,   unit:"%", legal:"Not more than 35% consists of Encumbered Receivables with an original principal balance or a credit limit greater than MXP3,000,000 provided to Obligors that have a Konfío Score other than AAA or AAAM."},
+        {idx:"(xii)",kind:"concentration_max", op:"max", actual:1.61,  limit:10,   unit:"%", legal:"Not more than 10% consists of Encumbered Receivables of Obligors that engage in: (A) any hospitality type activities (restaurants, bars, hotels, etc.), (B) all entertainment type activities; (C) all non-essential forms of transportation; and (D) all public sector-related activities, including health care and education."},
+        {idx:"(xiii)",kind:"concentration_max",op:"max", actual:24.20, limit:40,   unit:"%", legal:"Not more than 40% of Encumbered Receivables shall be SME Credit Card Loans."},
+        {idx:"(xiv)",kind:"count_limit", op:"max", actual:0.00, limit:0.25, unit:"%", subject:"single obligor", legal:"No single Obligor shall have outstanding principal balance that is more than 0.25% of the outstanding principal amount of all Eligible SME Loans."},
+        {idx:"(xv)", kind:"concentration_max", op:"max", actual:24.13, limit:30,   unit:"%", legal:"(B) Not more than 30% consists of Encumbered Receivables provided to Obligors conducting their business in any single industry."},
+        {idx:"(xvi)",kind:"conditional", op:"max", actual:0.00, limit:17.5, unit:"%", active:false,
+          condition:"Only applies if the Early Payment Default Threshold has been breached and not yet cured for two successive calendar months.",
+          legal:"If the Early Payment Default Threshold has been breached then, unless and until such breach is cured for a period of two successive calendar months, not more than 17.5% of SME Loans contributed to the Trust as Encumbered Receivables after the date of such breach shall have missed their first scheduled payment."},
+      ]},
+      { title: "Concentration Limitations — SME Term Loan", rules: [
+        {idx:"(i)",  kind:"concentration_max", op:"max", actual:1.09, limit:2.5, unit:"%", legal:"Not more than 2.5% consists of Encumbered Receivables of non-ACH (Automated Clearing House) SME Term Loans."},
+        {idx:"(iii)",kind:"concentration_max", op:"max", actual:0.12, limit:5,   unit:"%", legal:"(A) Not more than 5% consists of Encumbered Receivables that are SME Term Loans with an original term greater than 24 months."},
+        {idx:"(iv)", kind:"concentration_max", op:"max", actual:11.32,limit:15,  unit:"%", legal:"Not more than 15% consists of Encumbered Receivables of Obligors that have been Obligors under four or more SME Loans."},
+        {idx:"(vi)", kind:"conditional", op:"max", actual:0.45, limit:30, unit:"%", active:true,
+          condition:"Trigger-dependent: ≤30% prior to a Manually Approved SME Loans Trigger Event; ≤5% after.",
+          legal:"(A) At any time prior to the occurrence of a Manually Approved SME Loans Trigger Event, not more than 30% consists of Encumbered Receivables of Materially Manually Approved SME Loans, and (B) after the occurrence of a Manually Approved SME Loans Trigger Event, not more than 5%, consists of Encumbered Receivables of Materially Manually Approved SME Loans."},
+      ]},
+      { title: "Concentration Limitations — SME Credit Card Loan", rules: [
+        {idx:"(i)", kind:"composition_floor", op:"min", actual:80.83, limit:50, unit:"%", legal:"At least 50% of the related Account Agreements by Portfolio Receivable Outstanding Balance must have been in place for more than 12 months."},
+        {idx:"(ii)",kind:"concentration_max", op:"max", actual:13.28, limit:20, unit:"%", legal:"Not more than 20% of the Portfolio Receivable Outstanding Balance of all SME Credit Card Loans shall have an Average Utilization greater than 90% and an Average Spend Velocity of less than 10%."},
+      ]},
+    ]
+  },
+
+  "cib4198": {
+    name: "CIB/4198 — Mercado Lending (MercadoLibre)",
+    originator: "Mercado Lending, S.A. de C.V.",
+    agent: "Goldman Sachs Lending Partners, LLC (fideicomitente)",
+    cutoff: "28/05/2025",
+    src: "CIB/4198 Discrepancies Report",
+    groups: [
+      { title: "Concentration Limits", rules: [
+        {idx:"(i)",  kind:"composition_floor", op:"min", actual:31.48, limit:30, unit:"%", legal:"At least 30% consist of Loans made to Obligors with a credit score of A."},
+        {idx:"(iii)",kind:"composition_floor", op:"min", actual:67.46, limit:65, unit:"%", legal:"At least 65% consist of Loans made to Obligors with a credit score of A, B or C."},
+        {idx:"(iii)",kind:"concentration_max", op:"max", actual:7.10,  limit:7.5,unit:"%", legal:"No more than 7.5% of Loans made to Obligors with a credit score of E."},
+        {idx:"(iv)", kind:"informative", op:"max", actual:83.47, limit:95, unit:"%", legal:"The weighted average APR of such Loans is less than or equal to 95.00%."},
+        {idx:"(v)",  kind:"informative", op:"min", actual:202, limit:150, unit:"days", legal:"The weighted average remaining life to maturity of such Loans is greater than or equal to 150 days as of such Purchase Date."},
+        {idx:"(vii)",kind:"concentration_max", op:"max", actual:39.43, limit:58, unit:"%", legal:"The percentage of Purchased Loans with an outstanding principal balance greater than or equal to MXP2,500 is less than or equal to 58.00%."},
+        {idx:"(viii)",kind:"concentration_max",op:"max", actual:27.41, limit:30, unit:"%", legal:"The percentage of Purchased Loans with a remaining life to maturity greater than or equal to 270 days as of such Purchase Date is less than or equal to 30.00%."},
+        {idx:"(viii)",kind:"variable", op:"max", limit:50, unit:"%", subject:"per Monthly Vintage",
+          legal:"For each Monthly Vintage, the percentage of Purchased Loans which are Personal Loans may not exceed 50%, provided that the Purchased Portfolio concentration in Personal Loans of each Monthly Vintage cannot exceed the concentration of Total Originations of such Monthly Vintage.",
+          cohorts:[
+            {k:"31/05/2025", actual:41.8, limit:50},
+            {k:"30/06/2025", actual:0.0,  limit:50},
+            {k:"30/04/2025", actual:0.0,  limit:50},
+            {k:"31/03/2025", actual:0.0,  limit:50},
+            {k:"28/02/2025", actual:0.0,  limit:50},
+          ]},
+        {idx:"(ix)", kind:"aggregate_cap", op:"max", limit:394000000, unit:"MXN", subject:"per Monthly Vintage",
+          legal:"The aggregate Purchase Price of any Monthly Vintage (including Loans transferred on prior Purchase Dates) does not exceed MXP394,000,000.",
+          cohorts:[
+            {k:"31/05/2025", actual:135574110, limit:394000000},
+            {k:"30/04/2025", actual:307327948, limit:394000000},
+            {k:"31/03/2025", actual:307690065, limit:394000000},
+            {k:"31/12/2024", actual:295949136, limit:394000000},
+            {k:"30/11/2024", actual:303638671, limit:394000000},
+            {k:"31/10/2024", actual:307200923, limit:394000000},
+          ]},
+      ]},
+      { title: "Eligibility Criteria (per-loan filter)", rules: [
+        {idx:"E1", kind:"eligibility", actual:null, legal:"The Loan was originated directly by the Originator in the ordinary course of business; the Obligor has a Seller Score of A, B, C, D or E; the remaining term is ≤360 days and ≥60 days; direct debit mechanism to MP Wallet's account; original principal ≤MXP40,000; annualized interest rate ≤150%; denominated and payable solely in MXP; not refinanced/restructured; not a Deceased Loan at transfer."},
+      ]},
+    ]
+  }
+};
+
+/* ---------- formatting helpers ---------- */
+const fmt = (n,unit)=>{
+  if(n===null||n===undefined) return "—";
+  if(unit==="MXN") return "$"+n.toLocaleString("en-US");
+  if(unit==="days") return n+" d";
+  return n.toFixed(2)+"%";
+};
+const opSym = op => op==="min" ? "≥" : "≤";
+
+/* ---------- compliance engine ---------- */
+function evaluate(r){
+  // returns {status, badge, excess}
+  if(r.kind==="informative"){
+    const ok = r.op==="min" ? r.actual>=r.limit : r.actual<=r.limit;
+    return {status:"INFO", badgeClass:"b-info", badgeText:"Info · "+(ok?"within":"outside"), excess:null};
+  }
+  if(r.kind==="eligibility"){
+    return {status:"ELIG", badgeClass:"b-info", badgeText:"Eligibility filter", excess:null};
+  }
+  if(r.kind==="conditional" && r.active===false){
+    return {status:"INACTIVE", badgeClass:"b-inactive", badgeText:"Inactive · trigger not met", excess:null};
+  }
+  if(r.kind==="variable" || (r.cohorts && r.cohorts.length)){
+    const breaches = r.cohorts.filter(c=> r.op==="min" ? c.actual<c.limit : c.actual>c.limit);
+    if(breaches.length) return {status:"FAIL", badgeClass:"b-fail", badgeText:breaches.length+" cohort breach", excess:null};
+    return {status:"VARIABLE", badgeClass:"b-var", badgeText:"Variable · "+r.cohorts.length+" cohorts OK", excess:null};
+  }
+  if(r.actual===null||r.limit===null){
+    return {status:"NA", badgeClass:"b-na", badgeText:"N/A · missing data", excess:null};
+  }
+  // standard max / min
+  const ok = r.op==="min" ? r.actual>=r.limit : r.actual<=r.limit;
+  let excess=null;
+  if(!ok){
+    excess = r.op==="min" ? (r.limit-r.actual) : (r.actual-r.limit);
+  }
+  return ok
+    ? {status:"OK", badgeClass:"b-ok", badgeText:"Satisfied", excess:null}
+    : {status:"FAIL", badgeClass:"b-fail", badgeText:"Breach", excess};
+}
+
+/* ---------- render ---------- */
+let current = "cib3305";
+
+function renderSelector(){
+  const sel = document.getElementById("trust");
+  sel.innerHTML = Object.entries(DATA).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join("");
+  sel.value = current;
+  sel.onchange = e=>{ current=e.target.value; render(); };
+}
+
+function render(){
+  const d = DATA[current];
+  document.getElementById("meta").innerHTML = `
+    <div><b>Originator</b>${d.originator}</div>
+    <div><b>Agent</b>${d.agent}</div>
+    <div><b>Cut-off date</b>${d.cutoff}</div>`;
+  document.getElementById("src").textContent = "Source: "+d.src;
+
+  // overview
+  let total=0, ok=0, breach=0, other=0;
+  d.groups.forEach(g=>g.rules.forEach(r=>{
+    total++;
+    const e=evaluate(r);
+    if(e.status==="OK"||e.status==="VARIABLE") ok++;
+    else if(e.status==="FAIL") breach++;
+    else other++;
+  }));
+  document.getElementById("overview").innerHTML = `
+    <div class="stat"><div class="n">${total}</div><div class="l">Criteria tracked</div></div>
+    <div class="stat"><div class="n">${ok}</div><div class="l">Within limit</div></div>
+    <div class="stat ${breach?'breach':''}"><div class="n">${breach}</div><div class="l">In breach</div></div>
+    <div class="stat"><div class="n">${other}</div><div class="l">Info / inactive / N&#8203;/A</div></div>`;
+
+  // groups
+  const root = document.getElementById("criteria");
+  if(!d.groups.length){ root.innerHTML = `<div class="group"><div class="empty">No concentration rules defined for this trust.</div></div>`; return; }
+
+  root.innerHTML = d.groups.map((g,gi)=>{
+    const rows = g.rules.map((r,ri)=>{
+      const e = evaluate(r);
+      const hasCohorts = r.cohorts && r.cohorts.length;
+      const limitCell = (r.limit===null||r.limit===undefined)
+        ? '<span class="badge b-na">—</span>'
+        : `<span class="limit-chip"><span class="op">${opSym(r.op)}</span>${fmt(r.limit,r.unit)}</span>`;
+      const actualCell = r.actual===null||r.actual===undefined
+        ? (hasCohorts ? `<span style="color:var(--muted)">per cohort</span>` : '—')
+        : `<span class="actual">${fmt(r.actual,r.unit)}</span>`;
+      const excessCell = e.excess!=null
+        ? `<span class="excess">${fmt(e.excess,r.unit)}</span>`
+        : `<span class="excess none">—</span>`;
+
+      let cohortHtml = "";
+      if(hasCohorts){
+        const cid = `coh-${gi}-${ri}`;
+        cohortHtml = `
+          <button class="cohort-toggle" onclick="document.getElementById('${cid}').classList.toggle('open')">▸ View ${r.cohorts.length} cohorts</button>
+          <div class="cohort" id="${cid}">
+            <table><thead><tr><th>${r.subject||'Cohort'}</th><th class="num">Actual</th><th class="num">Limit</th><th>Compliance</th></tr></thead>
+            <tbody>${r.cohorts.map(c=>{
+              const cok = r.op==="min" ? c.actual>=c.limit : c.actual<=c.limit;
+              return `<tr><td>${c.k}</td><td class="num">${fmt(c.actual,r.unit)}</td><td class="num">${fmt(c.limit,r.unit)}</td>
+                <td><span class="badge ${cok?'b-ok':'b-fail'}"><span class="dot"></span>${cok?'Satisfied':'Breach'}</span></td></tr>`;
+            }).join("")}</tbody></table>
+          </div>`;
+      }
+
+      const kindLabel = r.kind.replace(/_/g," ");
+      return `<tr>
+        <td class="idx">${r.idx}</td>
+        <td class="legal">${r.legal}<div><span class="kindtag">${kindLabel}</span></div>${cohortHtml}</td>
+        <td class="num">${actualCell}</td>
+        <td class="num">${limitCell}</td>
+        <td><span class="badge ${e.badgeClass}"><span class="dot"></span>${e.badgeText}</span></td>
+        <td class="num">${excessCell}</td>
+      </tr>`;
+    }).join("");
+
+    return `<details class="group" open>
+      <summary><span class="chev">▸</span>${g.title}<span class="gcount">${g.rules.length} criteria</span></summary>
+      <table>
+        <thead><tr>
+          <th style="width:54px">#</th><th>Concentration criterion (verbatim)</th>
+          <th class="num">Actual</th><th class="num">Limit</th><th>Compliance</th><th class="num">Excess</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </details>`;
+  }).join("");
+}
+
+function downloadCSV(){
+  const d = DATA[current];
+  const lines = [["Group","#","Kind","Operator","Actual","Limit","Unit","Compliance","Excess","Legal text"]];
+  d.groups.forEach(g=>g.rules.forEach(r=>{
+    const e=evaluate(r);
+    lines.push([g.title, r.idx, r.kind, r.op||"", r.actual??"", r.limit??"", r.unit||"", e.badgeText, e.excess??"", '"'+r.legal.replace(/"/g,'""')+'"']);
+  }));
+  const csv = lines.map(l=>l.join(",")).join("\n");
+  const blob = new Blob([csv],{type:"text/csv"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `concentrations-${current}.csv`;
+  a.click();
+}
+
+renderSelector();
+render();
+</script>
+</body>
+</html>
