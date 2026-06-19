@@ -2205,7 +2205,7 @@
       pill1:null,
       card:{cls:'block bg-bg border border-border rounded-xl p-4 min-h-[118px]',
             tt:'Outstanding Debt = Borrowing Base = $220.00M — utilization 100%, zero availability',
-            title:'Availability', tcls:'text-text-secondary', val:'$0.00M', vcls:'text-text-secondary', sub:'Fully drawn · no headroom'},
+            title:'', tcls:'text-text-secondary', val:'$0.00M', vcls:'text-text-secondary', sub:'Fully drawn · no headroom'},
       bbVal:'$220.00M',
       data:[{m:'Apr 25',bb:246,od:205},{m:'May 25',bb:245,od:207},{m:'Jun 25',bb:244,od:209},{m:'Jul 25',bb:243,od:211},{m:'Aug 25',bb:242,od:212},{m:'Sep 25',bb:240,od:213},{m:'Oct 25',bb:238,od:214},{m:'Nov 25',bb:236,od:215},{m:'Dec 25',bb:232,od:216},{m:'Jan 26',bb:228,od:217},{m:'Feb 26',bb:224,od:219},{m:'Mar 26',bb:220,od:220}],
     },
@@ -2272,8 +2272,8 @@
     const card = $('bbPrimaryCard');
     card.className = c.card.cls; card.setAttribute('data-tt', c.card.tt);
     card.innerHTML =
-      '<div class="flex items-center gap-1.5 mb-1"><h4 class="font-primary text-sm font-medium '+c.card.tcls+' m-0">'+c.card.title+'</h4>'+
-      '<i class="ph ph-info text-text-muted text-sm cursor-help"></i></div>'+
+      (c.card.title ? '<div class="flex items-center gap-1.5 mb-1"><h4 class="font-primary text-sm font-medium '+c.card.tcls+' m-0">'+c.card.title+'</h4>'+
+      '<i class="ph ph-info text-text-muted text-sm cursor-help"></i></div>' : '')+
       '<div class="num text-3xl font-bold '+c.card.vcls+' leading-tight">'+c.card.val+'</div>'+
       (c.card.sub ? '<div class="text-xs text-text-secondary mt-1">'+c.card.sub+'</div>' : '');
     $('bbValue').textContent = c.bbVal;
