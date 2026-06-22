@@ -97,10 +97,18 @@
 
       <div class="recon" id="recon"></div>
 
-      <details class="tbl" id="tblWrap">
-        <summary><i class="ph ph-table" style="color:#910057;font-size:16px"></i> Ver tabla · conceptos de esta facility <i class="ph ph-caret-down" style="margin-left:auto;color:var(--muted)"></i></summary>
+      <!-- Show Data toggle -->
+      <div style="display:flex;align-items:center;gap:8px;margin-top:16px">
+        <button type="button" role="switch" aria-checked="false" title="Click para alternar"
+          onclick="toggleData(this,'tblWrap')"
+          style="position:relative;width:36px;height:20px;border-radius:999px;background:#CBD5E1;border:none;cursor:pointer;transition:background 200ms;flex-shrink:0;padding:0">
+          <span style="position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform 200ms;display:block"></span>
+        </button>
+        <span style="font-family:'Sofia Sans',sans-serif;font-size:12px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.04em">Show Data</span>
+      </div>
+      <div id="tblWrap" style="display:none;margin-top:12px;overflow-x:auto">
         <table><thead><tr><th>Concepto (según el reporte)</th><th style="text-align:right">Monto</th><th style="text-align:right">Saldo acumulado</th></tr></thead><tbody id="tbody"></tbody></table>
-      </details>
+      </div>
     </div>
 
     <div id="empty" class="empty" style="display:none">
@@ -324,6 +332,15 @@
 
   renderCompare();
   render('F-1600');
+</script>
+<script>
+function toggleData(btn, id){
+  const on = btn.getAttribute('aria-checked') !== 'true';
+  btn.setAttribute('aria-checked', on);
+  btn.style.background = on ? '#910057' : '#CBD5E1';
+  btn.querySelector('span').style.transform = on ? 'translateX(16px)' : '';
+  document.getElementById(id).style.display = on ? 'block' : 'none';
+}
 </script>
 </body>
 </html>
