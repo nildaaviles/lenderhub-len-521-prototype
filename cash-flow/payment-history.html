@@ -232,12 +232,10 @@ body {
     <div class="kpi-mini-card">
       <div class="kpi-mini-label">Total Principal</div>
       <div class="kpi-mini-value magenta" id="kpiPrin">$35.4M</div>
-      <div class="kpi-mini-sub"><span class="pct-pill magenta" id="kpiPrinPct">35.4%</span> of total paid</div>
     </div>
     <div class="kpi-mini-card">
       <div class="kpi-mini-label">Total Interest</div>
       <div class="kpi-mini-value slate" id="kpiInt">$64.7M</div>
-      <div class="kpi-mini-sub"><span class="pct-pill slate" id="kpiIntPct">64.6%</span> of total paid</div>
     </div>
   </div>
 
@@ -321,12 +319,12 @@ body {
 
 <script>
 /* 12 meses · May 2025 – Apr 2026 (as-of). La vista actual = últimos N según Trend range. */
-const FULL_LABELS = ['May 2025','Jun 2025','Jul 2025','Aug 2025','Sep 2025','Oct 2025','Nov 2025','Dec 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026'];
-const FULL_PRIN   = [4.1,3.8,4.5,3.9,5.2,4.0,3.5,3.2,5.8,6.1,4.5,15.8];
-const FULL_INT    = [12.5,11.8,13.0,12.2,14.1,11.5,9.8,8.3,15.1,13.7,22.8,4.8];
+const FULL_LABELS = ['May 2025','Jun 2025','Jul 2025','Aug 2025','Sep 2025','Oct 2025','Nov 2025','Dec 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026','May 2026','Jun 2026'];
+const FULL_PRIN   = [4.1,3.8,4.5,3.9,5.2,4.0,3.5,3.2,5.8,6.1,4.5,15.8,7.2,8.5];
+const FULL_INT    = [12.5,11.8,13.0,12.2,14.1,11.5,9.8,8.3,15.1,13.7,22.8,4.8,14.3,15.6];
 /* Adeudo total (outstanding) al inicio de cada periodo — denominador del % */
-const FULL_OUT    = [200,203,206,208,210,213,215,216,221,224,226.4,230];
-const PAY_RANGES  = { '3M':3, '6M':6, '12M':12, 'YTD':4 }; // YTD 2026 = ene–abr = 4
+const FULL_OUT    = [200,203,206,208,210,213,215,216,221,224,226.4,230,234,238];
+const PAY_RANGES  = { '3M':3, '6M':6, '12M':12, 'YTD':6 }; // YTD 2026 = ene–jun = 6
 /* Vista actual (mutable) — el tooltip y la tabla la consumen por índice */
 let labels = FULL_LABELS.slice(), principal = FULL_PRIN.slice(), interest = FULL_INT.slice(), outstanding = FULL_OUT.slice();
 
@@ -457,9 +455,7 @@ function setFixedKpis(){
   document.getElementById('kpiTotalPaid').textContent = fmt1(tot);
   document.getElementById('kpiPeriod').textContent = FULL_LABELS[0] + ' – ' + FULL_LABELS[li];
   document.getElementById('kpiPrin').textContent = fmt1(sP);
-  document.getElementById('kpiPrinPct').textContent = (sP/tot*100).toFixed(1) + '%';
   document.getElementById('kpiInt').textContent = fmt1(sI);
-  document.getElementById('kpiIntPct').textContent = (sI/tot*100).toFixed(1) + '%';
   document.getElementById('kpiLast').textContent = fmt1(FULL_PRIN[li] + FULL_INT[li]);
   document.getElementById('kpiLastMonth').textContent = FULL_LABELS[li];
   const pPct = sP/tot*100;
