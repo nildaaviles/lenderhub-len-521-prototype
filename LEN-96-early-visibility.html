@@ -544,12 +544,12 @@ function cardWorking(f) {
       <span class="comp-badge comp-working"><i class="ph ph-clock-countdown"></i> In Preparation</span>
     </div>
     <div class="working-body">
-      <div class="working-msg">
-        <strong>We're working on the operation ${f.alias}.</strong>
-        Your operation has been detected in our systems and is being prepared for monitoring.
-      </div>
-      <div class="working-placeholder">
-        <i class="ph ph-clock-countdown"></i>
+      <div class="working-placeholder" style="height:auto;padding:16px 18px;flex-direction:column;align-items:flex-start;gap:8px;text-align:left">
+        <i class="ph ph-clock-countdown" style="font-size:22px;color:#FDE68A;flex-shrink:0"></i>
+        <div>
+          <div style="font-size:.875rem;font-weight:700;color:#78350F;margin-bottom:4px">We're working on the operation ${f.alias}.</div>
+          <div style="font-size:.8125rem;color:#92400E;line-height:1.55">Your operation has been detected in our systems and is being prepared for monitoring.</div>
+        </div>
       </div>
     </div>
     <div class="fac-footer fac-footer-working">
