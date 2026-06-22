@@ -435,7 +435,7 @@ const FACILITIES = [
   },
   // ★ WORKING — LEN-97: visible solo al primary lender user
   {
-    id:'F3102', lender:'SAISON', alias:'SAISON CAPITAL F/3102', servicer:'CXC',
+    id:'F3102', lender:'SAISON', alias:'SAISON CAPITAL F/3102', shortAlias:'CAPITAL F/3102', servicer:'CXC',
     lifecycle:'working', compliance:null,
     ocr:null, trend:null, lastUpdated:null,
     detectedDate:'22/06/2026',
@@ -547,7 +547,7 @@ function cardWorking(f) {
       <div class="working-placeholder" style="height:auto;padding:16px 18px;flex-direction:column;align-items:flex-start;gap:8px;text-align:left">
         <i class="ph ph-clock-countdown" style="font-size:22px;color:#FDE68A;flex-shrink:0"></i>
         <div>
-          <div style="font-size:.875rem;font-weight:700;color:#78350F;margin-bottom:4px">We're working on the operation ${f.alias}.</div>
+          <div style="font-size:.875rem;font-weight:700;color:#78350F;margin-bottom:4px">We're working on the operation ${f.shortAlias || f.alias}.</div>
           <div style="font-size:.8125rem;color:#92400E;line-height:1.55">Your operation has been detected in our systems and is being prepared for monitoring.</div>
         </div>
       </div>
