@@ -420,8 +420,10 @@ function renderPaymentTable(){
     const debt = outstanding[i];
     const pct = debt > 0 ? (p/debt*100).toFixed(1) : '0.0';  // principal ÷ adeudo total
     totalP += p; totalI += it;
-    return `<tr>
-      <td style="padding:10px;border-bottom:1px solid #E2E8F0">${label}</td>
+    const isLatest = i === labels.length - 1;
+    const latestBadge = isLatest ? ' <span style="font-size:9px;font-weight:700;background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0;border-radius:4px;padding:1px 5px;vertical-align:middle;text-transform:uppercase;letter-spacing:.04em">latest</span>' : '';
+    return `<tr style="${isLatest ? 'background:#FAFEFF' : ''}">
+      <td style="padding:10px;border-bottom:1px solid #E2E8F0;font-weight:${isLatest ? '700' : '400'}">${label}${latestBadge}</td>
       <td style="padding:10px;text-align:right;font-family:'Space Mono',monospace;border-bottom:1px solid #E2E8F0;color:#C92693;font-weight:600">$${p.toFixed(2)}M</td>
       <td style="padding:10px;text-align:right;font-family:'Space Mono',monospace;border-bottom:1px solid #E2E8F0;color:#64748B">$${it.toFixed(2)}M</td>
       <td style="padding:10px;text-align:right;font-family:'Space Mono',monospace;border-bottom:1px solid #E2E8F0;font-weight:700">$${total.toFixed(2)}M</td>
@@ -443,19 +445,20 @@ function renderPaymentTable(){
 /* ─── Trend range → SOLO el gráfico + tabla. Las KPIs quedan fijas (total a la fecha). ─── */
 const fmt1 = v => `$${v.toFixed(1)}M`;
 
-// KPIs fijas = total acumulado del histórico completo (12M) · no cambian con el filtro
+// KPIs fijas = total acumulado del histórico completo · no cambian con el filtro
 function setFixedKpis(){
   const sP = FULL_PRIN.reduce((a,b)=>a+b,0), sI = FULL_INT.reduce((a,b)=>a+b,0), tot = sP + sI, li = FULL_LABELS.length - 1;
-  document.getElementById('kpiTotalPaid').textContent = fmt1(tot);
-  document.getElementById('kpiPeriod').textContent = FULL_LABELS[0] + ' – ' + FULL_LABELS[li];
-  document.getElementById('kpiPrin').textContent = fmt1(sP);
-  document.getElementById('kpiInt').textContent = fmt1(sI);
-  document.getElementById('kpiLast').textContent = fmt1(FULL_PRIN[li] + FULL_INT[li]);
-  document.getElementById('kpiLastMonth').textContent = FULL_LABELS[li];
+  const el = id => document.getElementById(id);
+  if(el('kpiTotalPaid'))  el('kpiTotalPaid').textContent  = fmt1(tot);
+  if(el('kpiPeriod'))     el('kpiPeriod').textContent     = FULL_LABELS[0] + ' – ' + FULL_LABELS[li];
+  if(el('kpiPrin'))       el('kpiPrin').textContent       = fmt1(sP);
+  if(el('kpiInt'))        el('kpiInt').textContent        = fmt1(sI);
+  if(el('kpiLast'))       el('kpiLast').textContent       = fmt1(FULL_PRIN[li] + FULL_INT[li]);
+  if(el('kpiLastMonth'))  el('kpiLastMonth').textContent  = FULL_LABELS[li];
   const pPct = sP/tot*100;
-  document.getElementById('splitBar').style.width = pPct.toFixed(1) + '%';
-  document.getElementById('splitP').textContent = `Principal · ${fmt1(sP)} · ${pPct.toFixed(1)}%`;
-  document.getElementById('splitI').textContent = `Interest · ${fmt1(sI)} · ${(100-pPct).toFixed(1)}%`;
+  el('splitBar').style.width = pPct.toFixed(1) + '%';
+  el('splitP').textContent = `Principal · ${fmt1(sP)} · ${pPct.toFixed(1)}%`;
+  el('splitI').textContent = `Interest · ${fmt1(sI)} · ${(100-pPct).toFixed(1)}%`;
 }
 
 // El filtro solo mueve el gráfico + tabla
