@@ -144,6 +144,7 @@
     <a href="../concentrations/index.html" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-squares-four"></i><span>Concentrations</span></a>
     <a href="../cash-flow/index.html" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-arrows-left-right"></i><span>Cash flow</span></a>
     <a href="../asset-view/index.html" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-cube"></i><span>Asset view</span></a>
+    <a href="index.html#deal-terms" onclick="switchTab('deal-terms');return false;" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-handshake"></i><span>Deal Terms</span></a>
     <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text font-semibold bg-border cursor-pointer"><i class="ph ph-file-text text-secondary-active"></i><span class="text-sm">General information</span></a>
     <a href="../report-repository/index.html" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-archive"></i><span>Report repository</span></a>
     <a href="../directory/index.html" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-text text-sm font-medium hover:bg-border-strong cursor-pointer"><i class="ph ph-envelope"></i><span>Directory</span></a>
@@ -173,9 +174,13 @@
 
   <!-- Tabs -->
   <div class="flex gap-2 border-b border-border mb-6">
-    <button class="px-4 py-2 text-sm font-semibold text-text border-b-2 border-secondary -mb-px font-primary">Overview</button>
-    <button class="px-4 py-2 text-sm font-medium text-text-secondary hover:text-text font-primary">Contracts</button>
+    <button id="tab-overview" onclick="switchTab('overview')" class="px-4 py-2 text-sm font-semibold text-text border-b-2 border-secondary -mb-px font-primary">Overview</button>
+    <button id="tab-deal-terms" onclick="switchTab('deal-terms')" class="px-4 py-2 text-sm font-medium text-text-secondary hover:text-text font-primary">Deal Terms</button>
+    <button id="tab-contracts" onclick="switchTab('contracts')" class="px-4 py-2 text-sm font-medium text-text-secondary hover:text-text font-primary">Contracts</button>
   </div>
+
+  <!-- ════════ OVERVIEW PANEL ════════ -->
+  <div id="panel-overview">
 
   <!-- ════════ 5 KPI CARDS ════════ -->
   <div class="grid grid-cols-5 gap-4 mb-6 max-[1280px]:grid-cols-3 max-[800px]:grid-cols-2">
@@ -457,8 +462,203 @@
     </div>
   </details>
 
+  </div><!-- /panel-overview -->
+
+  <!-- ════════ DEAL TERMS PANEL ════════ -->
+  <div id="panel-deal-terms" class="hidden">
+
+    <!-- Rate structure -->
+    <section class="mb-6">
+      <h3 class="font-primary text-xs font-bold uppercase tracking-wider text-text-secondary mb-3">Interest Rate</h3>
+      <div class="grid grid-cols-4 gap-4 max-[900px]:grid-cols-2">
+        <article class="bg-bg border border-border rounded-xl p-4">
+          <div class="text-[10px] font-primary font-bold uppercase tracking-wider text-text-secondary mb-1">Base Rate</div>
+          <div class="num text-xl font-bold text-text">TIIE 28d</div>
+          <div class="text-xs text-text-secondary mt-1">Effective at cut-off: 8.25%</div>
+        </article>
+        <article class="bg-bg border border-border rounded-xl p-4">
+          <div class="text-[10px] font-primary font-bold uppercase tracking-wider text-text-secondary mb-1">Spread</div>
+          <div class="num text-xl font-bold text-text">+ 5.50%</div>
+          <div class="text-xs text-text-secondary mt-1">Fixed over base rate</div>
+        </article>
+        <article class="bg-bg border border-border rounded-xl p-4">
+          <div class="text-[10px] font-primary font-bold uppercase tracking-wider text-text-secondary mb-1">Annual Rate</div>
+          <div class="num text-xl font-bold text-text">13.75%</div>
+          <div class="text-xs text-text-secondary mt-1">TIIE + spread</div>
+        </article>
+        <article class="bg-bg border border-border rounded-xl p-4">
+          <div class="text-[10px] font-primary font-bold uppercase tracking-wider text-text-secondary mb-1">Monthly Rate</div>
+          <div class="num text-xl font-bold text-text">1.15%</div>
+          <div class="text-xs text-text-secondary mt-1">Equivalent monthly</div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Fees -->
+    <section class="mb-6">
+      <h3 class="font-primary text-xs font-bold uppercase tracking-wider text-text-secondary mb-3">Fees</h3>
+      <div class="bg-surface border border-border rounded-xl overflow-hidden">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-border bg-bg">
+              <th class="text-left px-5 py-3 text-xs font-primary font-bold uppercase tracking-wider text-text-secondary">Fee</th>
+              <th class="text-left px-5 py-3 text-xs font-primary font-bold uppercase tracking-wider text-text-secondary">Rate</th>
+              <th class="text-left px-5 py-3 text-xs font-primary font-bold uppercase tracking-wider text-text-secondary">Base</th>
+              <th class="text-left px-5 py-3 text-xs font-primary font-bold uppercase tracking-wider text-text-secondary">Frequency</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border">
+            <tr class="hover:bg-bg">
+              <td class="px-5 py-3 font-semibold text-text">Commitment Fee</td>
+              <td class="px-5 py-3 font-mono text-text">0.75%</td>
+              <td class="px-5 py-3 text-text-secondary">Undrawn amount</td>
+              <td class="px-5 py-3 text-text-secondary">Monthly</td>
+            </tr>
+            <tr class="hover:bg-bg">
+              <td class="px-5 py-3 font-semibold text-text">Administration Fee</td>
+              <td class="px-5 py-3 font-mono text-text">0.30%</td>
+              <td class="px-5 py-3 text-text-secondary">Outstanding balance</td>
+              <td class="px-5 py-3 text-text-secondary">Annual</td>
+            </tr>
+            <tr class="hover:bg-bg">
+              <td class="px-5 py-3 font-semibold text-text">Structuring Fee</td>
+              <td class="px-5 py-3 font-mono text-text">1.00%</td>
+              <td class="px-5 py-3 text-text-secondary">Facility commitment</td>
+              <td class="px-5 py-3 text-text-secondary">One-time at closing</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Term structure -->
+    <section class="mb-6">
+      <h3 class="font-primary text-xs font-bold uppercase tracking-wider text-text-secondary mb-3">Term Structure</h3>
+      <div class="grid grid-cols-3 gap-4 max-[700px]:grid-cols-1">
+        <article class="bg-surface border border-border rounded-xl p-5">
+          <div class="w-9 h-9 rounded-md bg-bg border border-border grid place-items-center mb-4">
+            <i class="ph ph-calendar-check text-text-secondary text-lg"></i>
+          </div>
+          <div class="space-y-3">
+            <div>
+              <div class="text-[10px] font-primary font-bold tracking-wider uppercase text-text-secondary">Closing Date</div>
+              <div class="text-text font-bold font-primary mt-0.5">Oct 19, 2025</div>
+            </div>
+            <div>
+              <div class="text-[10px] font-primary font-bold tracking-wider uppercase text-text-secondary">First Drawdown</div>
+              <div class="text-text font-bold font-primary mt-0.5">Nov 3, 2025</div>
+            </div>
+          </div>
+        </article>
+        <article class="bg-surface border border-border rounded-xl p-5">
+          <div class="w-9 h-9 rounded-md bg-bg border border-border grid place-items-center mb-4">
+            <i class="ph ph-arrows-clockwise text-text-secondary text-lg"></i>
+          </div>
+          <div class="space-y-3">
+            <div>
+              <div class="text-[10px] font-primary font-bold tracking-wider uppercase text-text-secondary">Revolving Period End</div>
+              <div class="text-text font-bold font-primary mt-0.5">Oct 19, 2027</div>
+            </div>
+            <div>
+              <div class="text-[10px] font-primary font-bold tracking-wider uppercase text-text-secondary">Availability Period</div>
+              <div class="text-text font-bold font-primary mt-0.5">24 months</div>
+            </div>
+          </div>
+        </article>
+        <article class="bg-surface border border-border rounded-xl p-5">
+          <div class="w-9 h-9 rounded-md bg-bg border border-border grid place-items-center mb-4">
+            <i class="ph ph-flag-checkered text-text-secondary text-lg"></i>
+          </div>
+          <div class="space-y-3">
+            <div>
+              <div class="text-[10px] font-primary font-bold tracking-wider uppercase text-text-secondary">Final Maturity</div>
+              <div class="text-text font-bold font-primary mt-0.5">Oct 19, 2030</div>
+            </div>
+            <div>
+              <div class="text-[10px] font-primary font-bold tracking-wider uppercase text-text-secondary">Total Term</div>
+              <div class="text-text font-bold font-primary mt-0.5">60 months</div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Drawing conditions -->
+    <section>
+      <h3 class="font-primary text-xs font-bold uppercase tracking-wider text-text-secondary mb-3">Drawing Conditions</h3>
+      <div class="bg-surface border border-border rounded-xl p-5">
+        <div class="grid grid-cols-2 gap-x-6 gap-y-3 max-[700px]:grid-cols-1">
+          <div class="flex items-start gap-2.5">
+            <i class="ph ph-check-circle text-success text-base flex-shrink-0 mt-0.5"></i>
+            <div>
+              <div class="text-sm font-semibold text-text">Minimum drawdown</div>
+              <div class="text-xs text-text-secondary mt-0.5">$5,000,000 MXN por disposición</div>
+            </div>
+          </div>
+          <div class="flex items-start gap-2.5">
+            <i class="ph ph-check-circle text-success text-base flex-shrink-0 mt-0.5"></i>
+            <div>
+              <div class="text-sm font-semibold text-text">Notice period</div>
+              <div class="text-xs text-text-secondary mt-0.5">3 días hábiles de anticipación</div>
+            </div>
+          </div>
+          <div class="flex items-start gap-2.5">
+            <i class="ph ph-check-circle text-success text-base flex-shrink-0 mt-0.5"></i>
+            <div>
+              <div class="text-sm font-semibold text-text">OC test at drawdown</div>
+              <div class="text-xs text-text-secondary mt-0.5">Aforo ≥ 1.11x antes y después de la disposición</div>
+            </div>
+          </div>
+          <div class="flex items-start gap-2.5">
+            <i class="ph ph-check-circle text-success text-base flex-shrink-0 mt-0.5"></i>
+            <div>
+              <div class="text-sm font-semibold text-text">Payment date</div>
+              <div class="text-xs text-text-secondary mt-0.5">Día 19 de cada mes o siguiente hábil</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /panel-deal-terms -->
+
+  <!-- ════════ CONTRACTS PANEL ════════ -->
+  <div id="panel-contracts" class="hidden">
+    <div class="flex flex-col items-center justify-center py-24 text-center">
+      <div class="w-14 h-14 rounded-xl bg-bg border border-border grid place-items-center mb-4">
+        <i class="ph ph-file-text text-text-muted text-2xl"></i>
+      </div>
+      <p class="text-sm font-semibold text-text">No contracts attached</p>
+      <p class="text-xs text-text-secondary mt-1">Upload the facility contract documents to view them here.</p>
+      <button class="mt-4 px-4 py-2 text-sm font-semibold text-secondary border border-secondary rounded-lg hover:bg-secondary/5">Upload document</button>
+    </div>
+  </div><!-- /panel-contracts -->
+
 </main>
 
-<script>function toggleFlujos(){const k=document.getElementById("flujosKids"),c=document.getElementById("flujosCaret");const h=k.classList.toggle("hidden");c.classList.toggle("ph-caret-down",!h);c.classList.toggle("ph-caret-right",h);}</script>
+<script>
+function toggleFlujos(){const k=document.getElementById("flujosKids"),c=document.getElementById("flujosCaret");const h=k.classList.toggle("hidden");c.classList.toggle("ph-caret-down",!h);c.classList.toggle("ph-caret-right",h);}
+
+const TABS = ['overview','deal-terms','contracts'];
+function switchTab(active) {
+  TABS.forEach(id => {
+    const panel = document.getElementById('panel-' + id);
+    const btn = document.getElementById('tab-' + id);
+    if (!panel || !btn) return;
+    const isActive = id === active;
+    panel.classList.toggle('hidden', !isActive);
+    btn.classList.toggle('font-semibold', isActive);
+    btn.classList.toggle('text-text', isActive);
+    btn.classList.toggle('border-b-2', isActive);
+    btn.classList.toggle('border-secondary', isActive);
+    btn.classList.toggle('-mb-px', isActive);
+    btn.classList.toggle('font-medium', !isActive);
+    btn.classList.toggle('text-text-secondary', !isActive);
+  });
+}
+// Activate tab from URL hash on load
+const hash = window.location.hash.replace('#','');
+if (TABS.includes(hash)) switchTab(hash);
+</script>
 </body>
 </html>
